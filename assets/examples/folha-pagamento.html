@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Folha de Pagamento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de folha de pagamento */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .folha-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .folha-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .folha-filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .folha-filter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .folha-filter label {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .folha-filter select {
+            padding: 8px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .resumo-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .resumo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .resumo-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .resumo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .resumo-card {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .resumo-card-title {
+            font-size: 14px;
+            color: var(--tertiary-color);
+            margin-bottom: 5px;
+        }
+        
+        .resumo-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .resumo-card-value.positivo {
+            color: #4CAF50;
+        }
+        
+        .resumo-card-value.negativo {
+            color: var(--accent-color);
+        }
+        
+        .resumo-card-info {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-top: 5px;
+        }
+        
+        .detalhes-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .detalhes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .detalhes-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .detalhes-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .detalhes-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .detalhes-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .detalhes-content {
+            display: none;
+        }
+        
+        .detalhes-content.active {
+            display: block;
+        }
+        
+        .detalhes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .detalhes-table th {
+            background-color: #f5f5f5;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detalhes-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detalhes-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .detalhes-table tr:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .valor {
+            font-weight: 500;
+        }
+        
+        .valor.positivo {
+            color: #4CAF50;
+        }
+        
+        .valor.negativo {
+            color: var(--accent-color);
+        }
+        
+        .detalhes-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .detalhes-total {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .detalhes-total .valor {
+            font-size: 20px;
+            margin-left: 10px;
+        }
+        
+        .historico-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .historico-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .historico-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .historico-list {
+            margin-bottom: 20px;
+        }
+        
+        .historico-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .historico-item:last-child {
+            border-bottom: none;
+        }
+        
+        .historico-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .historico-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .historico-icon i {
+            color: var(--neutral-color);
+        }
+        
+        .historico-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .historico-title-text {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .historico-details {
+            display: flex;
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .historico-date {
+            margin-right: 15px;
+        }
+        
+        .historico-valor {
+            font-weight: 700;
+            margin-left: auto;
+        }
+        
+        .historico-valor.positivo {
+            color: #4CAF50;
+        }
+        
+        .historico-valor.negativo {
+            color: var(--accent-color);
+        }
+        
+        .historico-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        
+        .historico-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .historico-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .historico-action.download {
+            color: var(--secondary-color);
+        }
+        
+        .historico-action.download:hover {
+            color: var(--secondary-light);
+        }
+        
+        /* Modal para visualizar recibo */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .recibo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .recibo-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .recibo-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .recibo-subtitle {
+            font-size: 14px;
+            color: var(--tertiary-color);
+        }
+        
+        .recibo-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recibo-info-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .recibo-info-label {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-bottom: 5px;
+        }
+        
+        .recibo-info-value {
+            font-weight: 500;
+        }
+        
+        .recibo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .recibo-table th {
+            background-color: #f5f5f5;
+            padding: 10px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recibo-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recibo-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .recibo-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .recibo-total {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .recibo-assinatura {
+            text-align: center;
+            margin-top: 40px;
+            width: 200px;
+        }
+        
+        .recibo-assinatura-linha {
+            width: 100%;
+            height: 1px;
+            background-color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .recibo-assinatura-nome {
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Folha de Pagamento</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="folha-header">
+            <h1 class="folha-title">Folha de Pagamento</h1>
+            <div class="folha-filters">
+                <div class="folha-filter">
+                    <label for="mesFolha">Mês:</label>
+                    <select id="mesFolha" onchange="atualizarFolha()">
+                        <option value="4">Abril/2025</option>
+                        <option value="3">Março/2025</option>
+                        <option value="2">Fevereiro/2025</option>
+                        <option value="1">Janeiro/2025</option>
+                        <option value="12">Dezembro/2024</option>
+                        <option value="11">Novembro/2024</option>
+                    </select>
+                </div>
+                <div class="folha-filter">
+                    <label for="funcionarioFolha">Funcionário:</label>
+                    <select id="funcionarioFolha" onchange="atualizarFolha()">
+                        <option value="0">Todos</option>
+                        <option value="1">Maria Oliveira</option>
+                        <option value="2">Carlos Santos</option>
+                        <option value="3">Ana Ferreira</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="resumo-section">
+            <div class="resumo-header">
+                <h2 class="resumo-title">Resumo</h2>
+                <button class="btn-secondary" onclick="gerarRelatorio()">
+                    <i class="material-icons">description</i> Gerar Relatório
+                </button>
+            </div>
+            
+            <div class="resumo-cards">
+                <div class="resumo-card">
+                    <div class="resumo-card-title">Salário Bruto</div>
+                    <div class="resumo-card-value">R$ 3.500,00</div>
+                    <div class="resumo-card-info">Referente a Abril/2025</div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-card-title">Descontos</div>
+                    <div class="resumo-card-value negativo">R$ 980,00</div>
+                    <div class="resumo-card-info">INSS, IRRF, outros</div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-card-title">Adicionais</div>
+                    <div class="resumo-card-value positivo">R$ 450,00</div>
+                    <div class="resumo-card-info">Horas extras, benefícios</div>
+                </div>
+                
+                <div class="resumo-card">
+                    <div class="resumo-card-title">Salário Líquido</div>
+                    <div class="resumo-card-value">R$ 2.970,00</div>
+                    <div class="resumo-card-info">Disponível em 05/05/2025</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="detalhes-section">
+            <div class="detalhes-header">
+                <h2 class="detalhes-title">Detalhamento</h2>
+                <button class="btn-primary" onclick="visualizarRecibo()">
+                    <i class="material-icons">receipt</i> Visualizar Recibo
+                </button>
+            </div>
+            
+            <div class="detalhes-tabs">
+                <div class="detalhes-tab active" onclick="mudarTab('proventos')">Proventos</div>
+                <div class="detalhes-tab" onclick="mudarTab('descontos')">Descontos</div>
+                <div class="detalhes-tab" onclick="mudarTab('beneficios')">Benefícios</div>
+            </div>
+            
+            <div class="detalhes-content active" id="proventos-content">
+                <table class="detalhes-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Salário Base</td>
+                            <td>30 dias</td>
+                            <td class="valor positivo">R$ 3.000,00</td>
+                        </tr>
+                        <tr>
+                            <td>Horas Extras 50%</td>
+                            <td>10 horas</td>
+                            <td class="valor positivo">R$ 250,00</td>
+                        </tr>
+                        <tr>
+                            <td>Horas Extras 100%</td>
+                            <td>4 horas</td>
+                            <td class="valor positivo">R$ 200,00</td>
+                        </tr>
+                        <tr>
+                            <td>Adicional Noturno</td>
+                            <td>5 dias</td>
+                            <td class="valor positivo">R$ 50,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="detalhes-footer">
+                    <div class="detalhes-total">
+                        Total de Proventos: <span class="valor positivo">R$ 3.500,00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detalhes-content" id="descontos-content">
+                <table class="detalhes-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>INSS</td>
+                            <td>11%</td>
+                            <td class="valor negativo">R$ 385,00</td>
+                        </tr>
+                        <tr>
+                            <td>IRRF</td>
+                            <td>15%</td>
+                            <td class="valor negativo">R$ 525,00</td>
+                        </tr>
+                        <tr>
+                            <td>Adiantamento Salarial</td>
+                            <td>-</td>
+                            <td class="valor negativo">R$ 0,00</td>
+                        </tr>
+                        <tr>
+                            <td>Faltas</td>
+                            <td>1 dia</td>
+                            <td class="valor negativo">R$ 70,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="detalhes-footer">
+                    <div class="detalhes-total">
+                        Total de Descontos: <span class="valor negativo">R$ 980,00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detalhes-content" id="beneficios-content">
+                <table class="detalhes-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Referência</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vale Refeição</td>
+                            <td>22 dias</td>
+                            <td class="valor">R$ 660,00</td>
+                        </tr>
+                        <tr>
+                            <td>Vale Transporte</td>
+                            <td>22 dias</td>
+                            <td class="valor">R$ 352,00</td>
+                        </tr>
+                        <tr>
+                            <td>Plano de Saúde</td>
+                            <td>-</td>
+                            <td class="valor">R$ 250,00</td>
+                        </tr>
+                        <tr>
+                            <td>Seguro de Vida</td>
+                            <td>-</td>
+                            <td class="valor">R$ 35,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="detalhes-footer">
+                    <div class="detalhes-total">
+                        Total de Benefícios: <span class="valor">R$ 1.297,00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="historico-section">
+            <div class="historico-header">
+                <h2 class="historico-title">Histórico de Pagamentos</h2>
+            </div>
+            
+            <div class="historico-list">
+                <div class="historico-item" onclick="visualizarReciboHistorico(1)">
+                    <div class="historico-icon">
+                        <i class="material-icons">receipt</i>
+                    </div>
+                    <div class="historico-content">
+                        <div class="historico-title-text">Pagamento de Salário - Março/2025</div>
+                        <div class="historico-details">
+                            <div class="historico-date">05/04/2025</div>
+                            <div class="historico-status">Pago</div>
+                        </div>
+                    </div>
+                    <div class="historico-valor positivo">R$ 2.850,00</div>
+                    <div class="historico-actions">
+                        <button class="historico-action download" onclick="baixarRecibo(1, event)">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="historico-item" onclick="visualizarReciboHistorico(2)">
+                    <div class="historico-icon">
+                        <i class="material-icons">receipt</i>
+                    </div>
+                    <div class="historico-content">
+                        <div class="historico-title-text">Pagamento de Salário - Fevereiro/2025</div>
+                        <div class="historico-details">
+                            <div class="historico-date">05/03/2025</div>
+                            <div class="historico-status">Pago</div>
+                        </div>
+                    </div>
+                    <div class="historico-valor positivo">R$ 2.920,00</div>
+                    <div class="historico-actions">
+                        <button class="historico-action download" onclick="baixarRecibo(2, event)">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="historico-item" onclick="visualizarReciboHistorico(3)">
+                    <div class="historico-icon">
+                        <i class="material-icons">receipt</i>
+                    </div>
+                    <div class="historico-content">
+                        <div class="historico-title-text">Pagamento de Salário - Janeiro/2025</div>
+                        <div class="historico-details">
+                            <div class="historico-date">05/02/2025</div>
+                            <div class="historico-status">Pago</div>
+                        </div>
+                    </div>
+                    <div class="historico-valor positivo">R$ 2.780,00</div>
+                    <div class="historico-actions">
+                        <button class="historico-action download" onclick="baixarRecibo(3, event)">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="historico-item" onclick="visualizarReciboHistorico(4)">
+                    <div class="historico-icon">
+                        <i class="material-icons">receipt</i>
+                    </div>
+                    <div class="historico-content">
+                        <div class="historico-title-text">Pagamento de 13º Salário - 2ª Parcela</div>
+                        <div class="historico-details">
+                            <div class="historico-date">20/12/2024</div>
+                            <div class="historico-status">Pago</div>
+                        </div>
+                    </div>
+                    <div class="historico-valor positivo">R$ 1.350,00</div>
+                    <div class="historico-actions">
+                        <button class="historico-action download" onclick="baixarRecibo(4, event)">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="historico-item" onclick="visualizarReciboHistorico(5)">
+                    <div class="historico-icon">
+                        <i class="material-icons">receipt</i>
+                    </div>
+                    <div class="historico-content">
+                        <div class="historico-title-text">Pagamento de 13º Salário - 1ª Parcela</div>
+                        <div class="historico-details">
+                            <div class="historico-date">30/11/2024</div>
+                            <div class="historico-status">Pago</div>
+                        </div>
+                    </div>
+                    <div class="historico-valor positivo">R$ 1.500,00</div>
+                    <div class="historico-actions">
+                        <button class="historico-action download" onclick="baixarRecibo(5, event)">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para visualizar recibo -->
+    <div class="modal-backdrop" id="reciboModalBackdrop"></div>
+    <div class="modal" id="reciboModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="reciboModalTitle">Recibo de Pagamento</h2>
+            <button class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="recibo-header">
+                <div class="recibo-logo">GDOM</div>
+                <div class="recibo-title">RECIBO DE PAGAMENTO</div>
+                <div class="recibo-subtitle">Abril/2025</div>
+            </div>
+            
+            <div class="recibo-info">
+                <div class="recibo-info-group">
+                    <div class="recibo-info-label">Empregador</div>
+                    <div class="recibo-info-value">João Silva</div>
+                </div>
+                <div class="recibo-info-group">
+                    <div class="recibo-info-label">Funcionário</div>
+                    <div class="recibo-info-value">Maria Oliveira</div>
+                </div>
+                <div class="recibo-info-group">
+                    <div class="recibo-info-label">Função</div>
+                    <div class="recibo-info-value">Empregada Doméstica</div>
+                </div>
+                <div class="recibo-info-group">
+                    <div class="recibo-info-label">Admissão</div>
+                    <div class="recibo-info-value">10/01/2023</div>
+                </div>
+            </div>
+            
+            <table class="recibo-table">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Referência</th>
+                        <th>Proventos</th>
+                        <th>Descontos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Salário Base</td>
+                        <td>30 dias</td>
+                        <td>R$ 3.000,00</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras 50%</td>
+                        <td>10 horas</td>
+                        <td>R$ 250,00</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras 100%</td>
+                        <td>4 horas</td>
+                        <td>R$ 200,00</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Adicional Noturno</td>
+                        <td>5 dias</td>
+                        <td>R$ 50,00</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>INSS</td>
+                        <td>11%</td>
+                        <td>-</td>
+                        <td>R$ 385,00</td>
+                    </tr>
+                    <tr>
+                        <td>IRRF</td>
+                        <td>15%</td>
+                        <td>-</td>
+                        <td>R$ 525,00</td>
+                    </tr>
+                    <tr>
+                        <td>Faltas</td>
+                        <td>1 dia</td>
+                        <td>-</td>
+                        <td>R$ 70,00</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="recibo-footer">
+                <div class="recibo-total">
+                    <div>Total de Proventos: R$ 3.500,00</div>
+                    <div>Total de Descontos: R$ 980,00</div>
+                    <div>Valor Líquido: R$ 2.970,00</div>
+                </div>
+                
+                <div class="recibo-assinatura">
+                    <div class="recibo-assinatura-linha"></div>
+                    <div class="recibo-assinatura-nome">Maria Oliveira</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal()">Fechar</button>
+            <button class="btn-primary" onclick="imprimirRecibo()">
+                <i class="material-icons">print</i> Imprimir
+            </button>
+            <button class="btn-secondary" onclick="baixarReciboAtual()">
+                <i class="material-icons">download</i> Baixar PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Controle das tabs
+        function mudarTab(tab) {
+            // Remover classe active de todas as tabs
+            document.querySelectorAll('.detalhes-tab').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Remover classe active de todos os conteúdos
+            document.querySelectorAll('.detalhes-content').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Adicionar classe active à tab clicada
+            document.querySelector(`.detalhes-tab:nth-child(${tab === 'proventos' ? 1 : tab === 'descontos' ? 2 : 3})`).classList.add('active');
+            
+            // Adicionar classe active ao conteúdo correspondente
+            document.getElementById(`${tab}-content`).classList.add('active');
+        }
+        
+        // Controle do modal
+        function visualizarRecibo() {
+            document.getElementById('reciboModalBackdrop').style.display = 'block';
+            document.getElementById('reciboModal').style.display = 'block';
+        }
+        
+        function visualizarReciboHistorico(id) {
+            // Simulação de carregamento de dados do recibo histórico
+            const recibos = {
+                1: {
+                    mes: 'Março/2025',
+                    valor: 'R$ 2.850,00'
+                },
+                2: {
+                    mes: 'Fevereiro/2025',
+                    valor: 'R$ 2.920,00'
+                },
+                3: {
+                    mes: 'Janeiro/2025',
+                    valor: 'R$ 2.780,00'
+                },
+                4: {
+                    mes: '13º Salário - 2ª Parcela/2024',
+                    valor: 'R$ 1.350,00'
+                },
+                5: {
+                    mes: '13º Salário - 1ª Parcela/2024',
+                    valor: 'R$ 1.500,00'
+                }
+            };
+            
+            const recibo = recibos[id];
+            
+            if (recibo) {
+                document.getElementById('reciboModalTitle').textContent = `Recibo de Pagamento - ${recibo.mes}`;
+                document.querySelector('.recibo-subtitle').textContent = recibo.mes;
+                document.querySelector('.recibo-total div:nth-child(3)').textContent = `Valor Líquido: ${recibo.valor}`;
+            }
+            
+            document.getElementById('reciboModalBackdrop').style.display = 'block';
+            document.getElementById('reciboModal').style.display = 'block';
+        }
+        
+        function fecharModal() {
+            document.getElementById('reciboModalBackdrop').style.display = 'none';
+            document.getElementById('reciboModal').style.display = 'none';
+        }
+        
+        function baixarRecibo(id, event) {
+            // Evitar que o clique propague para o elemento pai
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            // Simulação de download
+            const recibos = {
+                1: 'Março/2025',
+                2: 'Fevereiro/2025',
+                3: 'Janeiro/2025',
+                4: '13º Salário - 2ª Parcela/2024',
+                5: '13º Salário - 1ª Parcela/2024'
+            };
+            
+            alert(`Download do recibo de ${recibos[id]} iniciado.`);
+        }
+        
+        function baixarReciboAtual() {
+            // Simulação de download
+            alert('Download do recibo atual iniciado.');
+            fecharModal();
+        }
+        
+        function imprimirRecibo() {
+            // Simulação de impressão
+            alert('Enviando recibo para impressão...');
+            fecharModal();
+        }
+        
+        function atualizarFolha() {
+            const mes = document.getElementById('mesFolha').value;
+            const funcionario = document.getElementById('funcionarioFolha').value;
+            
+            // Simulação de atualização
+            alert(`Atualizando folha de pagamento: Mês=${mes}, Funcionário=${funcionario}`);
+        }
+        
+        function gerarRelatorio() {
+            const mes = document.getElementById('mesFolha').value;
+            const funcionario = document.getElementById('funcionarioFolha').value;
+            
+            // Simulação de geração de relatório
+            alert(`Gerando relatório: Mês=${mes}, Funcionário=${funcionario}`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+:root {
+  /* Cores principais conforme o Manual de Identidade Visual */
+  --primary-color: #2E4053;    /* Azul */
+  --secondary-color: #6BAE7E;  /* Verde */
+  --tertiary-color: #969696;   /* Cinza */
+  --neutral-color: #FFFFFF;    /* Branco */
+  --accent-color: #FF6B35;     /* Laranja */
+  
+  /* Variações para efeitos e estados */
+  --primary-light: #3A516A;
+  --primary-dark: #1D2B38;
+  --secondary-light: #7FC991;
+  --secondary-dark: #4E8A5F;
+  --accent-light: #FF8B5F;
+  --accent-dark: #E54E1B;
+  
+  /* Cores para textos */
+  --text-dark: #333333;
+  --text-light: #FFFFFF;
+  --text-muted: #767676;
+  
+  /* Cores para estados */
+  --success: #28A745;
+  --warning: #FFC107;
+  --danger: #DC3545;
+  --info: #17A2B8;
+}

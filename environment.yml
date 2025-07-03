@@ -1,0 +1,34 @@
+name: domv1
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - jupyter
+  - notebook
+  - ipywidgets
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - plotly
+  - fastapi
+  - uvicorn
+  - pydantic
+  - sqlalchemy
+  - alembic
+  - psycopg2
+  - pytest
+  - black
+  - flake8
+  - mypy
+  - python-dotenv
+  - pip
+  - pip:
+      - python-jose[cryptography]
+      - passlib[bcrypt]
+      - python-multipart
+      - pytest-asyncio
+      - pytest-cov
+      - sphinx
+      - sphinx-rtd-theme 

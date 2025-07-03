@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Registro de Ponto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de registro de ponto */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .ponto-info {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ponto-data {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .ponto-local {
+            font-size: 14px;
+            color: var(--tertiary-color);
+        }
+        
+        .ponto-wifi {
+            font-size: 14px;
+            color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .ponto-wifi i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+        
+        .ponto-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ponto-card {
+            flex: 1;
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .ponto-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .ponto-card-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .ponto-card-value.warning {
+            color: var(--accent-color);
+        }
+        
+        .ponto-form {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ponto-form-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--tertiary-color);
+            padding-bottom: 10px;
+        }
+        
+        .ponto-form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ponto-form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .ponto-form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .ponto-form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .ponto-form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .ponto-form-input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
+        .ponto-form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .ponto-form-textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .ponto-form-check {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .ponto-form-check input {
+            margin-right: 10px;
+        }
+        
+        .ponto-form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--tertiary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Registro de Ponto</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="ponto-info">
+            <div>
+                <div class="ponto-data" id="pontoData">Carregando data...</div>
+                <div class="ponto-local">São Paulo, SP</div>
+            </div>
+            <div class="ponto-wifi">
+                <i class="material-icons">wifi</i>
+                <span>Rede: Casa_2.4GHz</span>
+            </div>
+        </div>
+        
+        <div class="ponto-cards">
+            <div class="ponto-card">
+                <div class="ponto-card-title">Total de Horas da Semana</div>
+                <div class="ponto-card-value warning">38h 20min</div>
+            </div>
+            <div class="ponto-card">
+                <div class="ponto-card-title">Dias sem Validação</div>
+                <div class="ponto-card-value">2</div>
+            </div>
+        </div>
+        
+        <form class="ponto-form" id="pontoForm">
+            <h2 class="ponto-form-title">Registro do Dia</h2>
+            
+            <div class="ponto-form-row">
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="entrada">Entrada (Início do Expediente)</label>
+                    <input type="time" class="ponto-form-input" id="entrada" name="entrada">
+                </div>
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="inicioIntervalo">Início do Intervalo</label>
+                    <input type="time" class="ponto-form-input" id="inicioIntervalo" name="inicioIntervalo" disabled>
+                </div>
+            </div>
+            
+            <div class="ponto-form-row">
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="fimIntervalo">Fim do Intervalo</label>
+                    <input type="time" class="ponto-form-input" id="fimIntervalo" name="fimIntervalo" disabled>
+                </div>
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="saida">Saída (Fim do Expediente)</label>
+                    <input type="time" class="ponto-form-input" id="saida" name="saida" disabled>
+                </div>
+            </div>
+            
+            <div class="ponto-form-row">
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="inicioExtraordinario">Início do Extraordinário</label>
+                    <input type="time" class="ponto-form-input" id="inicioExtraordinario" name="inicioExtraordinario" disabled>
+                </div>
+                <div class="ponto-form-group">
+                    <label class="ponto-form-label" for="fimExtraordinario">Fim do Extraordinário</label>
+                    <input type="time" class="ponto-form-input" id="fimExtraordinario" name="fimExtraordinario" disabled>
+                </div>
+            </div>
+            
+            <div class="ponto-form-row">
+                <div class="ponto-form-group" style="flex: 100%;">
+                    <label class="ponto-form-label" for="observacao">Observação</label>
+                    <textarea class="ponto-form-textarea" id="observacao" name="observacao" placeholder="Digite uma observação se necessário"></textarea>
+                </div>
+            </div>
+            
+            <div class="ponto-form-check">
+                <input type="checkbox" id="validado" name="validado" disabled>
+                <label for="validado">Validado</label>
+            </div>
+            
+            <div class="ponto-form-footer">
+                <button type="button" class="btn-primary" id="btnRegistrar">Registrar Entrada</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='ponto-mensal.html'">Listar Mês</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('pontoData').textContent = agora.toLocaleDateString('pt-BR', options);
+        }
+        
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarDataHora();
+            setInterval(atualizarDataHora, 1000); // Atualizar a cada segundo
+            
+            // Simular dados de ponto
+            const pontoAtual = {
+                entrada: null,
+                inicioIntervalo: null,
+                fimIntervalo: null,
+                saida: null,
+                inicioExtraordinario: null,
+                fimExtraordinario: null,
+                observacao: '',
+                validado: false
+            };
+            
+            // Botão de registro
+            const btnRegistrar = document.getElementById('btnRegistrar');
+            btnRegistrar.addEventListener('click', function() {
+                const agora = new Date();
+                const horaAtual = agora.getHours().toString().padStart(2, '0') + ':' + 
+                                 agora.getMinutes().toString().padStart(2, '0');
+                
+                // Lógica para determinar qual campo preencher
+                if (!pontoAtual.entrada) {
+                    document.getElementById('entrada').value = horaAtual;
+                    pontoAtual.entrada = horaAtual;
+                    document.getElementById('inicioIntervalo').disabled = false;
+                    btnRegistrar.textContent = 'Registrar Início do Intervalo';
+                    alert('Entrada registrada com sucesso!');
+                } 
+                else if (!pontoAtual.inicioIntervalo) {
+                    document.getElementById('inicioIntervalo').value = horaAtual;
+                    pontoAtual.inicioIntervalo = horaAtual;
+                    document.getElementById('fimIntervalo').disabled = false;
+                    btnRegistrar.textContent = 'Registrar Fim do Intervalo';
+                    alert('Início do intervalo registrado com sucesso!');
+                } 
+                else if (!pontoAtual.fimIntervalo) {
+                    document.getElementById('fimIntervalo').value = horaAtual;
+                    pontoAtual.fimIntervalo = horaAtual;
+                    document.getElementById('saida').disabled = false;
+                    btnRegistrar.textContent = 'Registrar Saída';
+                    alert('Fim do intervalo registrado com sucesso!');
+                } 
+                else if (!pontoAtual.saida) {
+                    document.getElementById('saida').value = horaAtual;
+                    pontoAtual.saida = horaAtual;
+                    document.getElementById('inicioExtraordinario').disabled = false;
+                    btnRegistrar.textContent = 'Registrar Início do Extraordinário';
+                    alert('Saída registrada com sucesso!');
+                } 
+                else if (!pontoAtual.inicioExtraordinario) {
+                    document.getElementById('inicioExtraordinario').value = horaAtual;
+                    pontoAtual.inicioExtraordinario = horaAtual;
+                    document.getElementById('fimExtraordinario').disabled = false;
+                    btnRegistrar.textContent = 'Registrar Fim do Extraordinário';
+                    alert('Início do extraordinário registrado com sucesso!');
+                } 
+                else if (!pontoAtual.fimExtraordinario) {
+                    document.getElementById('fimExtraordinario').value = horaAtual;
+                    pontoAtual.fimExtraordinario = horaAtual;
+                    btnRegistrar.disabled = true;
+                    btnRegistrar.textContent = 'Registro Completo';
+                    alert('Fim do extraordinário registrado com sucesso!');
+                }
+                
+                // Simular envio para o servidor
+                console.log('Registro de ponto atualizado:', pontoAtual);
+            });
+        });
+    </script>
+</body>
+</html>

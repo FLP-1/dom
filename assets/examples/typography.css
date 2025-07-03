@@ -1,0 +1,58 @@
+/* Fontes conforme o Manual de Identidade Visual */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Tamanhos de fonte conforme o Manual de Identidade Visual */
+.title {
+  font-size: 20px;
+  font-weight: 700; /* Bold */
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: 500; /* Medium */
+}
+
+.body-text {
+  font-size: 14px;
+  font-weight: 400; /* Regular */
+}
+
+/* Estilos para links */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
+/* Acessibilidade */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -1,0 +1,64 @@
+/* Ícones conforme o Manual de Identidade Visual */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Tamanho padrão conforme especificação */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  color: var(--tertiary-color);  /* Cor padrão cinza */
+  
+  /* Suporte para navegadores mais antigos */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
+/* Variações de cores para ícones */
+.icon-primary {
+  color: var(--primary-color);
+}
+
+.icon-secondary {
+  color: var(--secondary-color);
+}
+
+.icon-accent {
+  color: var(--accent-color);
+}
+
+.icon-light {
+  color: var(--neutral-color);
+}
+
+/* Variações de tamanho */
+.icon-sm {
+  font-size: 18px;
+}
+
+.icon-md {
+  font-size: 24px;
+}
+
+.icon-lg {
+  font-size: 36px;
+}
+
+/* Efeitos para ícones interativos */
+.icon-interactive {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon-interactive:hover {
+  transform: scale(1.1);
+  color: var(--primary-color);
+}

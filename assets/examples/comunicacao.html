@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Comunicação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de comunicação */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 64px);
+        }
+        
+        .chat-sidebar {
+            width: 300px;
+            background-color: var(--neutral-color);
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .chat-sidebar-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-sidebar-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .chat-sidebar-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .chat-search {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .chat-search input {
+            width: 100%;
+            padding: 8px 8px 8px 35px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .chat-search i {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--tertiary-color);
+        }
+        
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chat-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .chat-item.active {
+            background-color: rgba(46, 64, 83, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .chat-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .chat-item-avatar.group {
+            background-color: var(--secondary-color);
+        }
+        
+        .chat-item-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .chat-item-content {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .chat-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .chat-item-name {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .chat-item-time {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .chat-item-message {
+            font-size: 14px;
+            color: var(--tertiary-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .chat-item-badge {
+            background-color: var(--accent-color);
+            color: var(--neutral-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f5f5;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background-color: var(--neutral-color);
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .chat-header-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .chat-header-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header-name {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .chat-header-status {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .chat-header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .chat-header-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .chat-header-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 70%;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+        }
+        
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .message.sent .message-content {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.received .message-content {
+            background-color: var(--neutral-color);
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-info {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .message.sent .message-info {
+            justify-content: flex-end;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .message-status {
+            margin-left: 5px;
+            color: var(--tertiary-color);
+        }
+        
+        .message-status.read {
+            color: var(--secondary-color);
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: var(--secondary-color);
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            background-color: var(--neutral-color);
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-input-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .chat-input-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .chat-input-field {
+            flex: 1;
+            position: relative;
+        }
+        
+        .chat-input-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 24px;
+            font-size: 14px;
+        }
+        
+        .chat-input-field input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .chat-input-send {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .chat-input-send:hover {
+            background-color: var(--primary-light);
+        }
+        
+        /* Modal para novo grupo */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .modal-form-group input:focus,
+        .modal-form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .user-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .user-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        
+        .user-item-checkbox {
+            margin-right: 10px;
+        }
+        
+        .user-item-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-item-avatar i {
+            font-size: 16px;
+            color: var(--neutral-color);
+        }
+        
+        .user-item-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Comunicação</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <div class="chat-sidebar-header">
+                <h2 class="chat-sidebar-title">Conversas</h2>
+                <div class="chat-sidebar-actions">
+                    <button class="chat-sidebar-action" onclick="abrirModalNovoGrupo()">
+                        <i class="material-icons">group_add</i>
+                    </button>
+                    <button class="chat-sidebar-action" onclick="abrirModalNovaConversa()">
+                        <i class="material-icons">chat</i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-search">
+                <i class="material-icons">search</i>
+                <input type="text" placeholder="Buscar conversa...">
+            </div>
+            
+            <div class="chat-list">
+                <div class="chat-item active" onclick="selecionarConversa(1)">
+                    <div class="chat-item-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-header">
+                            <span class="chat-item-name">Maria Oliveira</span>
+                            <span class="chat-item-time">10:30</span>
+                        </div>
+                        <div class="chat-item-message">Preciso confirmar o horário da reunião de amanhã...</div>
+                    </div>
+                    <div class="chat-item-badge">2</div>
+                </div>
+                
+                <div class="chat-item" onclick="selecionarConversa(2)">
+                    <div class="chat-item-avatar group">
+                        <i class="material-icons">group</i>
+                    </div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-header">
+                            <span class="chat-item-name">Grupo Família</span>
+                            <span class="chat-item-time">09:45</span>
+                        </div>
+                        <div class="chat-item-message">Pedro: Alguém pode comprar pão na volta?</div>
+                    </div>
+                    <div class="chat-item-badge">3</div>
+                </div>
+                
+                <div class="chat-item" onclick="selecionarConversa(3)">
+                    <div class="chat-item-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-header">
+                            <span class="chat-item-name">Carlos Santos</span>
+                            <span class="chat-item-time">Ontem</span>
+                        </div>
+                        <div class="chat-item-message">Enviei os documentos solicitados por email...</div>
+                    </div>
+                </div>
+                
+                <div class="chat-item" onclick="selecionarConversa(4)">
+                    <div class="chat-item-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-header">
+                            <span class="chat-item-name">Ana Ferreira</span>
+                            <span class="chat-item-time">Ontem</span>
+                        </div>
+                        <div class="chat-item-message">Confirmando meu horário de chegada amanhã...</div>
+                    </div>
+                </div>
+                
+                <div class="chat-item" onclick="selecionarConversa(5)">
+                    <div class="chat-item-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-header">
+                            <span class="chat-item-name">Roberto Almeida</span>
+                            <span class="chat-item-time">03/04</span>
+                        </div>
+                        <div class="chat-item-message">Precisamos conversar sobre o pagamento...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-header-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="chat-header-details">
+                        <span class="chat-header-name">Maria Oliveira</span>
+                        <span class="chat-header-status">Online</span>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button class="chat-header-action">
+                        <i class="material-icons">search</i>
+                    </button>
+                    <button class="chat-header-action">
+                        <i class="material-icons">attach_file</i>
+                    </button>
+                    <button class="chat-header-action">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message received">
+                    <div class="message-content">
+                        Bom dia, João! Tudo bem?
+                    </div>
+                    <div class="message-info">
+                        <span class="message-time">09:15</span>
+                    </div>
+                </div>
+                
+                <div class="message sent">
+                    <div class="message-content">
+                        Bom dia, Maria! Tudo ótimo e com você?
+                    </div>
+                    <div class="message-info">
+                        <span class="message-time">09:17</span>
+                        <span class="message-status read">
+                            <i class="material-icons">done_all</i>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="message received">
+                    <div class="message-content">
+                        Estou bem também! Preciso confirmar o horário da reunião de amanhã. Será às 10h ou às 14h?
+                    </div>
+                    <div class="message-info">
+                        <span class="message-time">10:30</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <div class="chat-input-actions">
+                    <button class="chat-input-action">
+                        <i class="material-icons">emoji_emotions</i>
+                    </button>
+                    <button class="chat-input-action">
+                        <i class="material-icons">attach_file</i>
+                    </button>
+                </div>
+                <div class="chat-input-field">
+                    <input type="text" placeholder="Digite uma mensagem..." id="messageInput">
+                </div>
+                <button class="chat-input-send" onclick="enviarMensagem()">
+                    <i class="material-icons">send</i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para novo grupo -->
+    <div class="modal-backdrop" id="grupoModalBackdrop"></div>
+    <div class="modal" id="grupoModal">
+        <div class="modal-header">
+            <h2 class="modal-title">Novo Grupo</h2>
+            <button class="modal-close" onclick="fecharModal('grupo')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="grupoForm">
+                <div class="modal-form-group">
+                    <label for="grupoNome">Nome do Grupo*</label>
+                    <input type="text" id="grupoNome" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="grupoDescricao">Descrição</label>
+                    <input type="text" id="grupoDescricao">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label>Participantes*</label>
+                    <div class="user-list">
+                        <div class="user-item">
+                            <input type="checkbox" class="user-item-checkbox" id="user1" checked disabled>
+                            <div class="user-item-avatar">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <span class="user-item-name">João Silva (Você)</span>
+                        </div>
+                        <div class="user-item">
+                            <input type="checkbox" class="user-item-checkbox" id="user2">
+                            <div class="user-item-avatar">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <span class="user-item-name">Maria Oliveira</span>
+                        </div>
+                        <div class="user-item">
+                            <input type="checkbox" class="user-item-checkbox" id="user3">
+                            <div class="user-item-avatar">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <span class="user-item-name">Carlos Santos</span>
+                        </div>
+                        <div class="user-item">
+                            <input type="checkbox" class="user-item-checkbox" id="user4">
+                            <div class="user-item-avatar">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <span class="user-item-name">Ana Ferreira</span>
+                        </div>
+                        <div class="user-item">
+                            <input type="checkbox" class="user-item-checkbox" id="user5">
+                            <div class="user-item-avatar">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <span class="user-item-name">Roberto Almeida</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('grupo')">Cancelar</button>
+            <button class="btn-primary" onclick="criarGrupo()">Criar Grupo</button>
+        </div>
+    </div>
+    
+    <!-- Modal para nova conversa -->
+    <div class="modal-backdrop" id="conversaModalBackdrop"></div>
+    <div class="modal" id="conversaModal">
+        <div class="modal-header">
+            <h2 class="modal-title">Nova Conversa</h2>
+            <button class="modal-close" onclick="fecharModal('conversa')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="conversaForm">
+                <div class="modal-form-group">
+                    <label for="conversaContato">Selecione um contato*</label>
+                    <select id="conversaContato" required>
+                        <option value="">Selecione</option>
+                        <option value="1">Maria Oliveira</option>
+                        <option value="2">Carlos Santos</option>
+                        <option value="3">Ana Ferreira</option>
+                        <option value="4">Roberto Almeida</option>
+                        <option value="5">Pedro Souza</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('conversa')">Cancelar</button>
+            <button class="btn-primary" onclick="iniciarConversa()">Iniciar Conversa</button>
+        </div>
+    </div>
+
+    <script>
+        // Controle dos modais
+        function abrirModalNovoGrupo() {
+            document.getElementById('grupoModalBackdrop').style.display = 'block';
+            document.getElementById('grupoModal').style.display = 'block';
+        }
+        
+        function abrirModalNovaConversa() {
+            document.getElementById('conversaModalBackdrop').style.display = 'block';
+            document.getElementById('conversaModal').style.display = 'block';
+        }
+        
+        function fecharModal(tipo) {
+            document.getElementById(tipo + 'ModalBackdrop').style.display = 'none';
+            document.getElementById(tipo + 'Modal').style.display = 'none';
+        }
+        
+        function criarGrupo() {
+            const nomeGrupo = document.getElementById('grupoNome').value;
+            if (!nomeGrupo) {
+                alert('Por favor, informe o nome do grupo.');
+                return;
+            }
+            
+            // Verificar participantes selecionados
+            const participantes = [];
+            document.querySelectorAll('.user-item-checkbox:checked').forEach(checkbox => {
+                participantes.push(checkbox.id);
+            });
+            
+            if (participantes.length <= 1) {
+                alert('Selecione pelo menos um participante além de você.');
+                return;
+            }
+            
+            // Simulação de criação de grupo
+            alert(`Grupo "${nomeGrupo}" criado com sucesso!`);
+            fecharModal('grupo');
+        }
+        
+        function iniciarConversa() {
+            const contato = document.getElementById('conversaContato').value;
+            if (!contato) {
+                alert('Por favor, selecione um contato.');
+                return;
+            }
+            
+            // Simulação de início de conversa
+            alert('Conversa iniciada com sucesso!');
+            fecharModal('conversa');
+        }
+        
+        function selecionarConversa(id) {
+            // Remover classe active de todos os itens
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao item clicado
+            event.currentTarget.classList.add('active');
+            
+            // Simulação de carregamento de conversa
+            const conversas = {
+                1: {
+                    nome: 'Maria Oliveira',
+                    status: 'Online',
+                    tipo: 'individual'
+                },
+                2: {
+                    nome: 'Grupo Família',
+                    status: '5 participantes',
+                    tipo: 'grupo'
+                },
+                3: {
+                    nome: 'Carlos Santos',
+                    status: 'Offline',
+                    tipo: 'individual'
+                },
+                4: {
+                    nome: 'Ana Ferreira',
+                    status: 'Digitando...',
+                    tipo: 'individual'
+                },
+                5: {
+                    nome: 'Roberto Almeida',
+                    status: 'Visto por último hoje às 08:30',
+                    tipo: 'individual'
+                }
+            };
+            
+            const conversa = conversas[id];
+            
+            // Atualizar cabeçalho da conversa
+            document.querySelector('.chat-header-name').textContent = conversa.nome;
+            document.querySelector('.chat-header-status').textContent = conversa.status;
+            
+            // Atualizar ícone do avatar
+            const avatarIcon = document.querySelector('.chat-header-avatar i');
+            avatarIcon.textContent = conversa.tipo === 'grupo' ? 'group' : 'person';
+            
+            // Remover badge de mensagens não lidas
+            const badge = event.currentTarget.querySelector('.chat-item-badge');
+            if (badge) {
+                badge.remove();
+            }
+        }
+        
+        function enviarMensagem() {
+            const input = document.getElementById('messageInput');
+            const mensagem = input.value.trim();
+            
+            if (!mensagem) return;
+            
+            // Criar elemento de mensagem
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message sent';
+            
+            const now = new Date();
+            const hora = now.getHours().toString().padStart(2, '0');
+            const minutos = now.getMinutes().toString().padStart(2, '0');
+            
+            messageElement.innerHTML = `
+                <div class="message-content">
+                    ${mensagem}
+                </div>
+                <div class="message-info">
+                    <span class="message-time">${hora}:${minutos}</span>
+                    <span class="message-status">
+                        <i class="material-icons">done</i>
+                    </span>
+                </div>
+            `;
+            
+            // Adicionar mensagem ao chat
+            document.getElementById('chatMessages').appendChild(messageElement);
+            
+            // Limpar input
+            input.value = '';
+            
+            // Rolar para o final da conversa
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simular resposta após 2 segundos
+            setTimeout(() => {
+                const responseElement = document.createElement('div');
+                responseElement.className = 'message received';
+                
+                const respostas = [
+                    'Ok, entendi!',
+                    'Vou verificar e te respondo em breve.',
+                    'Obrigado pela informação!',
+                    'Podemos conversar mais sobre isso amanhã?',
+                    'Perfeito, anotado!'
+                ];
+                
+                const resposta = respostas[Math.floor(Math.random() * respostas.length)];
+                
+                const nowResponse = new Date();
+                const horaResponse = nowResponse.getHours().toString().padStart(2, '0');
+                const minutosResponse = nowResponse.getMinutes().toString().padStart(2, '0');
+                
+                responseElement.innerHTML = `
+                    <div class="message-content">
+                        ${resposta}
+                    </div>
+                    <div class="message-info">
+                        <span class="message-time">${horaResponse}:${minutosResponse}</span>
+                    </div>
+                `;
+                
+                document.getElementById('chatMessages').appendChild(responseElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Atualizar status da mensagem enviada para lida
+                const statusElement = messageElement.querySelector('.message-status');
+                statusElement.classList.add('read');
+                statusElement.innerHTML = '<i class="material-icons">done_all</i>';
+            }, 2000);
+        }
+        
+        // Adicionar evento de tecla Enter para enviar mensagem
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enviarMensagem();
+            }
+        });
+        
+        // Rolar para o final da conversa ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    </script>
+</body>
+</html>

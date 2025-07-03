@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de perfil */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .profile-form {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--tertiary-color);
+            padding-bottom: 10px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+        
+        .form-col {
+            flex: 1 0 250px;
+            padding: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon input {
+            padding-right: 40px;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .profile-type {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .profile-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .profile-type-option.active {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+        }
+        
+        .profile-type-option:not(.active) {
+            background-color: var(--neutral-color);
+        }
+        
+        .profile-type-option:not(.active):hover {
+            background-color: rgba(46, 64, 83, 0.1);
+        }
+        
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--tertiary-color);
+        }
+        
+        /* Seções condicionais */
+        .employer-section {
+            display: none;
+        }
+        
+        .employer-section.active {
+            display: block;
+        }
+        
+        .employee-data {
+            display: none;
+        }
+        
+        .employee-data.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons">home</i>
+            <span class="header-title">Perfil</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">Novo Usuário</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <form class="profile-form" id="profileForm">
+            <div class="profile-type">
+                <div class="profile-type-option active" data-type="employer" onclick="changeProfileType('employer')">Empregador</div>
+                <div class="profile-type-option" data-type="employee" onclick="changeProfileType('employee')">Empregado</div>
+                <div class="profile-type-option" data-type="member" onclick="changeProfileType('member')">Membro</div>
+            </div>
+            
+            <div class="form-section">
+                <h2 class="form-section-title">Dados Pessoais</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="cpf">CPF*</label>
+                            <input type="text" id="cpf" name="cpf" placeholder="Digite seu CPF" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo*</label>
+                            <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="nickname">Como gostaria de ser chamado*</label>
+                            <input type="text" id="nickname" name="nickname" placeholder="Digite seu apelido" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="celular">Celular (com DDD)*</label>
+                            <div class="input-with-icon">
+                                <input type="tel" id="celular" name="celular" placeholder="(00) 00000-0000" required>
+                                <i class="material-icons input-icon" onclick="validarTelefone()">check_circle</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="email">E-mail*</label>
+                            <div class="input-with-icon">
+                                <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+                                <i class="material-icons input-icon" onclick="validarEmail()">check_circle</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="foto">Foto</label>
+                            <input type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="senha">Senha*</label>
+                            <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="confirmarSenha">Confirmar Senha*</label>
+                            <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2 class="form-section-title">Dados de Conexão</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="wifi">Nome da Rede WiFi</label>
+                            <input type="text" id="wifi" name="wifi" placeholder="Digite o nome da sua rede WiFi">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="senhaWifi">Senha de Logon</label>
+                            <input type="password" id="senhaWifi" name="senhaWifi" placeholder="Digite a senha da sua rede WiFi">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2 class="form-section-title">Endereço</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="cep">CEP*</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="cep" name="cep" placeholder="00000-000" required>
+                                <i class="material-icons input-icon" onclick="buscarCep()">search</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="tipoLogradouro">Tipo de Logradouro*</label>
+                            <select id="tipoLogradouro" name="tipoLogradouro" required>
+                                <option value="">Selecione</option>
+                                <option value="Rua">Rua</option>
+                                <option value="Avenida">Avenida</option>
+                                <option value="Alameda">Alameda</option>
+                                <option value="Praça">Praça</option>
+                                <option value="Travessa">Travessa</option>
+                                <option value="Estrada">Estrada</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="logradouro">Logradouro*</label>
+                            <input type="text" id="logradouro" name="logradouro" placeholder="Nome do logradouro" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="numero">Número*</label>
+                            <input type="text" id="numero" name="numero" placeholder="Número" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" id="complemento" name="complemento" placeholder="Complemento">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="bairro">Bairro*</label>
+                            <input type="text" id="bairro" name="bairro" placeholder="Bairro" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="cidade">Cidade*</label>
+                            <input type="text" id="cidade" name="cidade" placeholder="Cidade" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="estado">Estado*</label>
+                            <select id="estado" name="estado" required>
+                                <option value="">Selecione</option>
+                                <option value="AC">Acre</option>
+                                <option value="AL">Alagoas</option>
+                                <option value="AP">Amapá</option>
+                                <option value="AM">Amazonas</option>
+                                <option value="BA">Bahia</option>
+                                <option value="CE">Ceará</option>
+                                <option value="DF">Distrito Federal</option>
+                                <option value="ES">Espírito Santo</option>
+                                <option value="GO">Goiás</option>
+                                <option value="MA">Maranhão</option>
+                                <option value="MT">Mato Grosso</option>
+                                <option value="MS">Mato Grosso do Sul</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="PA">Pará</option>
+                                <option value="PB">Paraíba</option>
+                                <option value="PR">Paraná</option>
+                                <option value="PE">Pernambuco</option>
+                                <option value="PI">Piauí</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="RN">Rio Grande do Norte</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="RO">Rondônia</option>
+                                <option value="RR">Roraima</option>
+                                <option value="SC">Santa Catarina</option>
+                                <option value="SP">São Paulo</option>
+                                <option value="SE">Sergipe</option>
+                                <option value="TO">Tocantins</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção específica para empregador -->
+            <div class="employer-section active" id="employerSection">
+                <div class="form-section">
+                    <h2 class="form-section-title">Dados do Empregador</h2>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="certificadoDigital">Certificado Digital</label>
+                                <input type="file" id="certificadoDigital" name="certificadoDigital">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="senhaCertificado">Senha do Certificado Digital</label>
+                                <input type="password" id="senhaCertificado" name="senhaCertificado" placeholder="Digite a senha do certificado">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="plano">Plano Escolhido</label>
+                                <select id="plano" name="plano">
+                                    <option value="basico">Básico</option>
+                                    <option value="intermediario">Intermediário</option>
+                                    <option value="premium">Premium</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="dataValidade">Data de Validade</label>
+                                <input type="date" id="dataValidade" name="dataValidade" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <button type="button" class="btn-secondary" onclick="window.location.href='planos.html'">
+                                <i class="material-icons">upgrade</i> Upgrade de Plano
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button type="submit" class="btn-primary">Gravar</button>
+                <button type="button" class="btn-outline" onclick="window.location.href='index.html'">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function changeProfileType(type) {
+            // Atualiza os botões de tipo de perfil
+            document.querySelectorAll('.profile-type-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`.profile-type-option[data-type="${type}"]`).classList.add('active');
+            
+            // Mostra/esconde seções específicas
+            if (type === 'employer') {
+                document.getElementById('employerSection').classList.add('active');
+            } else {
+                document.getElementById('employerSection').classList.remove('active');
+            }
+        }
+        
+        function validarTelefone() {
+            const telefone = document.getElementById('celular').value;
+            if (telefone.length >= 10) {
+                // Simulação de validação por SMS/WhatsApp
+                alert('Um código de verificação foi enviado para o número ' + telefone + '. Por favor, verifique seu celular.');
+                const codigo = prompt('Digite o código recebido:');
+                if (codigo) {
+                    alert('Telefone validado com sucesso!');
+                } else {
+                    alert('Falta validar o telefone. Por favor, tente novamente.');
+                }
+            } else {
+                alert('Por favor, digite um número de telefone válido.');
+            }
+        }
+        
+        function validarEmail() {
+            const email = document.getElementById('email').value;
+            if (email.includes('@') && email.includes('.')) {
+                // Simulação de validação por e-mail
+                alert('Um código de verificação foi enviado para o e-mail ' + email + '. Por favor, verifique sua caixa de entrada.');
+                const codigo = prompt('Digite o código recebido:');
+                if (codigo) {
+                    alert('E-mail validado com sucesso!');
+                } else {
+                    alert('Falta validar o e-mail. Por favor, tente novamente.');
+                }
+            } else {
+                alert('Por favor, digite um e-mail válido.');
+            }
+        }
+        
+        function buscarCep() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                // Simulação de busca de CEP
+                alert('Buscando endereço pelo CEP ' + cep + '...');
+                
+                // Simulação de preenchimento automático
+                document.getElementById('tipoLogradouro').value = 'Rua';
+                document.getElementById('logradouro').value = 'Nome da Rua Exemplo';
+                document.getElementById('bairro').value = 'Bairro Exemplo';
+                document.getElementById('cidade').value = 'São Paulo';
+                document.getElementById('estado').value = 'SP';
+                
+                alert('Endereço encontrado e preenchido automaticamente!');
+            } else {
+                alert('Por favor, digite um CEP válido.');
+            }
+        }
+        
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validação do CPF
+            const cpf = document.getElementById('cpf').value;
+            if (!validarCPF(cpf)) {
+                alert('CPF inválido. Por favor, verifique o número digitado.');
+                return;
+            }
+            
+            // Validação de senha
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            if (senha !== confirmarSenha) {
+                alert('As senhas não coincidem. Por favor, verifique.');
+                return;
+            }
+            
+            // Simulação de gravação
+            alert('Perfil gravado com sucesso!');
+            window.location.href = 'dashboard.html';
+        });
+        
+        // Função para validar CPF
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11) return false;
+            
+            // Verificação simples para simulação
+            return true;
+        }
+    </script>
+</body>
+</html>

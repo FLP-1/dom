@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Termo de Uso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de termo de uso */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .termo-uso-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .termo-uso-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .termo-uso-subtitle {
+            font-size: 16px;
+            color: var(--tertiary-color);
+            margin-top: 5px;
+        }
+        
+        .termo-uso-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .termo-uso-card {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .termo-uso-section {
+            margin-bottom: 30px;
+        }
+        
+        .termo-uso-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .termo-uso-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .termo-uso-section-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        
+        .termo-uso-section-content p {
+            margin-bottom: 15px;
+        }
+        
+        .termo-uso-section-content ul,
+        .termo-uso-section-content ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        
+        .termo-uso-section-content li {
+            margin-bottom: 8px;
+        }
+        
+        .termo-uso-section-content strong {
+            font-weight: 700;
+        }
+        
+        .termo-uso-section-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .termo-uso-section-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .termo-uso-acceptance {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .termo-uso-acceptance-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .termo-uso-acceptance-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        
+        .termo-uso-checkbox-group {
+            margin-bottom: 20px;
+        }
+        
+        .termo-uso-checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .termo-uso-checkbox-item input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .termo-uso-checkbox-item label {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .termo-uso-acceptance-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .termo-uso-history {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .termo-uso-history-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .termo-uso-history-list {
+            margin-top: 15px;
+        }
+        
+        .termo-uso-history-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .termo-uso-history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .termo-uso-history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .termo-uso-history-icon i {
+            color: var(--primary-color);
+        }
+        
+        .termo-uso-history-content {
+            flex-grow: 1;
+        }
+        
+        .termo-uso-history-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .termo-uso-history-details {
+            font-size: 14px;
+            color: var(--tertiary-color);
+        }
+        
+        .termo-uso-history-date {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-left: auto;
+            flex-shrink: 0;
+            padding-left: 15px;
+        }
+        
+        .termo-uso-version {
+            font-size: 14px;
+            color: var(--tertiary-color);
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        /* Modal para confirmação de aceitação */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-confirmation-message {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .modal-confirmation-icon {
+            font-size: 48px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        .modal-confirmation-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .modal-confirmation-text {
+            color: var(--tertiary-color);
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Responsividade para telas menores */
+        @media (max-width: 768px) {
+            .termo-uso-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .termo-uso-actions {
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .termo-uso-actions .btn-primary {
+                width: 100%;
+            }
+            
+            .termo-uso-acceptance-actions {
+                flex-direction: column;
+            }
+            
+            .termo-uso-acceptance-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Termo de Uso</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="termo-uso-header">
+            <div>
+                <h1 class="termo-uso-title">Termos de Uso e Política de Privacidade</h1>
+                <p class="termo-uso-subtitle">Leia atentamente os termos e condições para utilização do aplicativo GDOM</p>
+            </div>
+            <div class="termo-uso-actions">
+                <button class="btn-outline" onclick="window.print()">
+                    <i class="material-icons">print</i> Imprimir
+                </button>
+                <button class="btn-outline" onclick="window.location.href='#termo-uso-acceptance'">
+                    <i class="material-icons">check_circle</i> Ir para Aceitação
+                </button>
+            </div>
+        </div>
+        
+        <div class="termo-uso-card">
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">1. Introdução</h2>
+                <div class="termo-uso-section-content">
+                    <p>Bem-vindo ao GDOM (Gestão do Trabalho Doméstico), um aplicativo desenvolvido para facilitar a gestão das relações entre empregadores e empregados domésticos. Estes Termos de Uso e Política de Privacidade ("Termos") regem o acesso e uso do aplicativo GDOM, incluindo todos os recursos, funcionalidades, conteúdos e serviços disponibilizados através do aplicativo.</p>
+                    
+                    <p>Ao acessar ou utilizar o GDOM, você concorda em cumprir e estar vinculado a estes Termos. Se você não concordar com qualquer parte destes Termos, não poderá acessar ou utilizar o GDOM.</p>
+                    
+                    <p>Reservamo-nos o direito de modificar estes Termos a qualquer momento, a nosso critério exclusivo. Quaisquer alterações entrarão em vigor imediatamente após a publicação dos Termos revisados no aplicativo. É sua responsabilidade verificar periodicamente se há atualizações. Seu uso continuado do GDOM após a publicação de Termos revisados constitui sua aceitação e concordância com as alterações.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">2. Definições</h2>
+                <div class="termo-uso-section-content">
+                    <p>Para os fins destes Termos, as seguintes definições se aplicam:</p>
+                    
+                    <ul>
+                        <li><strong>GDOM:</strong> Refere-se ao aplicativo Gestão do Trabalho Doméstico, incluindo todas as suas funcionalidades, conteúdos e serviços.</li>
+                        <li><strong>Usuário:</strong> Qualquer pessoa que acesse ou utilize o GDOM, seja como empregador ou empregado doméstico.</li>
+                        <li><strong>Conta:</strong> O registro pessoal de um Usuário no GDOM, que permite acesso às funcionalidades do aplicativo.</li>
+                        <li><strong>Conteúdo:</strong> Todos os textos, gráficos, imagens, músicas, softwares, áudios, vídeos, informações ou outros materiais que aparecem no GDOM.</li>
+                        <li><strong>Dados Pessoais:</strong> Qualquer informação relacionada a uma pessoa natural identificada ou identificável.</li>
+                        <li><strong>Serviços:</strong> Todas as funcionalidades oferecidas pelo GDOM, incluindo, mas não se limitando a, registro de ponto, gestão de documentos, folha de pagamento, entre outros.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">3. Cadastro e Conta</h2>
+                <div class="termo-uso-section-content">
+                    <p>Para utilizar o GDOM, você deverá criar uma conta fornecendo informações precisas e completas. Você é responsável por manter a confidencialidade de suas credenciais de acesso e por todas as atividades que ocorrem em sua conta.</p>
+                    
+                    <p>Você concorda em:</p>
+                    
+                    <ul>
+                        <li>Fornecer informações precisas, atuais e completas durante o processo de registro;</li>
+                        <li>Manter e atualizar prontamente suas informações de registro para mantê-las precisas, atuais e completas;</li>
+                        <li>Manter a segurança e confidencialidade de sua senha e de qualquer identificação que fornecemos para você ou que você seleciona para uso no GDOM;</li>
+                        <li>Notificar-nos imediatamente sobre qualquer uso não autorizado de sua conta ou qualquer outra violação de segurança;</li>
+                        <li>Aceitar toda responsabilidade por todas as atividades que ocorrem em sua conta;</li>
+                        <li>Aceitar todos os riscos de acesso não autorizado às informações que você fornece ao GDOM.</li>
+                    </ul>
+                    
+                    <p>Reservamo-nos o direito de suspender ou encerrar sua conta se qualquer informação fornecida durante o processo de registro ou posteriormente se mostrar imprecisa, desatualizada ou incompleta.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">4. Uso do Aplicativo</h2>
+                <div class="termo-uso-section-content">
+                    <p>O GDOM é uma plataforma destinada a facilitar a gestão das relações entre empregadores e empregados domésticos. Ao utilizar o GDOM, você concorda em:</p>
+                    
+                    <ul>
+                        <li>Utilizar o aplicativo apenas para fins legais e de acordo com estes Termos;</li>
+                        <li>Não utilizar o aplicativo de qualquer maneira que possa danificar, desabilitar, sobrecarregar ou prejudicar o GDOM ou interferir no uso e aproveitamento do aplicativo por qualquer outra parte;</li>
+                        <li>Não tentar obter acesso não autorizado a qualquer parte do aplicativo, outros sistemas ou redes conectadas ao GDOM, ou a qualquer servidor do GDOM, por meio de hacking, mineração de senhas ou qualquer outro meio;</li>
+                        <li>Não utilizar qualquer robô, spider, scraper ou outros meios automatizados para acessar o GDOM para qualquer finalidade sem nossa permissão expressa por escrito;</li>
+                        <li>Não coletar ou colher qualquer informação pessoal identificável, incluindo nomes de conta, do aplicativo, nem usar os sistemas de comunicação fornecidos pelo aplicativo para qualquer solicitação comercial;</li>
+                        <li>Não se envolver em qualquer conduta que restrinja ou iniba o uso ou aproveitamento do GDOM por qualquer pessoa.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">5. Propriedade Intelectual</h2>
+                <div class="termo-uso-section-content">
+                    <p>O GDOM e todo o seu conteúdo, recursos e funcionalidades (incluindo, mas não se limitando a, todas as informações, software, texto, exibições, imagens, vídeo e áudio, e o design, seleção e arranjo dos mesmos) são de propriedade do GDOM, seus licenciadores ou outros provedores de tal material e são protegidos por leis de direitos autorais, marcas registradas, patentes, segredos comerciais e outras leis de propriedade intelectual ou direitos de propriedade.</p>
+                    
+                    <p>Estes Termos permitem que você use o GDOM apenas para seu uso pessoal e não comercial. Você não deve reproduzir, distribuir, modificar, criar trabalhos derivados, exibir publicamente, executar publicamente, republicar, baixar, armazenar ou transmitir qualquer material do GDOM, exceto conforme permitido por estes Termos.</p>
+                    
+                    <p>Nenhum direito, título ou interesse em ou para o GDOM ou qualquer conteúdo no aplicativo é transferido para você, e todos os direitos não expressamente concedidos são reservados pelo GDOM. Qualquer uso do aplicativo não expressamente permitido por estes Termos é uma violação destes Termos e pode violar direitos autorais, marcas registradas e outras leis.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">6. Política de Privacidade</h2>
+                <div class="termo-uso-section-content">
+                    <p>Respeitamos sua privacidade e estamos comprometidos em proteger seus dados pessoais. Nossa Política de Privacidade, incorporada a estes Termos por referência, explica como coletamos, usamos e divulgamos informações sobre você. Ao usar o GDOM, você concorda com nossa coleta, uso e divulgação de informações conforme descrito em nossa Política de Privacidade.</p>
+                    
+                    <p><strong>6.1. Dados Coletados</strong></p>
+                    <p>Coletamos os seguintes tipos de informações:</p>
+                    <ul>
+                        <li>Informações que você nos fornece diretamente, como nome, endereço, e-mail, telefone, CPF, dados bancários e outras informações necessárias para o funcionamento do aplicativo;</li>
+                        <li>Informações sobre seu uso do GDOM, incluindo registros de ponto, documentos enviados, folhas de pagamento e outras atividades realizadas no aplicativo;</li>
+                        <li>Informações de localização, quando você utiliza a funcionalidade de registro de ponto com geolocalização;</li>
+                        <li>Informações técnicas sobre seu dispositivo e conexão com o GDOM, incluindo endereço IP, tipo e versão do navegador, configuração de fuso horário, tipos e versões de plug-ins do navegador, sistema operacional e plataforma.</li>
+                    </ul>
+                    
+                    <p><strong>6.2. Uso dos Dados</strong></p>
+                    <p>Utilizamos seus dados para:</p>
+                    <ul>
+                        <li>Fornecer e manter o GDOM;</li>
+                        <li>Processar e completar transações;</li>
+                        <li>Enviar informações administrativas, como confirmações, avisos técnicos, atualizações e alertas de segurança;</li>
+                        <li>Responder a seus comentários, perguntas e solicitações;</li>
+                        <li>Melhorar o GDOM e fornecer suporte ao cliente;</li>
+                        <li>Monitorar e analisar tendências, uso e atividades relacionadas ao GDOM;</li>
+                        <li>Detectar, prevenir e resolver problemas técnicos, fraudes ou atividades ilegais.</li>
+                    </ul>
+                    
+                    <p><strong>6.3. Compartilhamento de Dados</strong></p>
+                    <p>Podemos compartilhar suas informações nas seguintes circunstâncias:</p>
+                    <ul>
+                        <li>Com prestadores de serviços que realizam serviços em nosso nome;</li>
+                        <li>Com órgãos governamentais, como o e-Social, quando necessário para cumprir obrigações legais;</li>
+                        <li>Se acreditarmos que a divulgação é necessária para cumprir qualquer lei, regulamento, processo legal ou solicitação governamental aplicável;</li>
+                        <li>Para proteger os direitos, propriedade ou segurança do GDOM, nossos usuários ou outros;</li>
+                        <li>Em conexão com, ou durante negociações de, qualquer fusão, venda de ativos da empresa, financiamento ou aquisição de todo ou parte de nosso negócio por outra empresa.</li>
+                    </ul>
+                    
+                    <p><strong>6.4. Segurança dos Dados</strong></p>
+                    <p>Implementamos medidas de segurança técnicas e organizacionais apropriadas para proteger seus dados pessoais contra perda acidental, uso ou acesso não autorizado, alteração e divulgação. No entanto, nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro. Portanto, não podemos garantir sua segurança absoluta.</p>
+                    
+                    <p><strong>6.5. Seus Direitos</strong></p>
+                    <p>Você tem o direito de:</p>
+                    <ul>
+                        <li>Acessar, corrigir ou excluir seus dados pessoais;</li>
+                        <li>Restringir ou se opor ao processamento de seus dados pessoais;</li>
+                        <li>Receber seus dados pessoais em um formato estruturado, comumente usado e legível por máquina;</li>
+                        <li>Retirar seu consentimento a qualquer momento, quando o processamento for baseado em seu consentimento.</li>
+                    </ul>
+                    
+                    <p>Para exercer esses direitos, entre em contato conosco através dos canais de suporte disponíveis no aplicativo.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">7. Limitação de Responsabilidade</h2>
+                <div class="termo-uso-section-content">
+                    <p>Em nenhuma circunstância o GDOM, seus diretores, funcionários, parceiros, agentes, fornecedores ou afiliados serão responsáveis por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos, incluindo, sem limitação, perda de lucros, dados, uso, boa vontade ou outras perdas intangíveis, resultantes de:</p>
+                    
+                    <ul>
+                        <li>Seu acesso ou uso ou incapacidade de acessar ou usar o GDOM;</li>
+                        <li>Qualquer conduta ou conteúdo de terceiros no GDOM;</li>
+                        <li>Qualquer conteúdo obtido do GDOM;</li>
+                        <li>Acesso não autorizado, uso ou alteração de suas transmissões ou conteúdo.</li>
+                    </ul>
+                    
+                    <p>O GDOM não garante que o aplicativo estará disponível ininterruptamente, será seguro ou livre de erros, ou que quaisquer defeitos no aplicativo serão corrigidos. O GDOM não garante a precisão, integridade ou utilidade de qualquer informação no aplicativo.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">8. Indenização</h2>
+                <div class="termo-uso-section-content">
+                    <p>Você concorda em defender, indenizar e isentar o GDOM, seus diretores, funcionários, parceiros, agentes, fornecedores e afiliados de e contra quaisquer reclamações, responsabilidades, danos, julgamentos, prêmios, perdas, custos, despesas ou taxas (incluindo honorários advocatícios razoáveis) resultantes de ou decorrentes de sua violação destes Termos ou seu uso do GDOM, incluindo, sem limitação, qualquer uso do Conteúdo do aplicativo que não seja expressamente autorizado nestes Termos.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">9. Lei Aplicável e Jurisdição</h2>
+                <div class="termo-uso-section-content">
+                    <p>Estes Termos e quaisquer disputas ou reclamações decorrentes de ou relacionadas a estes Termos ou seu objeto ou formação (incluindo disputas ou reclamações não contratuais) serão regidos e interpretados de acordo com as leis da República Federativa do Brasil.</p>
+                    
+                    <p>Qualquer disputa, controvérsia ou reclamação decorrente de ou relacionada a estes Termos, ou a violação, rescisão ou invalidade dos mesmos, que não possa ser resolvida amigavelmente entre as partes, será submetida exclusivamente aos tribunais da Comarca de São Paulo, Estado de São Paulo, Brasil.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">10. Disposições Gerais</h2>
+                <div class="termo-uso-section-content">
+                    <p><strong>10.1. Acordo Integral</strong></p>
+                    <p>Estes Termos constituem o acordo integral entre você e o GDOM em relação ao seu uso do aplicativo e substituem todos os acordos e entendimentos anteriores ou contemporâneos, escritos ou orais, relacionados ao assunto destes Termos.</p>
+                    
+                    <p><strong>10.2. Renúncia e Separabilidade</strong></p>
+                    <p>A falha do GDOM em exercer ou fazer cumprir qualquer direito ou disposição destes Termos não constituirá uma renúncia a tal direito ou disposição. Se qualquer disposição destes Termos for considerada inválida, ilegal ou inexequível por qualquer motivo, tal disposição será eliminada ou limitada ao mínimo possível para que as disposições restantes destes Termos permaneçam em pleno vigor e efeito.</p>
+                    
+                    <p><strong>10.3. Cessão</strong></p>
+                    <p>Você não pode ceder ou transferir estes Termos, por força de lei ou de outra forma, sem o consentimento prévio por escrito do GDOM. Qualquer tentativa de cessão ou transferência que viole esta seção será nula. O GDOM pode ceder ou transferir estes Termos, a seu exclusivo critério, sem restrição.</p>
+                    
+                    <p><strong>10.4. Notificações</strong></p>
+                    <p>Todas as notificações ou outras comunicações permitidas ou exigidas por estes Termos serão por escrito e serão entregues por e-mail, correio registrado ou entrega expressa, para os endereços que você fornece ao GDOM durante o processo de registro.</p>
+                    
+                    <p><strong>10.5. Força Maior</strong></p>
+                    <p>O GDOM não será responsável por qualquer falha ou atraso no cumprimento de suas obrigações nos termos destes Termos quando tal falha ou atraso for devido a causas além de seu controle razoável, incluindo, mas não se limitando a, atos de Deus, guerra, terrorismo, tumultos, embargos, atos de autoridades civis ou militares, incêndios, inundações, acidentes, greves ou escassez de transporte, combustível, energia, mão de obra ou materiais.</p>
+                </div>
+            </div>
+            
+            <div class="termo-uso-section">
+                <h2 class="termo-uso-section-title">11. Contato</h2>
+                <div class="termo-uso-section-content">
+                    <p>Se você tiver alguma dúvida sobre estes Termos, entre em contato conosco através dos seguintes canais:</p>
+                    
+                    <ul>
+                        <li>E-mail: suporte@gdom.com.br</li>
+                        <li>Telefone: (11) 1234-5678</li>
+                        <li>Endereço: Av. Paulista, 1000, São Paulo - SP, CEP 01310-100</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="termo-uso-version">
+                Versão 1.0 - Última atualização: 06 de abril de 2025
+            </div>
+        </div>
+        
+        <div class="termo-uso-acceptance" id="termo-uso-acceptance">
+            <h2 class="termo-uso-acceptance-title">Aceitação dos Termos</h2>
+            <div class="termo-uso-acceptance-content">
+                <p>Ao marcar as caixas abaixo e clicar em "Aceitar Termos", você confirma que leu, entendeu e concorda com os Termos de Uso e Política de Privacidade do GDOM.</p>
+            </div>
+            
+            <div class="termo-uso-checkbox-group">
+                <div class="termo-uso-checkbox-item">
+                    <input type="checkbox" id="termoUsoCheck">
+                    <label for="termoUsoCheck">Eu li e concordo com os Termos de Uso do GDOM.</label>
+                </div>
+                
+                <div class="termo-uso-checkbox-item">
+                    <input type="checkbox" id="politicaPrivacidadeCheck">
+                    <label for="politicaPrivacidadeCheck">Eu li e concordo com a Política de Privacidade do GDOM.</label>
+                </div>
+                
+                <div class="termo-uso-checkbox-item">
+                    <input type="checkbox" id="dadosPessoaisCheck">
+                    <label for="dadosPessoaisCheck">Eu autorizo o GDOM a coletar, processar e armazenar meus dados pessoais conforme descrito na Política de Privacidade.</label>
+                </div>
+                
+                <div class="termo-uso-checkbox-item">
+                    <input type="checkbox" id="comunicacoesCheck">
+                    <label for="comunicacoesCheck">Eu concordo em receber comunicações do GDOM, incluindo atualizações, notificações e informações relacionadas ao serviço.</label>
+                </div>
+            </div>
+            
+            <div class="termo-uso-acceptance-actions">
+                <button class="btn-outline" onclick="window.location.href='dashboard.html'">Recusar</button>
+                <button class="btn-primary" onclick="aceitarTermos()">Aceitar Termos</button>
+            </div>
+        </div>
+        
+        <div class="termo-uso-history">
+            <h2 class="termo-uso-history-title">Histórico de Aceitação</h2>
+            
+            <div class="termo-uso-history-list">
+                <div class="termo-uso-history-item">
+                    <div class="termo-uso-history-icon">
+                        <i class="material-icons">check_circle</i>
+                    </div>
+                    <div class="termo-uso-history-content">
+                        <div class="termo-uso-history-title">Termos de Uso v1.0</div>
+                        <div class="termo-uso-history-details">Aceito por João Silva</div>
+                    </div>
+                    <div class="termo-uso-history-date">01/01/2025</div>
+                </div>
+                
+                <div class="termo-uso-history-item">
+                    <div class="termo-uso-history-icon">
+                        <i class="material-icons">check_circle</i>
+                    </div>
+                    <div class="termo-uso-history-content">
+                        <div class="termo-uso-history-title">Política de Privacidade v1.0</div>
+                        <div class="termo-uso-history-details">Aceito por João Silva</div>
+                    </div>
+                    <div class="termo-uso-history-date">01/01/2025</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmação de aceitação -->
+    <div class="modal-backdrop" id="confirmacaoModalBackdrop"></div>
+    <div class="modal" id="confirmacaoModal">
+        <div class="modal-header">
+            <h2 class="modal-title">Termos Aceitos</h2>
+            <button class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-confirmation-message">
+                <div class="modal-confirmation-icon">
+                    <i class="material-icons">check_circle</i>
+                </div>
+                <div class="modal-confirmation-title">Termos aceitos com sucesso!</div>
+                <div class="modal-confirmation-text">Obrigado por aceitar os Termos de Uso e Política de Privacidade do GDOM. Você agora pode continuar a utilizar todas as funcionalidades do aplicativo.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="fecharModal()">Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para aceitar os termos
+        function aceitarTermos() {
+            const termoUsoCheck = document.getElementById('termoUsoCheck').checked;
+            const politicaPrivacidadeCheck = document.getElementById('politicaPrivacidadeCheck').checked;
+            const dadosPessoaisCheck = document.getElementById('dadosPessoaisCheck').checked;
+            
+            if (!termoUsoCheck || !politicaPrivacidadeCheck || !dadosPessoaisCheck) {
+                alert('Por favor, aceite os Termos de Uso, a Política de Privacidade e a autorização para coleta de dados pessoais para continuar.');
+                return;
+            }
+            
+            // Exibir modal de confirmação
+            document.getElementById('confirmacaoModalBackdrop').style.display = 'block';
+            document.getElementById('confirmacaoModal').style.display = 'block';
+            
+            // Aqui você enviaria os dados para o servidor
+            console.log('Termos aceitos pelo usuário');
+        }
+        
+        // Função para fechar o modal
+        function fecharModal() {
+            document.getElementById('confirmacaoModalBackdrop').style.display = 'none';
+            document.getElementById('confirmacaoModal').style.display = 'none';
+            
+            // Redirecionar para o dashboard após aceitar os termos
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

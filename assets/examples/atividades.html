@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Atividades</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de atividades */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .atividades-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .atividades-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .atividades-filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .atividades-filter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .atividades-filter label {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .atividades-filter select {
+            padding: 8px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .atividades-search {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .atividades-search input {
+            padding: 8px 8px 8px 35px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+        
+        .atividades-search i {
+            position: absolute;
+            left: 10px;
+            color: var(--tertiary-color);
+        }
+        
+        .responsaveis-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .responsaveis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .responsaveis-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .responsaveis-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .responsavel-item {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .responsavel-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .responsavel-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .responsavel-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .responsavel-info {
+            flex: 1;
+        }
+        
+        .responsavel-name {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        
+        .responsavel-role {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .responsavel-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .responsavel-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .responsavel-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .responsavel-action.delete {
+            color: var(--accent-color);
+        }
+        
+        .responsavel-action.delete:hover {
+            color: var(--accent-light);
+        }
+        
+        .tarefas-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tarefas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .tarefas-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .tarefas-list {
+            margin-bottom: 20px;
+        }
+        
+        .tarefa-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .tarefa-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tarefa-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .tarefa-check {
+            margin-right: 15px;
+        }
+        
+        .tarefa-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .tarefa-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tarefa-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .tarefa-title.completed {
+            text-decoration: line-through;
+            color: var(--tertiary-color);
+        }
+        
+        .tarefa-details {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .tarefa-responsavel {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .tarefa-responsavel i {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+        
+        .tarefa-data {
+            display: flex;
+            align-items: center;
+        }
+        
+        .tarefa-data i {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+        
+        .tarefa-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tarefa-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .tarefa-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .tarefa-action.delete {
+            color: var(--accent-color);
+        }
+        
+        .tarefa-action.delete:hover {
+            color: var(--accent-light);
+        }
+        
+        .tarefa-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+        
+        .tarefa-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Modal para adicionar/editar responsável */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Modal para visualizar foto */
+        .photo-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .photo-modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .photo-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .photo-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .photo-modal-body {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .photo-modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 4px;
+        }
+        
+        .photo-modal-info {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 14px;
+            color: var(--tertiary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Atividades</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="atividades-header">
+            <h1 class="atividades-title">Gestão de Atividades</h1>
+            <div class="atividades-filters">
+                <div class="atividades-filter">
+                    <label for="statusAtividade">Status:</label>
+                    <select id="statusAtividade">
+                        <option value="">Todos</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="concluido">Concluídas</option>
+                    </select>
+                </div>
+                <div class="atividades-filter">
+                    <label for="responsavelAtividade">Responsável:</label>
+                    <select id="responsavelAtividade">
+                        <option value="">Todos</option>
+                        <option value="1">João Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Carlos Santos</option>
+                        <option value="4">Ana Ferreira</option>
+                    </select>
+                </div>
+                <div class="atividades-search">
+                    <i class="material-icons">search</i>
+                    <input type="text" placeholder="Buscar atividade...">
+                </div>
+            </div>
+        </div>
+        
+        <div class="responsaveis-section">
+            <div class="responsaveis-header">
+                <h2 class="responsaveis-title">Responsáveis</h2>
+                <button class="btn-secondary" onclick="abrirModalNovoResponsavel()">
+                    <i class="material-icons">person_add</i> Adicionar Responsável
+                </button>
+            </div>
+            
+            <div class="responsaveis-list">
+                <div class="responsavel-item">
+                    <div class="responsavel-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="responsavel-info">
+                        <div class="responsavel-name">João Silva</div>
+                        <div class="responsavel-role">Empregador</div>
+                    </div>
+                    <div class="responsavel-actions">
+                        <button class="responsavel-action" onclick="editarResponsavel(1)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="responsavel-item">
+                    <div class="responsavel-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="responsavel-info">
+                        <div class="responsavel-name">Maria Oliveira</div>
+                        <div class="responsavel-role">Empregada</div>
+                    </div>
+                    <div class="responsavel-actions">
+                        <button class="responsavel-action" onclick="editarResponsavel(2)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="responsavel-action delete" onclick="excluirResponsavel(2)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="responsavel-item">
+                    <div class="responsavel-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="responsavel-info">
+                        <div class="responsavel-name">Carlos Santos</div>
+                        <div class="responsavel-role">Membro</div>
+                    </div>
+                    <div class="responsavel-actions">
+                        <button class="responsavel-action" onclick="editarResponsavel(3)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="responsavel-action delete" onclick="excluirResponsavel(3)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="responsavel-item">
+                    <div class="responsavel-avatar">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="responsavel-info">
+                        <div class="responsavel-name">Ana Ferreira</div>
+                        <div class="responsavel-role">Membro</div>
+                    </div>
+                    <div class="responsavel-actions">
+                        <button class="responsavel-action" onclick="editarResponsavel(4)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="responsavel-action delete" onclick="excluirResponsavel(4)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tarefas-section">
+            <div class="tarefas-header">
+                <h2 class="tarefas-title">Tarefas</h2>
+                <button class="btn-primary" onclick="abrirModalNovaTarefa()">
+                    <i class="material-icons">add</i> Nova Tarefa
+                </button>
+            </div>
+            
+            <div class="tarefas-list">
+                <div class="tarefa-item">
+                    <div class="tarefa-check">
+                        <input type="checkbox" onchange="marcarTarefa(this, 1)">
+                    </div>
+                    <div class="tarefa-content">
+                        <div class="tarefa-title">Limpar a cozinha após o almoço</div>
+                        <div class="tarefa-details">
+                            <div class="tarefa-responsavel">
+                                <i class="material-icons">person</i>
+                                <span>Maria Oliveira</span>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="material-icons">event</i>
+                                <span>Hoje</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tarefa-actions">
+                        <button class="tarefa-action" onclick="editarTarefa(1)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="tarefa-action delete" onclick="excluirTarefa(1)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tarefa-item">
+                    <div class="tarefa-check">
+                        <input type="checkbox" checked onchange="marcarTarefa(this, 2)">
+                    </div>
+                    <div class="tarefa-content">
+                        <div class="tarefa-title completed">Lavar e passar as roupas</div>
+                        <div class="tarefa-details">
+                            <div class="tarefa-responsavel">
+                                <i class="material-icons">person</i>
+                                <span>Maria Oliveira</span>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="material-icons">event</i>
+                                <span>Ontem</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tarefa-photo" onclick="visualizarFoto(2)">
+                        <img src="https://via.placeholder.com/40" alt="Foto da tarefa">
+                    </div>
+                    <div class="tarefa-actions">
+                        <button class="tarefa-action" onclick="editarTarefa(2)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="tarefa-action delete" onclick="excluirTarefa(2)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tarefa-item">
+                    <div class="tarefa-check">
+                        <input type="checkbox" onchange="marcarTarefa(this, 3)">
+                    </div>
+                    <div class="tarefa-content">
+                        <div class="tarefa-title">Fazer compras no supermercado</div>
+                        <div class="tarefa-details">
+                            <div class="tarefa-responsavel">
+                                <i class="material-icons">person</i>
+                                <span>Carlos Santos</span>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="material-icons">event</i>
+                                <span>Amanhã</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tarefa-actions">
+                        <button class="tarefa-action" onclick="editarTarefa(3)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="tarefa-action delete" onclick="excluirTarefa(3)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tarefa-item">
+                    <div class="tarefa-check">
+                        <input type="checkbox" checked onchange="marcarTarefa(this, 4)">
+                    </div>
+                    <div class="tarefa-content">
+                        <div class="tarefa-title completed">Limpar o banheiro</div>
+                        <div class="tarefa-details">
+                            <div class="tarefa-responsavel">
+                                <i class="material-icons">person</i>
+                                <span>Maria Oliveira</span>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="material-icons">event</i>
+                                <span>03/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tarefa-photo" onclick="visualizarFoto(4)">
+                        <img src="https://via.placeholder.com/40" alt="Foto da tarefa">
+                    </div>
+                    <div class="tarefa-actions">
+                        <button class="tarefa-action" onclick="editarTarefa(4)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="tarefa-action delete" onclick="excluirTarefa(4)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tarefa-item">
+                    <div class="tarefa-check">
+                        <input type="checkbox" onchange="marcarTarefa(this, 5)">
+                    </div>
+                    <div class="tarefa-content">
+                        <div class="tarefa-title">Organizar documentos do mês</div>
+                        <div class="tarefa-details">
+                            <div class="tarefa-responsavel">
+                                <i class="material-icons">person</i>
+                                <span>João Silva</span>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="material-icons">event</i>
+                                <span>10/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tarefa-actions">
+                        <button class="tarefa-action" onclick="editarTarefa(5)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="tarefa-action delete" onclick="excluirTarefa(5)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar responsável -->
+    <div class="modal-backdrop" id="responsavelModalBackdrop"></div>
+    <div class="modal" id="responsavelModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="responsavelModalTitle">Novo Responsável</h2>
+            <button class="modal-close" onclick="fecharModal('responsavel')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="responsavelForm">
+                <div class="modal-form-group">
+                    <label for="respNome">Nome*</label>
+                    <input type="text" id="respNome" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="respTipo">Tipo*</label>
+                    <select id="respTipo" required>
+                        <option value="">Selecione</option>
+                        <option value="empregador">Empregador</option>
+                        <option value="empregado">Empregado</option>
+                        <option value="membro">Membro</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="respPermissao">Permissão*</label>
+                    <select id="respPermissao" required>
+                        <option value="">Selecione</option>
+                        <option value="1">Usuário</option>
+                        <option value="2">Administrador</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="respCelular">Celular</label>
+                    <input type="tel" id="respCelular" placeholder="(00) 00000-0000">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('responsavel')">Cancelar</button>
+            <button class="btn-primary" onclick="salvarResponsavel()">Salvar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar tarefa -->
+    <div class="modal-backdrop" id="tarefaModalBackdrop"></div>
+    <div class="modal" id="tarefaModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="tarefaModalTitle">Nova Tarefa</h2>
+            <button class="modal-close" onclick="fecharModal('tarefa')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="tarefaForm">
+                <div class="modal-form-group">
+                    <label for="tarefaTitulo">Título*</label>
+                    <input type="text" id="tarefaTitulo" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="tarefaResponsavel">Responsável pela Execução*</label>
+                    <select id="tarefaResponsavel" required>
+                        <option value="">Selecione</option>
+                        <option value="1">João Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Carlos Santos</option>
+                        <option value="4">Ana Ferreira</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="tarefaControle">Responsável pelo Controle*</label>
+                    <select id="tarefaControle" required>
+                        <option value="">Selecione</option>
+                        <option value="1">João Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Carlos Santos</option>
+                        <option value="4">Ana Ferreira</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="tarefaData">Data*</label>
+                    <input type="date" id="tarefaData" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="tarefaDescricao">Descrição</label>
+                    <textarea id="tarefaDescricao" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('tarefa')">Cancelar</button>
+            <button class="btn-primary" onclick="salvarTarefa()">Salvar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para visualizar foto -->
+    <div class="modal-backdrop" id="photoModalBackdrop"></div>
+    <div class="photo-modal" id="photoModal">
+        <div class="photo-modal-header">
+            <h2 class="photo-modal-title">Foto da Tarefa</h2>
+            <button class="photo-modal-close" onclick="fecharModal('photo')">&times;</button>
+        </div>
+        <div class="photo-modal-body">
+            <img src="https://via.placeholder.com/600x400" alt="Foto da tarefa" class="photo-modal-image" id="photoModalImage">
+            <div class="photo-modal-info" id="photoModalInfo">
+                Tarefa concluída em 05/04/2025 às 14:30 por Maria Oliveira
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Controle dos modais
+        function abrirModalNovoResponsavel() {
+            document.getElementById('responsavelModalTitle').textContent = 'Novo Responsável';
+            document.getElementById('responsavelForm').reset();
+            document.getElementById('responsavelModalBackdrop').style.display = 'block';
+            document.getElementById('responsavelModal').style.display = 'block';
+        }
+        
+        function abrirModalNovaTarefa() {
+            document.getElementById('tarefaModalTitle').textContent = 'Nova Tarefa';
+            document.getElementById('tarefaForm').reset();
+            
+            // Definir data padrão como hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('tarefaData').value = hoje;
+            
+            document.getElementById('tarefaModalBackdrop').style.display = 'block';
+            document.getElementById('tarefaModal').style.display = 'block';
+        }
+        
+        function fecharModal(tipo) {
+            document.getElementById(tipo + 'ModalBackdrop').style.display = 'none';
+            document.getElementById(tipo + 'Modal').style.display = 'none';
+        }
+        
+        function editarResponsavel(id) {
+            document.getElementById('responsavelModalTitle').textContent = 'Editar Responsável';
+            
+            // Simulação de carregamento de dados do responsável
+            const responsaveis = {
+                1: {
+                    nome: 'João Silva',
+                    tipo: 'empregador',
+                    permissao: '2',
+                    celular: '(11) 98765-4321'
+                },
+                2: {
+                    nome: 'Maria Oliveira',
+                    tipo: 'empregado',
+                    permissao: '1',
+                    celular: '(11) 91234-5678'
+                },
+                3: {
+                    nome: 'Carlos Santos',
+                    tipo: 'membro',
+                    permissao: '1',
+                    celular: '(11) 99876-5432'
+                },
+                4: {
+                    nome: 'Ana Ferreira',
+                    tipo: 'membro',
+                    permissao: '1',
+                    celular: '(11) 95678-1234'
+                }
+            };
+            
+            const responsavel = responsaveis[id];
+            
+            if (responsavel) {
+                document.getElementById('respNome').value = responsavel.nome;
+                document.getElementById('respTipo').value = responsavel.tipo;
+                document.getElementById('respPermissao').value = responsavel.permissao;
+                document.getElementById('respCelular').value = responsavel.celular;
+            }
+            
+            document.getElementById('responsavelModalBackdrop').style.display = 'block';
+            document.getElementById('responsavelModal').style.display = 'block';
+        }
+        
+        function editarTarefa(id) {
+            document.getElementById('tarefaModalTitle').textContent = 'Editar Tarefa';
+            
+            // Simulação de carregamento de dados da tarefa
+            const tarefas = {
+                1: {
+                    titulo: 'Limpar a cozinha após o almoço',
+                    responsavel: '2',
+                    controle: '1',
+                    data: '2025-04-06',
+                    descricao: 'Lavar a louça, limpar o fogão e varrer o chão.'
+                },
+                2: {
+                    titulo: 'Lavar e passar as roupas',
+                    responsavel: '2',
+                    controle: '1',
+                    data: '2025-04-05',
+                    descricao: 'Lavar todas as roupas e passar as que estão no cesto azul.'
+                },
+                3: {
+                    titulo: 'Fazer compras no supermercado',
+                    responsavel: '3',
+                    controle: '1',
+                    data: '2025-04-07',
+                    descricao: 'Comprar itens da lista que está na geladeira.'
+                },
+                4: {
+                    titulo: 'Limpar o banheiro',
+                    responsavel: '2',
+                    controle: '1',
+                    data: '2025-04-03',
+                    descricao: 'Limpar todos os banheiros da casa.'
+                },
+                5: {
+                    titulo: 'Organizar documentos do mês',
+                    responsavel: '1',
+                    controle: '1',
+                    data: '2025-04-10',
+                    descricao: 'Organizar contas, recibos e documentos do mês de abril.'
+                }
+            };
+            
+            const tarefa = tarefas[id];
+            
+            if (tarefa) {
+                document.getElementById('tarefaTitulo').value = tarefa.titulo;
+                document.getElementById('tarefaResponsavel').value = tarefa.responsavel;
+                document.getElementById('tarefaControle').value = tarefa.controle;
+                document.getElementById('tarefaData').value = tarefa.data;
+                document.getElementById('tarefaDescricao').value = tarefa.descricao;
+            }
+            
+            document.getElementById('tarefaModalBackdrop').style.display = 'block';
+            document.getElementById('tarefaModal').style.display = 'block';
+        }
+        
+        function visualizarFoto(id) {
+            // Simulação de carregamento de dados da foto
+            const fotos = {
+                2: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Tarefa concluída em 05/04/2025 às 14:30 por Maria Oliveira'
+                },
+                4: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Tarefa concluída em 03/04/2025 às 10:15 por Maria Oliveira'
+                }
+            };
+            
+            const foto = fotos[id];
+            
+            if (foto) {
+                document.getElementById('photoModalImage').src = foto.url;
+                document.getElementById('photoModalInfo').textContent = foto.info;
+            }
+            
+            document.getElementById('photoModalBackdrop').style.display = 'block';
+            document.getElementById('photoModal').style.display = 'block';
+        }
+        
+        function salvarResponsavel() {
+            const nome = document.getElementById('respNome').value;
+            const tipo = document.getElementById('respTipo').value;
+            const permissao = document.getElementById('respPermissao').value;
+            
+            if (!nome || !tipo || !permissao) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Simulação de salvamento
+            alert('Responsável salvo com sucesso!');
+            fecharModal('responsavel');
+        }
+        
+        function salvarTarefa() {
+            const titulo = document.getElementById('tarefaTitulo').value;
+            const responsavel = document.getElementById('tarefaResponsavel').value;
+            const controle = document.getElementById('tarefaControle').value;
+            const data = document.getElementById('tarefaData').value;
+            
+            if (!titulo || !responsavel || !controle || !data) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Simulação de salvamento
+            alert('Tarefa salva com sucesso!');
+            fecharModal('tarefa');
+        }
+        
+        function excluirResponsavel(id) {
+            // Simulação de exclusão
+            if (confirm('Tem certeza que deseja excluir este responsável?')) {
+                alert('Responsável excluído com sucesso!');
+            }
+        }
+        
+        function excluirTarefa(id) {
+            // Simulação de exclusão
+            if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                alert('Tarefa excluída com sucesso!');
+            }
+        }
+        
+        function marcarTarefa(checkbox, id) {
+            const tarefaTitle = checkbox.parentElement.nextElementSibling.querySelector('.tarefa-title');
+            
+            if (checkbox.checked) {
+                tarefaTitle.classList.add('completed');
+                
+                // Simulação de tirar foto
+                if (!checkbox.parentElement.parentElement.querySelector('.tarefa-photo')) {
+                    if (confirm('Deseja tirar uma foto para comprovar a conclusão da tarefa?')) {
+                        alert('Câmera aberta para tirar foto da tarefa concluída.');
+                        
+                        // Simulação de foto tirada
+                        setTimeout(() => {
+                            const photoDiv = document.createElement('div');
+                            photoDiv.className = 'tarefa-photo';
+                            photoDiv.onclick = function() { visualizarFoto(id); };
+                            photoDiv.innerHTML = '<img src="https://via.placeholder.com/40" alt="Foto da tarefa">';
+                            
+                            const actionsDiv = checkbox.parentElement.parentElement.querySelector('.tarefa-actions');
+                            checkbox.parentElement.parentElement.insertBefore(photoDiv, actionsDiv);
+                            
+                            alert('Foto registrada com sucesso!');
+                        }, 1000);
+                    }
+                }
+            } else {
+                tarefaTitle.classList.remove('completed');
+            }
+        }
+        
+        // Filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('statusAtividade').addEventListener('change', filtrarTarefas);
+            document.getElementById('responsavelAtividade').addEventListener('change', filtrarTarefas);
+            
+            function filtrarTarefas() {
+                const status = document.getElementById('statusAtividade').value;
+                const responsavel = document.getElementById('responsavelAtividade').value;
+                
+                // Simulação de filtro
+                alert(`Filtrando tarefas: Status=${status || 'Todos'}, Responsável=${responsavel || 'Todos'}`);
+            }
+        });
+    </script>
+</body>
+</html>

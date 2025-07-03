@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Documentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de documentos */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .documentos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .documentos-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .documentos-filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .documentos-filter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .documentos-filter label {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .documentos-filter select {
+            padding: 8px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .documentos-search {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .documentos-search input {
+            padding: 8px 8px 8px 35px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+        
+        .documentos-search i {
+            position: absolute;
+            left: 10px;
+            color: var(--tertiary-color);
+        }
+        
+        .documentos-table {
+            width: 100%;
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .documentos-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .documentos-table th {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 500;
+        }
+        
+        .documentos-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .documentos-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .documentos-table tr:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .documento-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .documento-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .documento-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .documento-action.delete {
+            color: var(--accent-color);
+        }
+        
+        .documento-action.delete:hover {
+            color: var(--accent-light);
+        }
+        
+        .documento-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .documento-badge.valid {
+            background-color: rgba(107, 174, 126, 0.2);
+            color: var(--secondary-dark);
+        }
+        
+        .documento-badge.expired {
+            background-color: rgba(255, 107, 53, 0.2);
+            color: var(--accent-dark);
+        }
+        
+        .documento-badge.no-expiry {
+            background-color: rgba(150, 150, 150, 0.2);
+            color: var(--tertiary-color);
+        }
+        
+        .documentos-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .documentos-pagination {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .pagination-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-item:hover {
+            background-color: rgba(46, 64, 83, 0.1);
+        }
+        
+        .pagination-item.active {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Modal para adicionar/editar documento */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .modal-form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-check input {
+            margin-right: 10px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Documentos</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="documentos-header">
+            <h1 class="documentos-title">Gestão de Documentos</h1>
+            <div class="documentos-filters">
+                <div class="documentos-filter">
+                    <label for="tipoDocumento">Tipo:</label>
+                    <select id="tipoDocumento">
+                        <option value="">Todos</option>
+                        <option value="contrato">Contrato</option>
+                        <option value="holerite">Holerite</option>
+                        <option value="atestado">Atestado</option>
+                        <option value="recibo">Recibo</option>
+                        <option value="guia">Guia</option>
+                        <option value="exame">Exame</option>
+                    </select>
+                </div>
+                <div class="documentos-filter">
+                    <label for="statusDocumento">Status:</label>
+                    <select id="statusDocumento">
+                        <option value="">Todos</option>
+                        <option value="valido">Válido</option>
+                        <option value="expirado">Expirado</option>
+                        <option value="semValidade">Sem Validade</option>
+                    </select>
+                </div>
+                <div class="documentos-search">
+                    <i class="material-icons">search</i>
+                    <input type="text" placeholder="Buscar documento...">
+                </div>
+            </div>
+        </div>
+        
+        <div class="documentos-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Nome</th>
+                        <th>Responsável</th>
+                        <th>Data Cadastro</th>
+                        <th>Validade</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Contrato</td>
+                        <td>Contrato de Trabalho - Maria Oliveira</td>
+                        <td>João Silva</td>
+                        <td>15/01/2025</td>
+                        <td>15/01/2026</td>
+                        <td><span class="documento-badge valid">Válido</span></td>
+                        <td>
+                            <div class="documento-actions">
+                                <button class="documento-action" onclick="visualizarDocumento(1)">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="documento-action" onclick="editarDocumento(1)">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="documento-action delete" onclick="excluirDocumento(1)">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Holerite</td>
+                        <td>Holerite - Maria Oliveira - Março/2025</td>
+                        <td>Sistema</td>
+                        <td>05/04/2025</td>
+                        <td>-</td>
+                        <td><span class="documento-badge no-expiry">Sem Validade</span></td>
+                        <td>
+                            <div class="documento-actions">
+                                <button class="documento-action" onclick="visualizarDocumento(2)">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="documento-action" onclick="editarDocumento(2)">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="documento-action delete" onclick="excluirDocumento(2)">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Atestado</td>
+                        <td>Atestado Médico - Maria Oliveira</td>
+                        <td>Maria Oliveira</td>
+                        <td>20/03/2025</td>
+                        <td>22/03/2025</td>
+                        <td><span class="documento-badge expired">Expirado</span></td>
+                        <td>
+                            <div class="documento-actions">
+                                <button class="documento-action" onclick="visualizarDocumento(3)">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="documento-action" onclick="editarDocumento(3)">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="documento-action delete" onclick="excluirDocumento(3)">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Guia</td>
+                        <td>Guia FGTS - Março/2025</td>
+                        <td>João Silva</td>
+                        <td>02/04/2025</td>
+                        <td>07/04/2025</td>
+                        <td><span class="documento-badge valid">Válido</span></td>
+                        <td>
+                            <div class="documento-actions">
+                                <button class="documento-action" onclick="visualizarDocumento(4)">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="documento-action" onclick="editarDocumento(4)">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="documento-action delete" onclick="excluirDocumento(4)">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Exame</td>
+                        <td>Exame Admissional - Carlos Santos</td>
+                        <td>João Silva</td>
+                        <td>10/02/2025</td>
+                        <td>10/02/2026</td>
+                        <td><span class="documento-badge valid">Válido</span></td>
+                        <td>
+                            <div class="documento-actions">
+                                <button class="documento-action" onclick="visualizarDocumento(5)">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="documento-action" onclick="editarDocumento(5)">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="documento-action delete" onclick="excluirDocumento(5)">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="documentos-footer">
+            <button class="btn-primary" onclick="abrirModalNovoDocumento()">
+                <i class="material-icons">add</i> Novo Documento
+            </button>
+            
+            <div class="documentos-pagination">
+                <div class="pagination-item active">1</div>
+                <div class="pagination-item">2</div>
+                <div class="pagination-item">3</div>
+                <div class="pagination-item">
+                    <i class="material-icons">chevron_right</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar documento -->
+    <div class="modal-backdrop" id="documentoModalBackdrop"></div>
+    <div class="modal" id="documentoModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Novo Documento</h2>
+            <button class="modal-close" onclick="fecharModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="documentoForm">
+                <div class="modal-form-group">
+                    <label for="docTipo">Tipo de Documento*</label>
+                    <select id="docTipo" required>
+                        <option value="">Selecione</option>
+                        <option value="contrato">Contrato</option>
+                        <option value="holerite">Holerite</option>
+                        <option value="atestado">Atestado</option>
+                        <option value="recibo">Recibo</option>
+                        <option value="guia">Guia</option>
+                        <option value="exame">Exame</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="docNome">Nome do Documento*</label>
+                    <input type="text" id="docNome" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="docArquivo">Arquivo*</label>
+                    <input type="file" id="docArquivo" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                
+                <div class="modal-form-check">
+                    <input type="checkbox" id="docTemValidade">
+                    <label for="docTemValidade">Documento com validade</label>
+                </div>
+                
+                <div class="modal-form-group" id="docValidadeGroup" style="display: none;">
+                    <label for="docValidade">Data de Validade*</label>
+                    <input type="date" id="docValidade">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="docObservacao">Observações</label>
+                    <textarea id="docObservacao" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarDocumento()">Salvar</button>
+        </div>
+    </div>
+
+    <script>
+        // Controle do modal
+        function abrirModalNovoDocumento() {
+            document.getElementById('modalTitle').textContent = 'Novo Documento';
+            document.getElementById('documentoForm').reset();
+            document.getElementById('documentoModalBackdrop').style.display = 'block';
+            document.getElementById('documentoModal').style.display = 'block';
+        }
+        
+        function editarDocumento(id) {
+            document.getElementById('modalTitle').textContent = 'Editar Documento';
+            
+            // Simulação de carregamento de dados do documento
+            const documentos = {
+                1: {
+                    tipo: 'contrato',
+                    nome: 'Contrato de Trabalho - Maria Oliveira',
+                    temValidade: true,
+                    validade: '2026-01-15',
+                    observacao: 'Contrato por tempo indeterminado'
+                },
+                2: {
+                    tipo: 'holerite',
+                    nome: 'Holerite - Maria Oliveira - Março/2025',
+                    temValidade: false,
+                    validade: '',
+                    observacao: 'Gerado automaticamente pelo sistema'
+                },
+                3: {
+                    tipo: 'atestado',
+                    nome: 'Atestado Médico - Maria Oliveira',
+                    temValidade: true,
+                    validade: '2025-03-22',
+                    observacao: 'Afastamento de 2 dias'
+                },
+                4: {
+                    tipo: 'guia',
+                    nome: 'Guia FGTS - Março/2025',
+                    temValidade: true,
+                    validade: '2025-04-07',
+                    observacao: 'Pagamento mensal'
+                },
+                5: {
+                    tipo: 'exame',
+                    nome: 'Exame Admissional - Carlos Santos',
+                    temValidade: true,
+                    validade: '2026-02-10',
+                    observacao: 'Realizado na clínica Saúde Total'
+                }
+            };
+            
+            const documento = documentos[id];
+            
+            if (documento) {
+                document.getElementById('docTipo').value = documento.tipo;
+                document.getElementById('docNome').value = documento.nome;
+                document.getElementById('docTemValidade').checked = documento.temValidade;
+                document.getElementById('docValidade').value = documento.validade;
+                document.getElementById('docObservacao').value = documento.observacao;
+                
+                // Mostrar/esconder campo de validade
+                document.getElementById('docValidadeGroup').style.display = documento.temValidade ? 'block' : 'none';
+            }
+            
+            document.getElementById('documentoModalBackdrop').style.display = 'block';
+            document.getElementById('documentoModal').style.display = 'block';
+        }
+        
+        function fecharModal() {
+            document.getElementById('documentoModalBackdrop').style.display = 'none';
+            document.getElementById('documentoModal').style.display = 'none';
+        }
+        
+        function salvarDocumento() {
+            // Simulação de salvamento
+            alert('Documento salvo com sucesso!');
+            fecharModal();
+        }
+        
+        function visualizarDocumento(id) {
+            // Simulação de visualização
+            alert('Visualizando documento ID: ' + id);
+        }
+        
+        function excluirDocumento(id) {
+            // Simulação de exclusão
+            if (confirm('Tem certeza que deseja excluir este documento?')) {
+                alert('Documento excluído com sucesso!');
+            }
+        }
+        
+        // Controle do checkbox de validade
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('docTemValidade').addEventListener('change', function() {
+                document.getElementById('docValidadeGroup').style.display = this.checked ? 'block' : 'none';
+                if (this.checked) {
+                    document.getElementById('docValidade').setAttribute('required', 'required');
+                } else {
+                    document.getElementById('docValidade').removeAttribute('required');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

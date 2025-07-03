@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Empréstimos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de empréstimos */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .emprestimos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .emprestimos-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .emprestimos-subtitle {
+            font-size: 16px;
+            color: var(--tertiary-color);
+            margin-top: 5px;
+        }
+        
+        .dashboard-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .dashboard-card {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dashboard-card-title {
+            font-size: 14px;
+            color: var(--tertiary-color);
+            margin-bottom: 5px;
+        }
+        
+        .dashboard-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-card-info {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-top: 5px;
+        }
+        
+        .dashboard-card-progress {
+            margin-top: 10px;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .dashboard-card-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .emprestimos-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .emprestimos-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .emprestimos-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .emprestimos-content {
+            display: none;
+        }
+        
+        .emprestimos-content.active {
+            display: block;
+        }
+        
+        .emprestimos-list {
+            margin-bottom: 20px;
+        }
+        
+        .emprestimo-item {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .emprestimo-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .emprestimo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .emprestimo-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .emprestimo-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .emprestimo-status.active {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .emprestimo-status.pending {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .emprestimo-status.completed {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .emprestimo-status.rejected {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #E74C3C;
+        }
+        
+        .emprestimo-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .emprestimo-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .emprestimo-info-label {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-bottom: 5px;
+        }
+        
+        .emprestimo-info-value {
+            font-weight: 500;
+        }
+        
+        .emprestimo-progress {
+            margin-bottom: 15px;
+        }
+        
+        .emprestimo-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .emprestimo-progress-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .emprestimo-progress-value {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .emprestimo-progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .emprestimo-progress-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .emprestimo-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .emprestimo-action {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+        
+        .emprestimo-action.primary {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+        }
+        
+        .emprestimo-action.primary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .emprestimo-action.secondary {
+            background-color: var(--neutral-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .emprestimo-action.secondary:hover {
+            background-color: rgba(46, 64, 83, 0.1);
+        }
+        
+        .emprestimo-action.destructive {
+            background-color: var(--neutral-color);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+        
+        .emprestimo-action.destructive:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .emprestimo-installments {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .emprestimo-installments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .emprestimo-installments-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .emprestimo-installments-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .emprestimo-installments-toggle i {
+            margin-left: 5px;
+        }
+        
+        .emprestimo-installments-list {
+            display: none;
+        }
+        
+        .emprestimo-installments-list.show {
+            display: block;
+        }
+        
+        .emprestimo-installment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .emprestimo-installment:last-child {
+            border-bottom: none;
+        }
+        
+        .emprestimo-installment-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .emprestimo-installment-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .emprestimo-installment-date {
+            font-size: 14px;
+        }
+        
+        .emprestimo-installment-value {
+            font-weight: 500;
+        }
+        
+        .emprestimo-installment-status {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .emprestimo-installment-status.paid {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .emprestimo-installment-status.pending {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .emprestimo-installment-status.late {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #E74C3C;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            color: var(--tertiary-color);
+            margin-bottom: 15px;
+        }
+        
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state-description {
+            color: var(--tertiary-color);
+            margin-bottom: 20px;
+            max-width: 400px;
+        }
+        
+        /* Modal para solicitar empréstimo */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .modal-form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .modal-form-row .modal-form-group {
+            flex: 1;
+        }
+        
+        .modal-form-group .slider-container {
+            margin-top: 10px;
+        }
+        
+        .modal-form-group .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+        }
+        
+        .modal-form-group .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .modal-form-group .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .modal-form-group .slider-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-form-group .slider-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .modal-form-group .checkbox-group {
+            margin-top: 5px;
+        }
+        
+        .modal-form-group .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+        
+        .modal-form-group .checkbox-item input {
+            width: auto;
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .modal-form-group .checkbox-item label {
+            font-weight: 400;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-summary {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal-summary-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .modal-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .modal-summary-item.total {
+            font-weight: 700;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .modal-summary-label {
+            color: var(--tertiary-color);
+        }
+        
+        .modal-summary-value {
+            font-weight: 500;
+        }
+        
+        /* Modal para detalhes do empréstimo */
+        .modal-details-section {
+            margin-bottom: 20px;
+        }
+        
+        .modal-details-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .modal-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .modal-details-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-details-label {
+            font-size: 12px;
+            color: var(--tertiary-color);
+            margin-bottom: 5px;
+        }
+        
+        .modal-details-value {
+            font-weight: 500;
+        }
+        
+        .modal-details-progress {
+            margin: 20px 0;
+        }
+        
+        .modal-details-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .modal-details-progress-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .modal-details-progress-value {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .modal-details-progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .modal-details-progress-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .modal-details-installments {
+            margin-top: 20px;
+        }
+        
+        .modal-details-installments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-details-installments-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-details-installment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-details-installment:last-child {
+            border-bottom: none;
+        }
+        
+        .modal-details-installment-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .modal-details-installment-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .modal-details-installment-date {
+            font-size: 14px;
+        }
+        
+        .modal-details-installment-value {
+            font-weight: 500;
+        }
+        
+        .modal-details-installment-status {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .modal-details-installment-status.paid {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .modal-details-installment-status.pending {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .modal-details-installment-status.late {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #E74C3C;
+        }
+        
+        .modal-details-documents {
+            margin-top: 20px;
+        }
+        
+        .modal-details-document {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-details-document:last-child {
+            border-bottom: none;
+        }
+        
+        .modal-details-document-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .modal-details-document-icon i {
+            color: var(--primary-color);
+        }
+        
+        .modal-details-document-info {
+            flex-grow: 1;
+        }
+        
+        .modal-details-document-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .modal-details-document-date {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-details-document-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-details-document-action {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Empréstimos</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="emprestimos-header">
+            <div>
+                <h1 class="emprestimos-title">Empréstimos</h1>
+                <p class="emprestimos-subtitle">Gerencie seus empréstimos e adiantamentos</p>
+            </div>
+            <button class="btn-primary" onclick="abrirModalSolicitarEmprestimo()">
+                <i class="material-icons">add</i> Solicitar Empréstimo
+            </button>
+        </div>
+        
+        <div class="dashboard-section">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Visão Geral</h2>
+            </div>
+            
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-title">Empréstimos Ativos</div>
+                    <div class="dashboard-card-value">2</div>
+                    <div class="dashboard-card-info">Total: R$ 5.000,00</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-title">Valor Total Pago</div>
+                    <div class="dashboard-card-value">R$ 1.250,00</div>
+                    <div class="dashboard-card-info">25% do total</div>
+                    <div class="dashboard-card-progress">
+                        <div class="dashboard-card-progress-bar" style="width: 25%;"></div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-title">Próximo Pagamento</div>
+                    <div class="dashboard-card-value">R$ 416,67</div>
+                    <div class="dashboard-card-info">Vencimento: 15/04/2025</div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-title">Limite Disponível</div>
+                    <div class="dashboard-card-value">R$ 5.000,00</div>
+                    <div class="dashboard-card-info">50% do limite total</div>
+                    <div class="dashboard-card-progress">
+                        <div class="dashboard-card-progress-bar" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="emprestimos-tabs">
+            <div class="emprestimos-tab active" onclick="mudarTab('ativos')">Ativos</div>
+            <div class="emprestimos-tab" onclick="mudarTab('pendentes')">Pendentes</div>
+            <div class="emprestimos-tab" onclick="mudarTab('concluidos')">Concluídos</div>
+            <div class="emprestimos-tab" onclick="mudarTab('todos')">Todos</div>
+        </div>
+        
+        <div class="emprestimos-content active" id="ativos-content">
+            <div class="emprestimos-list">
+                <div class="emprestimo-item">
+                    <div class="emprestimo-header">
+                        <h3 class="emprestimo-title">Empréstimo Pessoal</h3>
+                        <div class="emprestimo-status active">Ativo</div>
+                    </div>
+                    
+                    <div class="emprestimo-info">
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Valor Total</div>
+                            <div class="emprestimo-info-value">R$ 3.000,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Parcelas</div>
+                            <div class="emprestimo-info-value">12x de R$ 250,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Início</div>
+                            <div class="emprestimo-info-value">15/01/2025</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Término</div>
+                            <div class="emprestimo-info-value">15/12/2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-progress">
+                        <div class="emprestimo-progress-header">
+                            <div class="emprestimo-progress-title">Progresso</div>
+                            <div class="emprestimo-progress-value">3/12 parcelas (25%)</div>
+                        </div>
+                        <div class="emprestimo-progress-bar">
+                            <div class="emprestimo-progress-bar-fill" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-actions">
+                        <button class="emprestimo-action secondary" onclick="verDetalhesEmprestimo(1)">Ver Detalhes</button>
+                        <button class="emprestimo-action primary" onclick="pagarParcelaEmprestimo(1)">Pagar Parcela</button>
+                    </div>
+                    
+                    <div class="emprestimo-installments">
+                        <div class="emprestimo-installments-header">
+                            <div class="emprestimo-installments-title">Parcelas</div>
+                            <button class="emprestimo-installments-toggle" onclick="toggleInstallments(1)">
+                                Ver Parcelas <i class="material-icons">keyboard_arrow_down</i>
+                            </button>
+                        </div>
+                        
+                        <div class="emprestimo-installments-list" id="installments-1">
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">1</div>
+                                    <div class="emprestimo-installment-date">15/01/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 250,00</div>
+                                <div class="emprestimo-installment-status paid">Pago</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">2</div>
+                                    <div class="emprestimo-installment-date">15/02/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 250,00</div>
+                                <div class="emprestimo-installment-status paid">Pago</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">3</div>
+                                    <div class="emprestimo-installment-date">15/03/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 250,00</div>
+                                <div class="emprestimo-installment-status paid">Pago</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">4</div>
+                                    <div class="emprestimo-installment-date">15/04/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 250,00</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">5</div>
+                                    <div class="emprestimo-installment-date">15/05/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 250,00</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="emprestimo-item">
+                    <div class="emprestimo-header">
+                        <h3 class="emprestimo-title">Adiantamento de 13º Salário</h3>
+                        <div class="emprestimo-status active">Ativo</div>
+                    </div>
+                    
+                    <div class="emprestimo-info">
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Valor Total</div>
+                            <div class="emprestimo-info-value">R$ 2.000,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Parcelas</div>
+                            <div class="emprestimo-info-value">6x de R$ 333,33</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Início</div>
+                            <div class="emprestimo-info-value">01/03/2025</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Término</div>
+                            <div class="emprestimo-info-value">01/08/2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-progress">
+                        <div class="emprestimo-progress-header">
+                            <div class="emprestimo-progress-title">Progresso</div>
+                            <div class="emprestimo-progress-value">1/6 parcelas (16.7%)</div>
+                        </div>
+                        <div class="emprestimo-progress-bar">
+                            <div class="emprestimo-progress-bar-fill" style="width: 16.7%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-actions">
+                        <button class="emprestimo-action secondary" onclick="verDetalhesEmprestimo(2)">Ver Detalhes</button>
+                        <button class="emprestimo-action primary" onclick="pagarParcelaEmprestimo(2)">Pagar Parcela</button>
+                    </div>
+                    
+                    <div class="emprestimo-installments">
+                        <div class="emprestimo-installments-header">
+                            <div class="emprestimo-installments-title">Parcelas</div>
+                            <button class="emprestimo-installments-toggle" onclick="toggleInstallments(2)">
+                                Ver Parcelas <i class="material-icons">keyboard_arrow_down</i>
+                            </button>
+                        </div>
+                        
+                        <div class="emprestimo-installments-list" id="installments-2">
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">1</div>
+                                    <div class="emprestimo-installment-date">01/03/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status paid">Pago</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">2</div>
+                                    <div class="emprestimo-installment-date">01/04/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">3</div>
+                                    <div class="emprestimo-installment-date">01/05/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">4</div>
+                                    <div class="emprestimo-installment-date">01/06/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">5</div>
+                                    <div class="emprestimo-installment-date">01/07/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                            
+                            <div class="emprestimo-installment">
+                                <div class="emprestimo-installment-info">
+                                    <div class="emprestimo-installment-number">6</div>
+                                    <div class="emprestimo-installment-date">01/08/2025</div>
+                                </div>
+                                <div class="emprestimo-installment-value">R$ 333,33</div>
+                                <div class="emprestimo-installment-status pending">Pendente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="emprestimos-content" id="pendentes-content">
+            <div class="emprestimos-list">
+                <div class="emprestimo-item">
+                    <div class="emprestimo-header">
+                        <h3 class="emprestimo-title">Empréstimo para Reforma</h3>
+                        <div class="emprestimo-status pending">Pendente</div>
+                    </div>
+                    
+                    <div class="emprestimo-info">
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Valor Solicitado</div>
+                            <div class="emprestimo-info-value">R$ 5.000,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Parcelas</div>
+                            <div class="emprestimo-info-value">24x de R$ 208,33</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Solicitação</div>
+                            <div class="emprestimo-info-value">03/04/2025</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Status</div>
+                            <div class="emprestimo-info-value">Aguardando aprovação</div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-actions">
+                        <button class="emprestimo-action destructive" onclick="cancelarSolicitacaoEmprestimo(3)">Cancelar Solicitação</button>
+                        <button class="emprestimo-action secondary" onclick="verDetalhesEmprestimo(3)">Ver Detalhes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="emprestimos-content" id="concluidos-content">
+            <div class="emprestimos-list">
+                <div class="emprestimo-item">
+                    <div class="emprestimo-header">
+                        <h3 class="emprestimo-title">Adiantamento Salarial</h3>
+                        <div class="emprestimo-status completed">Concluído</div>
+                    </div>
+                    
+                    <div class="emprestimo-info">
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Valor Total</div>
+                            <div class="emprestimo-info-value">R$ 1.500,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Parcelas</div>
+                            <div class="emprestimo-info-value">3x de R$ 500,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Início</div>
+                            <div class="emprestimo-info-value">01/10/2024</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Término</div>
+                            <div class="emprestimo-info-value">01/12/2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-progress">
+                        <div class="emprestimo-progress-header">
+                            <div class="emprestimo-progress-title">Progresso</div>
+                            <div class="emprestimo-progress-value">3/3 parcelas (100%)</div>
+                        </div>
+                        <div class="emprestimo-progress-bar">
+                            <div class="emprestimo-progress-bar-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-actions">
+                        <button class="emprestimo-action secondary" onclick="verDetalhesEmprestimo(4)">Ver Detalhes</button>
+                        <button class="emprestimo-action primary" onclick="solicitarComprovante(4)">Solicitar Comprovante</button>
+                    </div>
+                </div>
+                
+                <div class="emprestimo-item">
+                    <div class="emprestimo-header">
+                        <h3 class="emprestimo-title">Empréstimo para Viagem</h3>
+                        <div class="emprestimo-status rejected">Recusado</div>
+                    </div>
+                    
+                    <div class="emprestimo-info">
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Valor Solicitado</div>
+                            <div class="emprestimo-info-value">R$ 8.000,00</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Parcelas</div>
+                            <div class="emprestimo-info-value">36x de R$ 222,22</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Data de Solicitação</div>
+                            <div class="emprestimo-info-value">15/02/2025</div>
+                        </div>
+                        
+                        <div class="emprestimo-info-item">
+                            <div class="emprestimo-info-label">Motivo da Recusa</div>
+                            <div class="emprestimo-info-value">Limite excedido</div>
+                        </div>
+                    </div>
+                    
+                    <div class="emprestimo-actions">
+                        <button class="emprestimo-action secondary" onclick="verDetalhesEmprestimo(5)">Ver Detalhes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="emprestimos-content" id="todos-content">
+            <div class="emprestimos-list">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para solicitar empréstimo -->
+    <div class="modal-backdrop" id="solicitarEmprestimoModalBackdrop"></div>
+    <div class="modal" id="solicitarEmprestimoModal">
+        <div class="modal-header">
+            <h2 class="modal-title">Solicitar Empréstimo</h2>
+            <button class="modal-close" onclick="fecharModal('solicitarEmprestimo')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="solicitarEmprestimoForm">
+                <div class="modal-form-group">
+                    <label for="tipoEmprestimo">Tipo de Empréstimo*</label>
+                    <select id="tipoEmprestimo" required onchange="atualizarOpcoesEmprestimo()">
+                        <option value="">Selecione</option>
+                        <option value="pessoal">Empréstimo Pessoal</option>
+                        <option value="13salario">Adiantamento de 13º Salário</option>
+                        <option value="ferias">Adiantamento de Férias</option>
+                        <option value="adiantamento">Adiantamento Salarial</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="valorEmprestimo">Valor do Empréstimo*</label>
+                    <div class="slider-container">
+                        <input type="range" min="500" max="10000" value="3000" step="100" class="slider" id="valorEmprestimoSlider" oninput="atualizarValorEmprestimo()">
+                        <div class="slider-values">
+                            <span>R$ 500,00</span>
+                            <span>R$ 10.000,00</span>
+                        </div>
+                        <div class="slider-value" id="valorEmprestimoDisplay">R$ 3.000,00</div>
+                    </div>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="numeroParcelas">Número de Parcelas*</label>
+                    <div class="slider-container">
+                        <input type="range" min="1" max="36" value="12" class="slider" id="numeroParcelasSlider" oninput="atualizarNumeroParcelas()">
+                        <div class="slider-values">
+                            <span>1x</span>
+                            <span>36x</span>
+                        </div>
+                        <div class="slider-value" id="numeroParcelasDisplay">12x</div>
+                    </div>
+                </div>
+                
+                <div class="modal-form-row">
+                    <div class="modal-form-group">
+                        <label for="dataInicio">Data de Início*</label>
+                        <input type="date" id="dataInicio" required>
+                    </div>
+                    
+                    <div class="modal-form-group">
+                        <label for="diaPagamento">Dia de Pagamento*</label>
+                        <select id="diaPagamento" required>
+                            <option value="1">1</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15" selected>15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="motivoEmprestimo">Motivo do Empréstimo</label>
+                    <select id="motivoEmprestimo">
+                        <option value="">Selecione (opcional)</option>
+                        <option value="pessoal">Uso Pessoal</option>
+                        <option value="saude">Saúde</option>
+                        <option value="educacao">Educação</option>
+                        <option value="reforma">Reforma</option>
+                        <option value="viagem">Viagem</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="observacoesEmprestimo">Observações</label>
+                    <textarea id="observacoesEmprestimo" rows="3"></textarea>
+                </div>
+                
+                <div class="modal-form-group">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="concordaTermos" required>
+                            <label for="concordaTermos">Concordo com os <a href="#" onclick="abrirTermosEmprestimo()">termos e condições</a> do empréstimo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="autorizaDesconto" required>
+                            <label for="autorizaDesconto">Autorizo o desconto das parcelas diretamente na folha de pagamento</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-summary">
+                    <div class="modal-summary-title">Resumo do Empréstimo</div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Valor do Empréstimo</div>
+                        <div class="modal-summary-value" id="resumoValorEmprestimo">R$ 3.000,00</div>
+                    </div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Número de Parcelas</div>
+                        <div class="modal-summary-value" id="resumoNumeroParcelas">12x</div>
+                    </div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Valor da Parcela</div>
+                        <div class="modal-summary-value" id="resumoValorParcela">R$ 250,00</div>
+                    </div>
+                    <div class="modal-summary-item">
+                        <div class="modal-summary-label">Taxa de Juros</div>
+                        <div class="modal-summary-value" id="resumoTaxaJuros">0%</div>
+                    </div>
+                    <div class="modal-summary-item total">
+                        <div class="modal-summary-label">Total a Pagar</div>
+                        <div class="modal-summary-value" id="resumoTotalPagar">R$ 3.000,00</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('solicitarEmprestimo')">Cancelar</button>
+            <button class="btn-primary" onclick="enviarSolicitacaoEmprestimo()">Solicitar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para detalhes do empréstimo -->
+    <div class="modal-backdrop" id="detalhesEmprestimoModalBackdrop"></div>
+    <div class="modal" id="detalhesEmprestimoModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="detalhesEmprestimoModalTitle">Detalhes do Empréstimo</h2>
+            <button class="modal-close" onclick="fecharModal('detalhesEmprestimo')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-details-section">
+                <h3 class="modal-details-title">Informações Gerais</h3>
+                <div class="modal-details-grid">
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Tipo de Empréstimo</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoTipo">Empréstimo Pessoal</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Status</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoStatus">Ativo</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Valor Total</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoValor">R$ 3.000,00</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Parcelas</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoParcelas">12x de R$ 250,00</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Data de Início</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoInicio">15/01/2025</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Data de Término</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoTermino">15/12/2025</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Motivo</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoMotivo">Uso Pessoal</div>
+                    </div>
+                    <div class="modal-details-item">
+                        <div class="modal-details-label">Forma de Pagamento</div>
+                        <div class="modal-details-value" id="detalhesEmprestimoFormaPagamento">Desconto em Folha</div>
+                    </div>
+                </div>
+                
+                <div class="modal-details-progress">
+                    <div class="modal-details-progress-header">
+                        <div class="modal-details-progress-title">Progresso</div>
+                        <div class="modal-details-progress-value" id="detalhesEmprestimoProgresso">3/12 parcelas (25%)</div>
+                    </div>
+                    <div class="modal-details-progress-bar">
+                        <div class="modal-details-progress-bar-fill" id="detalhesEmprestimoProgressoBar" style="width: 25%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-details-installments">
+                <div class="modal-details-installments-header">
+                    <h3 class="modal-details-installments-title">Parcelas</h3>
+                </div>
+                
+                <div id="detalhesEmprestimoParcelasList">
+                    <div class="modal-details-installment">
+                        <div class="modal-details-installment-info">
+                            <div class="modal-details-installment-number">1</div>
+                            <div class="modal-details-installment-date">15/01/2025</div>
+                        </div>
+                        <div class="modal-details-installment-value">R$ 250,00</div>
+                        <div class="modal-details-installment-status paid">Pago</div>
+                    </div>
+                    
+                    <div class="modal-details-installment">
+                        <div class="modal-details-installment-info">
+                            <div class="modal-details-installment-number">2</div>
+                            <div class="modal-details-installment-date">15/02/2025</div>
+                        </div>
+                        <div class="modal-details-installment-value">R$ 250,00</div>
+                        <div class="modal-details-installment-status paid">Pago</div>
+                    </div>
+                    
+                    <div class="modal-details-installment">
+                        <div class="modal-details-installment-info">
+                            <div class="modal-details-installment-number">3</div>
+                            <div class="modal-details-installment-date">15/03/2025</div>
+                        </div>
+                        <div class="modal-details-installment-value">R$ 250,00</div>
+                        <div class="modal-details-installment-status paid">Pago</div>
+                    </div>
+                    
+                    <div class="modal-details-installment">
+                        <div class="modal-details-installment-info">
+                            <div class="modal-details-installment-number">4</div>
+                            <div class="modal-details-installment-date">15/04/2025</div>
+                        </div>
+                        <div class="modal-details-installment-value">R$ 250,00</div>
+                        <div class="modal-details-installment-status pending">Pendente</div>
+                    </div>
+                    
+                    <div class="modal-details-installment">
+                        <div class="modal-details-installment-info">
+                            <div class="modal-details-installment-number">5</div>
+                            <div class="modal-details-installment-date">15/05/2025</div>
+                        </div>
+                        <div class="modal-details-installment-value">R$ 250,00</div>
+                        <div class="modal-details-installment-status pending">Pendente</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-details-documents">
+                <h3 class="modal-details-title">Documentos</h3>
+                
+                <div class="modal-details-document">
+                    <div class="modal-details-document-icon">
+                        <i class="material-icons">description</i>
+                    </div>
+                    <div class="modal-details-document-info">
+                        <div class="modal-details-document-title">Contrato de Empréstimo</div>
+                        <div class="modal-details-document-date">15/01/2025</div>
+                    </div>
+                    <div class="modal-details-document-actions">
+                        <button class="modal-details-document-action" onclick="visualizarDocumento('contrato')">
+                            <i class="material-icons">visibility</i>
+                        </button>
+                        <button class="modal-details-document-action" onclick="baixarDocumento('contrato')">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-details-document">
+                    <div class="modal-details-document-icon">
+                        <i class="material-icons">description</i>
+                    </div>
+                    <div class="modal-details-document-info">
+                        <div class="modal-details-document-title">Autorização de Desconto em Folha</div>
+                        <div class="modal-details-document-date">15/01/2025</div>
+                    </div>
+                    <div class="modal-details-document-actions">
+                        <button class="modal-details-document-action" onclick="visualizarDocumento('autorizacao')">
+                            <i class="material-icons">visibility</i>
+                        </button>
+                        <button class="modal-details-document-action" onclick="baixarDocumento('autorizacao')">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-details-document">
+                    <div class="modal-details-document-icon">
+                        <i class="material-icons">description</i>
+                    </div>
+                    <div class="modal-details-document-info">
+                        <div class="modal-details-document-title">Comprovante de Transferência</div>
+                        <div class="modal-details-document-date">16/01/2025</div>
+                    </div>
+                    <div class="modal-details-document-actions">
+                        <button class="modal-details-document-action" onclick="visualizarDocumento('comprovante')">
+                            <i class="material-icons">visibility</i>
+                        </button>
+                        <button class="modal-details-document-action" onclick="baixarDocumento('comprovante')">
+                            <i class="material-icons">download</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('detalhesEmprestimo')">Fechar</button>
+            <button class="btn-primary" id="detalhesEmprestimoAcaoPrincipal" onclick="pagarParcelaEmprestimoModal()">Pagar Parcela</button>
+        </div>
+    </div>
+
+    <script>
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir data padrão como hoje
+            const hoje = new Date();
+            document.getElementById('dataInicio').value = hoje.toISOString().split('T')[0];
+            
+            // Preencher a aba "Todos"
+            preencherTodosEmprestimos();
+            
+            // Atualizar valores iniciais
+            atualizarValorEmprestimo();
+            atualizarNumeroParcelas();
+        });
+        
+        // Controle das tabs
+        function mudarTab(tab) {
+            // Remover classe active de todas as tabs
+            document.querySelectorAll('.emprestimos-tab').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Remover classe active de todos os conteúdos
+            document.querySelectorAll('.emprestimos-content').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Adicionar classe active à tab clicada
+            document.querySelector(`.emprestimos-tab:nth-child(${tab === 'ativos' ? 1 : tab === 'pendentes' ? 2 : tab === 'concluidos' ? 3 : 4})`).classList.add('active');
+            
+            // Adicionar classe active ao conteúdo correspondente
+            document.getElementById(`${tab}-content`).classList.add('active');
+        }
+        
+        // Controle dos modais
+        function abrirModalSolicitarEmprestimo() {
+            document.getElementById('solicitarEmprestimoModalBackdrop').style.display = 'block';
+            document.getElementById('solicitarEmprestimoModal').style.display = 'block';
+        }
+        
+        function fecharModal(tipo) {
+            document.getElementById(tipo + 'ModalBackdrop').style.display = 'none';
+            document.getElementById(tipo + 'Modal').style.display = 'none';
+        }
+        
+        // Controle das parcelas
+        function toggleInstallments(id) {
+            const installmentsList = document.getElementById(`installments-${id}`);
+            const toggleButton = installmentsList.previousElementSibling.querySelector('.emprestimo-installments-toggle');
+            
+            if (installmentsList.classList.contains('show')) {
+                installmentsList.classList.remove('show');
+                toggleButton.innerHTML = 'Ver Parcelas <i class="material-icons">keyboard_arrow_down</i>';
+            } else {
+                installmentsList.classList.add('show');
+                toggleButton.innerHTML = 'Ocultar Parcelas <i class="material-icons">keyboard_arrow_up</i>';
+            }
+        }
+        
+        // Funções para o modal de solicitar empréstimo
+        function atualizarValorEmprestimo() {
+            const valor = document.getElementById('valorEmprestimoSlider').value;
+            const valorFormatado = formatarMoeda(valor);
+            
+            document.getElementById('valorEmprestimoDisplay').textContent = valorFormatado;
+            document.getElementById('resumoValorEmprestimo').textContent = valorFormatado;
+            
+            atualizarValorParcela();
+        }
+        
+        function atualizarNumeroParcelas() {
+            const parcelas = document.getElementById('numeroParcelasSlider').value;
+            
+            document.getElementById('numeroParcelasDisplay').textContent = `${parcelas}x`;
+            document.getElementById('resumoNumeroParcelas').textContent = `${parcelas}x`;
+            
+            atualizarValorParcela();
+        }
+        
+        function atualizarValorParcela() {
+            const valor = document.getElementById('valorEmprestimoSlider').value;
+            const parcelas = document.getElementById('numeroParcelasSlider').value;
+            
+            const valorParcela = valor / parcelas;
+            const valorParcelaFormatado = formatarMoeda(valorParcela);
+            
+            document.getElementById('resumoValorParcela').textContent = valorParcelaFormatado;
+            document.getElementById('resumoTotalPagar').textContent = formatarMoeda(valor);
+        }
+        
+        function atualizarOpcoesEmprestimo() {
+            const tipo = document.getElementById('tipoEmprestimo').value;
+            
+            // Simulação de atualização de opções
+            if (tipo === '13salario') {
+                document.getElementById('valorEmprestimoSlider').max = 5000;
+                document.getElementById('numeroParcelasSlider').max = 12;
+                document.getElementById('resumoTaxaJuros').textContent = '0%';
+            } else if (tipo === 'ferias') {
+                document.getElementById('valorEmprestimoSlider').max = 5000;
+                document.getElementById('numeroParcelasSlider').max = 12;
+                document.getElementById('resumoTaxaJuros').textContent = '0%';
+            } else if (tipo === 'adiantamento') {
+                document.getElementById('valorEmprestimoSlider').max = 3000;
+                document.getElementById('numeroParcelasSlider').max = 3;
+                document.getElementById('resumoTaxaJuros').textContent = '0%';
+            } else {
+                document.getElementById('valorEmprestimoSlider').max = 10000;
+                document.getElementById('numeroParcelasSlider').max = 36;
+                document.getElementById('resumoTaxaJuros').textContent = '1,5% a.m.';
+            }
+            
+            // Resetar valores
+            document.getElementById('valorEmprestimoSlider').value = 3000;
+            document.getElementById('numeroParcelasSlider').value = 12;
+            
+            atualizarValorEmprestimo();
+            atualizarNumeroParcelas();
+        }
+        
+        function enviarSolicitacaoEmprestimo() {
+            const tipo = document.getElementById('tipoEmprestimo').value;
+            const valor = document.getElementById('valorEmprestimoSlider').value;
+            const parcelas = document.getElementById('numeroParcelasSlider').value;
+            const dataInicio = document.getElementById('dataInicio').value;
+            const diaPagamento = document.getElementById('diaPagamento').value;
+            const motivo = document.getElementById('motivoEmprestimo').value;
+            const concordaTermos = document.getElementById('concordaTermos').checked;
+            const autorizaDesconto = document.getElementById('autorizaDesconto').checked;
+            
+            if (!tipo || !dataInicio || !concordaTermos || !autorizaDesconto) {
+                alert('Por favor, preencha todos os campos obrigatórios e aceite os termos.');
+                return;
+            }
+            
+            // Simulação de envio
+            alert(`Solicitação de empréstimo enviada com sucesso! Valor: ${formatarMoeda(valor)}, Parcelas: ${parcelas}x`);
+            fecharModal('solicitarEmprestimo');
+            
+            // Atualizar a lista de empréstimos pendentes
+            setTimeout(() => {
+                alert('Sua solicitação foi recebida e está em análise. Você receberá uma notificação quando for aprovada.');
+                window.location.reload();
+            }, 1000);
+        }
+        
+        function abrirTermosEmprestimo() {
+            alert('Abrindo termos e condições do empréstimo...');
+            return false;
+        }
+        
+        // Funções para ações nos empréstimos
+        function verDetalhesEmprestimo(id) {
+            // Simulação de carregamento de dados do empréstimo
+            const emprestimos = {
+                1: {
+                    titulo: 'Empréstimo Pessoal',
+                    tipo: 'Empréstimo Pessoal',
+                    status: 'Ativo',
+                    valor: 'R$ 3.000,00',
+                    parcelas: '12x de R$ 250,00',
+                    inicio: '15/01/2025',
+                    termino: '15/12/2025',
+                    motivo: 'Uso Pessoal',
+                    formaPagamento: 'Desconto em Folha',
+                    progresso: '3/12 parcelas (25%)',
+                    progressoValor: 25
+                },
+                2: {
+                    titulo: 'Adiantamento de 13º Salário',
+                    tipo: 'Adiantamento de 13º Salário',
+                    status: 'Ativo',
+                    valor: 'R$ 2.000,00',
+                    parcelas: '6x de R$ 333,33',
+                    inicio: '01/03/2025',
+                    termino: '01/08/2025',
+                    motivo: 'Uso Pessoal',
+                    formaPagamento: 'Desconto em Folha',
+                    progresso: '1/6 parcelas (16.7%)',
+                    progressoValor: 16.7
+                },
+                3: {
+                    titulo: 'Empréstimo para Reforma',
+                    tipo: 'Empréstimo Pessoal',
+                    status: 'Pendente',
+                    valor: 'R$ 5.000,00',
+                    parcelas: '24x de R$ 208,33',
+                    inicio: 'Pendente',
+                    termino: 'Pendente',
+                    motivo: 'Reforma',
+                    formaPagamento: 'Desconto em Folha',
+                    progresso: '0/24 parcelas (0%)',
+                    progressoValor: 0
+                },
+                4: {
+                    titulo: 'Adiantamento Salarial',
+                    tipo: 'Adiantamento Salarial',
+                    status: 'Concluído',
+                    valor: 'R$ 1.500,00',
+                    parcelas: '3x de R$ 500,00',
+                    inicio: '01/10/2024',
+                    termino: '01/12/2024',
+                    motivo: 'Uso Pessoal',
+                    formaPagamento: 'Desconto em Folha',
+                    progresso: '3/3 parcelas (100%)',
+                    progressoValor: 100
+                },
+                5: {
+                    titulo: 'Empréstimo para Viagem',
+                    tipo: 'Empréstimo Pessoal',
+                    status: 'Recusado',
+                    valor: 'R$ 8.000,00',
+                    parcelas: '36x de R$ 222,22',
+                    inicio: 'N/A',
+                    termino: 'N/A',
+                    motivo: 'Viagem',
+                    formaPagamento: 'N/A',
+                    progresso: 'N/A',
+                    progressoValor: 0
+                }
+            };
+            
+            const emprestimo = emprestimos[id];
+            
+            if (emprestimo) {
+                document.getElementById('detalhesEmprestimoModalTitle').textContent = `Detalhes do ${emprestimo.titulo}`;
+                document.getElementById('detalhesEmprestimoTipo').textContent = emprestimo.tipo;
+                document.getElementById('detalhesEmprestimoStatus').textContent = emprestimo.status;
+                document.getElementById('detalhesEmprestimoValor').textContent = emprestimo.valor;
+                document.getElementById('detalhesEmprestimoParcelas').textContent = emprestimo.parcelas;
+                document.getElementById('detalhesEmprestimoInicio').textContent = emprestimo.inicio;
+                document.getElementById('detalhesEmprestimoTermino').textContent = emprestimo.termino;
+                document.getElementById('detalhesEmprestimoMotivo').textContent = emprestimo.motivo;
+                document.getElementById('detalhesEmprestimoFormaPagamento').textContent = emprestimo.formaPagamento;
+                document.getElementById('detalhesEmprestimoProgresso').textContent = emprestimo.progresso;
+                document.getElementById('detalhesEmprestimoProgressoBar').style.width = `${emprestimo.progressoValor}%`;
+                
+                // Configurar botão de ação principal
+                const botaoAcaoPrincipal = document.getElementById('detalhesEmprestimoAcaoPrincipal');
+                
+                if (emprestimo.status === 'Ativo') {
+                    botaoAcaoPrincipal.textContent = 'Pagar Parcela';
+                    botaoAcaoPrincipal.style.display = 'block';
+                    botaoAcaoPrincipal.onclick = function() { pagarParcelaEmprestimoModal(id); };
+                } else if (emprestimo.status === 'Pendente') {
+                    botaoAcaoPrincipal.textContent = 'Cancelar Solicitação';
+                    botaoAcaoPrincipal.style.display = 'block';
+                    botaoAcaoPrincipal.onclick = function() { cancelarSolicitacaoEmprestimoModal(id); };
+                } else if (emprestimo.status === 'Concluído') {
+                    botaoAcaoPrincipal.textContent = 'Solicitar Comprovante';
+                    botaoAcaoPrincipal.style.display = 'block';
+                    botaoAcaoPrincipal.onclick = function() { solicitarComprovanteModal(id); };
+                } else {
+                    botaoAcaoPrincipal.style.display = 'none';
+                }
+            }
+            
+            document.getElementById('detalhesEmprestimoModalBackdrop').style.display = 'block';
+            document.getElementById('detalhesEmprestimoModal').style.display = 'block';
+        }
+        
+        function pagarParcelaEmprestimo(id) {
+            // Simulação de pagamento
+            alert(`Iniciando pagamento da parcela do empréstimo ${id}...`);
+            
+            // Simulação de redirecionamento para página de pagamento
+            setTimeout(() => {
+                alert('Você será redirecionado para a página de pagamento.');
+            }, 1000);
+        }
+        
+        function pagarParcelaEmprestimoModal(id) {
+            fecharModal('detalhesEmprestimo');
+            pagarParcelaEmprestimo(id);
+        }
+        
+        function cancelarSolicitacaoEmprestimo(id) {
+            // Simulação de cancelamento
+            if (confirm('Tem certeza que deseja cancelar esta solicitação de empréstimo?')) {
+                alert(`Solicitação de empréstimo ${id} cancelada com sucesso!`);
+                
+                // Atualizar interface (simulação)
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }
+        
+        function cancelarSolicitacaoEmprestimoModal(id) {
+            fecharModal('detalhesEmprestimo');
+            cancelarSolicitacaoEmprestimo(id);
+        }
+        
+        function solicitarComprovante(id) {
+            // Simulação de solicitação
+            alert(`Gerando comprovante de quitação do empréstimo ${id}...`);
+            
+            // Simulação de download
+            setTimeout(() => {
+                alert('Comprovante gerado com sucesso! O download será iniciado automaticamente.');
+            }, 1000);
+        }
+        
+        function solicitarComprovanteModal(id) {
+            fecharModal('detalhesEmprestimo');
+            solicitarComprovante(id);
+        }
+        
+        function visualizarDocumento(tipo) {
+            // Simulação de visualização
+            alert(`Abrindo documento: ${tipo}`);
+        }
+        
+        function baixarDocumento(tipo) {
+            // Simulação de download
+            alert(`Iniciando download do documento: ${tipo}`);
+        }
+        
+        // Funções auxiliares
+        function formatarMoeda(valor) {
+            return `R$ ${parseFloat(valor).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+        }
+        
+        function preencherTodosEmprestimos() {
+            // Clonar conteúdo das outras abas para a aba "Todos"
+            const todosContent = document.getElementById('todos-content').querySelector('.emprestimos-list');
+            
+            // Limpar conteúdo atual
+            todosContent.innerHTML = '';
+            
+            // Adicionar empréstimos ativos
+            const ativosContent = document.getElementById('ativos-content').querySelector('.emprestimos-list').innerHTML;
+            todosContent.innerHTML += ativosContent;
+            
+            // Adicionar empréstimos pendentes
+            const pendentesContent = document.getElementById('pendentes-content').querySelector('.emprestimos-list').innerHTML;
+            todosContent.innerHTML += pendentesContent;
+            
+            // Adicionar empréstimos concluídos
+            const concluidosContent = document.getElementById('concluidos-content').querySelector('.emprestimos-list').innerHTML;
+            todosContent.innerHTML += concluidosContent;
+        }
+    </script>
+</body>
+</html>

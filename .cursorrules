@@ -1,0 +1,377 @@
+# Cursor Rules - DOM v1
+# Regras específicas para o Cursor AI
+
+## 🎯 Contexto do Projeto
+
+Este é um aplicativo multiplataforma (web, iOS, Android) desenvolvido com:
+- Monorepo usando Turbo
+- React/Next.js para web
+- React Native para mobile
+- TypeScript rigoroso
+- Material-UI v2
+- Prisma + PostgreSQL
+- Internacionalização completa
+
+## 👥 Perfis de Usuários
+
+O aplicativo atende 7 perfis distintos que DEVEM ser considerados em todo desenvolvimento:
+
+1. **Empregadores**: Mulheres 35-50 anos, ocupadas, boa experiência digital
+   - UI/UX: Eficiência máxima, menos cliques, interface limpa
+   - Prioridades: Dashboard rápido, notificações inteligentes
+
+2. **Empregados Domésticos**: Mulheres 30-60 anos, pouca escolaridade, experiência digital limitada
+   - UI/UX: Simplicidade extrema, textos grandes, botões grandes
+   - Prioridades: Interface simples, tutorial interativo, modo offline
+
+3. **Familiares dos Empregadores**: 15-70 anos, experiência digital variada
+   - UI/UX: Adaptável por idade, compartilhamento fácil
+   - Prioridades: Modo básico/avançado, notificações familiares
+
+4. **Parceiros**: Donos de negócios, experiência avançada, foco em ROI
+   - UI/UX: Interface empresarial, métricas em destaque
+   - Prioridades: Dashboard de métricas, white label, APIs
+
+5. **Subordinados dos Parceiros**: Funcionários dos parceiros, operação
+   - UI/UX: Eficiência operacional, clareza de responsabilidades
+   - Prioridades: Interface operacional, relatórios automáticos
+
+6. **Administradores**: Desenvolvedores/suporte, experiência avançada
+   - UI/UX: Máxima informação, acesso rápido, dados técnicos
+   - Prioridades: Painel administrativo, logs detalhados
+
+7. **Donos**: Fundadores, experiência expert, controle total
+   - UI/UX: Visão estratégica, acesso completo, interface premium
+   - Prioridades: Dashboard executivo, acesso ao código/banco
+
+**SEMPRE considerar o perfil do usuário antes de implementar qualquer funcionalidade!**
+
+## 📋 Regras Obrigatórias
+
+### Cabeçalho em Todos os Arquivos
+SEMPRE incluir cabeçalho JSDoc em TODOS os arquivos:
+```typescript
+/**
+ * @fileoverview Nome do arquivo
+ * @directory caminho/do/diretorio
+ * @description Descrição detalhada da função do arquivo
+ * @created 2024-12-19
+ * @lastModified 2024-12-19
+ * @author Nome do Desenvolvedor
+ */
+```
+
+### Imports com Alias
+SEMPRE usar imports com "@/" em vez de caminhos relativos:
+```typescript
+// ✅ Correto
+import { Button } from '@/components/ui/Button'
+import { useAuth } from '@/hooks/useAuth'
+
+// ❌ Incorreto
+import { Button } from '../../../components/ui/Button'
+```
+
+### Proibição de "any"
+NUNCA usar `any` no TypeScript. Sempre tipar corretamente:
+```typescript
+// ❌ NUNCA fazer isso
+const data: any = response.data
+
+// ✅ Sempre fazer isso
+interface UserData {
+  id: string
+  name: string
+  email: string
+}
+const data: UserData = response.data
+```
+
+### Consideração de Perfis
+SEMPRE considerar o perfil do usuário ao desenvolver:
+```typescript
+// ✅ Correto - Componente adaptativo
+interface UserProfileProps {
+  profile: 'empregador' | 'empregado' | 'familiar' | 'parceiro' | 'subordinado' | 'admin' | 'owner'
+  user: User
+}
+
+const UserProfile = ({ profile, user }: UserProfileProps) => {
+  const theme = getThemeByProfile(profile)
+  const isSimpleInterface = profile === 'empregado' || profile === 'familiar'
+  
+  return (
+    <ThemeProvider theme={theme}>
+      <Box className={`user-profile ${isSimpleInterface ? 'simple' : 'advanced'}`}>
+        {/* Interface adaptada ao perfil */}
+      </Box>
+    </ThemeProvider>
+  )
+}
+
+// ❌ Incorreto - Interface genérica
+const UserProfile = ({ user }: { user: User }) => {
+  return <div>Perfil do usuário</div> // Sem considerar perfil
+}
+```
+
+### Tooltips Obrigatórios
+TODOS os inputs devem ter tooltips:
+```typescript
+<TextField
+  label={t('user.email')}
+  InputProps={{
+    endAdornment: (
+      <Tooltip title={t('user.email.help')}>
+        <InfoIcon />
+      </Tooltip>
+    )
+  }}
+/>
+```
+
+### Componentes Reutilizáveis
+Sempre criar componentes pequenos e reutilizáveis:
+- Máximo 300 linhas por arquivo
+- Props interface obrigatória
+- Default props quando apropriado
+- Memoização para performance
+- **Adaptação por perfil obrigatória**
+
+```typescript
+// ✅ Correto - Componente adaptativo
+interface ButtonProps {
+  profile: UserProfile
+  variant?: 'simple' | 'standard' | 'advanced'
+  children: React.ReactNode
+  onClick?: () => void
+}
+
+const AdaptiveButton = memo<ButtonProps>(({ profile, variant = 'standard', children, onClick }) => {
+  const theme = getThemeByProfile(profile)
+  const buttonSize = profile === 'empregado' ? 'large' : 'medium'
+  const buttonVariant = profile === 'empregado' ? 'contained' : 'outlined'
+  
+  return (
+    <Button
+      size={buttonSize}
+      variant={buttonVariant}
+      onClick={onClick}
+      className={`adaptive-button ${variant}`}
+    >
+      {children}
+    </Button>
+  )
+})
+```
+
+### Mensagens Centralizadas
+SEMPRE usar mensagens centralizadas para i18n e adaptadas por perfil:
+```typescript
+// ✅ Correto - Mensagens adaptadas por perfil
+const { t } = useTranslation()
+const { profile } = useUserProfile()
+
+// Mensagem específica do perfil ou fallback genérico
+const message = t(`${profile}.user.profile`) || t('user.profile')
+return <Typography>{message}</Typography>
+
+// ❌ Incorreto
+return <Typography>Perfil do Usuário</Typography>
+```
+
+### Estrutura de Mensagens por Perfil
+```typescript
+// shared/messages/pt-BR.ts
+export const messages = {
+  common: { save: 'Salvar', cancel: 'Cancelar' },
+  empregador: {
+    user: { profile: 'Meu Perfil', dashboard: 'Painel Principal' },
+    tasks: { create: 'Criar Tarefa', manage: 'Gerenciar Tarefas' }
+  },
+  empregado: {
+    user: { profile: 'Meu Perfil', dashboard: 'Minhas Tarefas' },
+    tasks: { start: 'Iniciar Tarefa', complete: 'Tarefa Concluída' }
+  },
+  familiar: {
+    user: { profile: 'Perfil Familiar', dashboard: 'Acompanhamento' },
+    tasks: { view: 'Ver Tarefas', help: 'Ajudar' }
+  }
+  // ... outros perfis
+}
+```
+
+## 🎨 Padrões de UI/UX
+
+### Material-UI v2
+- Usar componentes MUI como base
+- Preferir ícones e cards sobre botões simples
+- Tema centralizado e consistente
+
+### Acessibilidade
+- ARIA labels obrigatórios
+- Navegação por teclado
+- Contraste adequado
+- Screen reader friendly
+
+## 🏗️ Estrutura de Arquivos
+
+### Nomenclatura
+- **kebab-case**: arquivos e diretórios (`user-profile.tsx`)
+- **PascalCase**: componentes React (`UserProfile.tsx`)
+- **camelCase**: variáveis e funções (`getUserData()`)
+- **snake_case**: banco de dados (`user_profiles`)
+
+### Organização
+```
+components/
+├── ComponentName/
+│   ├── ComponentName.tsx
+│   ├── ComponentName.types.ts
+│   ├── ComponentName.test.tsx
+│   └── index.ts
+```
+
+## 🧪 Testes
+
+### Obrigatórios
+- Testes unitários para todos os componentes
+- Testes de integração para serviços
+- Coverage mínimo de 80%
+
+### Padrão de Teste
+```typescript
+describe('ComponentName', () => {
+  it('should render correctly', () => {
+    render(<ComponentName />)
+    expect(screen.getByText('Expected Text')).toBeInTheDocument()
+  })
+})
+```
+
+## 🔒 Segurança
+
+### Validação
+- Sempre validar inputs do usuário
+- Sanitizar dados antes de salvar
+- Verificar permissões antes de operações
+
+### Dados Sensíveis
+- Nunca expor dados sensíveis no frontend
+- Usar variáveis de ambiente para configurações
+- Criptografar dados sensíveis
+
+## 📱 Multiplataforma
+
+### Compartilhamento de Código
+- Usar pacotes compartilhados (`packages/`)
+- Lógica de negócio reutilizável
+- Tipos compartilhados
+
+### Específico por Plataforma
+- Componentes específicos quando necessário
+- Adaptações de UI para cada plataforma
+- APIs nativas quando apropriado
+
+## 🚀 Performance
+
+### Otimizações
+- Lazy loading de componentes pesados
+- Memoização com React.memo, useMemo, useCallback
+- Bundle splitting por rotas
+- Otimização de imagens
+
+### Monitoramento
+- Métricas de performance
+- Error tracking
+- Analytics de uso
+
+## 🌍 Internacionalização
+
+### Estrutura
+```typescript
+// shared/messages/pt-BR.ts
+export const messages = {
+  common: { save: 'Salvar', cancel: 'Cancelar' },
+  user: { profile: 'Perfil do Usuário' }
+}
+```
+
+### Uso
+```typescript
+const { t } = useTranslation()
+return <Button>{t('common.save')}</Button>
+```
+
+## 📚 Documentação
+
+### JSDoc Obrigatório
+```typescript
+/**
+ * Calcula o total de vendas
+ * @param startDate - Data de início
+ * @param endDate - Data de fim
+ * @returns Promise com o total
+ * @throws {ValidationError} Se as datas forem inválidas
+ */
+export const calculateSalesTotal = async (
+  startDate: Date,
+  endDate: Date
+): Promise<number> => {
+  // implementação
+}
+```
+
+## 🔄 Commits
+
+### Padrão Semântico
+```bash
+feat: adiciona autenticação com Google
+fix: corrige validação de e-mail
+docs: atualiza documentação da API
+refactor: refatora componente UserCard
+test: adiciona testes para UserService
+```
+
+## ⚠️ Proibições
+
+### NUNCA fazer:
+- Usar `any` no TypeScript
+- Hardcodar strings no código
+- Duplicar código
+- Criar arquivos maiores que 300 linhas
+- Esquecer tooltips nos inputs
+- Ignorar testes
+- Usar imports relativos longos
+- Esquecer cabeçalhos nos arquivos
+- **Ignorar o perfil do usuário**
+- **Criar interfaces genéricas sem adaptação**
+- **Usar temas padrão para todos os perfis**
+- **Implementar funcionalidades sem validar permissões**
+
+## ✅ Checklist de Qualidade
+
+Antes de finalizar qualquer código:
+- [ ] Cabeçalho incluído
+- [ ] Imports com "@/"
+- [ ] Sem uso de `any`
+- [ ] Tooltips implementados
+- [ ] Mensagens centralizadas
+- [ ] **Perfil do usuário considerado**
+- [ ] **Componente adaptativo implementado**
+- [ ] **Tema específico aplicado**
+- [ ] **Permissões validadas**
+- [ ] Testes escritos
+- [ ] ESLint sem erros
+- [ ] TypeScript sem erros
+- [ ] Documentação atualizada
+
+## 🎯 Prioridades
+
+1. **Qualidade do código** acima de velocidade
+2. **Reutilização** acima de duplicação
+3. **Acessibilidade** para todos os usuários
+4. **Performance** em todas as plataformas
+5. **Segurança** em todas as operações
+6. **Testes** para todas as funcionalidades
+7. **Documentação** para manutenibilidade 

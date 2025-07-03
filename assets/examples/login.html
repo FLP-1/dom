@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de login */
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: var(--text-dark);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-logo span {
+            font-size: 40px;
+            color: var(--neutral-color);
+        }
+        
+        .login-mote {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .login-chamamento {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--tertiary-color);
+        }
+        
+        .login-form {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .form-check input {
+            margin-right: 10px;
+        }
+        
+        .login-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .biometric-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .biometric-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .biometric-button i {
+            font-size: 30px;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .biometric-button span {
+            font-size: 12px;
+        }
+        
+        .login-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .login-links a {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .terms-text {
+            font-size: 12px;
+            text-align: center;
+            color: var(--tertiary-color);
+        }
+        
+        .terms-text a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">
+                <span class="material-icons">home</span>
+            </div>
+            <h1 class="login-mote">Simplifique a gestão do trabalho doméstico</h1>
+            <p class="login-chamamento">Comece a simplificar sua gestão hoje!</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" name="cpf" placeholder="Digite seu CPF" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+            </div>
+            
+            <div class="form-check">
+                <input type="checkbox" id="lembrar" name="lembrar">
+                <label for="lembrar">Lembrar usuário e senha</label>
+            </div>
+            
+            <div class="login-buttons">
+                <button type="submit" class="btn-primary">Entrar</button>
+                <button type="button" class="btn-outline" onclick="window.close()">Sair</button>
+            </div>
+        </form>
+        
+        <div class="biometric-buttons">
+            <div class="biometric-button" onclick="autenticarBiometria('facial')">
+                <i class="material-icons">face</i>
+                <span>Reconhecimento Facial</span>
+            </div>
+            <div class="biometric-button" onclick="autenticarBiometria('digital')">
+                <i class="material-icons">fingerprint</i>
+                <span>Reconhecimento Digital</span>
+            </div>
+        </div>
+        
+        <div class="login-links">
+            <a href="#" onclick="esqueceuSenha()">Esqueci minha senha</a>
+            <a href="perfil.html">Quero me cadastrar</a>
+        </div>
+        
+        <p class="terms-text">
+            Entrando você concorda/aceita com o <a href="termo-uso.html">Termo de Uso</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cpf = document.getElementById('cpf').value;
+            const senha = document.getElementById('senha').value;
+            
+            // Simulação de autenticação
+            if (cpf && senha) {
+                // Simulando sucesso de autenticação
+                alert('Login realizado com sucesso!');
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Usuário ou senha incorretos. Por favor, tente novamente.');
+            }
+        });
+        
+        function autenticarBiometria(tipo) {
+            // Simulação de autenticação biométrica
+            const autenticado = Math.random() > 0.3; // 70% de chance de sucesso para simulação
+            
+            if (autenticado) {
+                alert('Autenticação por ' + (tipo === 'facial' ? 'reconhecimento facial' : 'digital') + ' realizada com sucesso!');
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Não foi possível reconhecer sua ' + (tipo === 'facial' ? 'face' : 'digital') + '. Tente novamente ou use outro método de login.');
+            }
+        }
+        
+        function esqueceuSenha() {
+            const cpf = prompt('Digite seu CPF para receber uma nova senha:');
+            
+            if (cpf) {
+                // Simulação de verificação de CPF
+                if (cpf.length === 11) {
+                    alert('Uma nova senha foi enviada para o celular e email cadastrados. A senha tem validade de 1 hora.');
+                } else {
+                    alert('CPF não cadastrado. Por favor, verifique o número digitado.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

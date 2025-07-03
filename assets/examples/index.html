@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Gestão do Trabalho Doméstico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela inicial */
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .splash-container {
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            background-color: var(--neutral-color);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .splash-logo span {
+            font-size: 60px;
+            color: var(--primary-color);
+        }
+        
+        .splash-mote {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .splash-chamamento {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .biometric-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .biometric-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .biometric-button i {
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: var(--neutral-color);
+        }
+        
+        .terms-text {
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        .terms-text a {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="splash-logo">
+            <span class="material-icons">home</span>
+        </div>
+        <h1 class="splash-mote">Simplifique a gestão do trabalho doméstico</h1>
+        <p class="splash-chamamento">Comece a simplificar sua gestão hoje!</p>
+        
+        <div class="auth-buttons">
+            <button class="btn-primary" onclick="window.location.href='login.html'">Entrar</button>
+            <button class="btn-outline" onclick="window.close()">Sair</button>
+        </div>
+        
+        <div class="biometric-buttons">
+            <div class="biometric-button" onclick="autenticarBiometria('facial')">
+                <i class="material-icons">face</i>
+                <span>Reconhecimento Facial</span>
+            </div>
+            <div class="biometric-button" onclick="autenticarBiometria('digital')">
+                <i class="material-icons">fingerprint</i>
+                <span>Reconhecimento Digital</span>
+            </div>
+        </div>
+        
+        <p class="terms-text">
+            Entrando você concorda/aceita com o <a href="termo-uso.html">Termo de Uso</a>
+        </p>
+    </div>
+
+    <script>
+        function autenticarBiometria(tipo) {
+            // Simulação de autenticação biométrica
+            const autenticado = Math.random() > 0.3; // 70% de chance de sucesso para simulação
+            
+            if (autenticado) {
+                alert('Autenticação por ' + (tipo === 'facial' ? 'reconhecimento facial' : 'digital') + ' realizada com sucesso!');
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Não foi possível reconhecer sua ' + (tipo === 'facial' ? 'face' : 'digital') + '. Tente novamente ou use outro método de login.');
+            }
+        }
+    </script>
+</body>
+</html>

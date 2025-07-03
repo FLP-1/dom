@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDOM - Compras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/main.css">
+    <style>
+        /* Estilos específicos para a tela de compras */
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: var(--neutral-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .user-avatar i {
+            color: var(--neutral-color);
+        }
+        
+        .user-nickname {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .compras-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .compras-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .compras-filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .compras-filter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .compras-filter label {
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        
+        .compras-filter select {
+            padding: 8px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .compras-search {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .compras-search input {
+            padding: 8px 8px 8px 35px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+        
+        .compras-search i {
+            position: absolute;
+            left: 10px;
+            color: var(--tertiary-color);
+        }
+        
+        .grupos-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .grupos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .grupos-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .grupos-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .grupo-item {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .grupo-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .grupo-item.active {
+            background-color: rgba(46, 64, 83, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .grupo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--tertiary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .grupo-icon i {
+            color: var(--neutral-color);
+        }
+        
+        .grupo-info {
+            flex: 1;
+        }
+        
+        .grupo-name {
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        
+        .grupo-count {
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .grupo-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .grupo-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .grupo-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .grupo-action.delete {
+            color: var(--accent-color);
+        }
+        
+        .grupo-action.delete:hover {
+            color: var(--accent-light);
+        }
+        
+        .produtos-section {
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .produtos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .produtos-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .produtos-list {
+            margin-bottom: 20px;
+        }
+        
+        .produto-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .produto-item:last-child {
+            border-bottom: none;
+        }
+        
+        .produto-item:hover {
+            background-color: rgba(46, 64, 83, 0.05);
+        }
+        
+        .produto-check {
+            margin-right: 15px;
+        }
+        
+        .produto-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .produto-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .produto-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .produto-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .produto-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .produto-title.completed {
+            text-decoration: line-through;
+            color: var(--tertiary-color);
+        }
+        
+        .produto-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--tertiary-color);
+        }
+        
+        .produto-detail {
+            display: flex;
+            align-items: center;
+        }
+        
+        .produto-detail i {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+        
+        .produto-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .produto-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+        
+        .produto-action:hover {
+            color: var(--primary-light);
+        }
+        
+        .produto-action.delete {
+            color: var(--accent-color);
+        }
+        
+        .produto-action.delete:hover {
+            color: var(--accent-light);
+        }
+        
+        .produtos-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .produtos-summary {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        /* Modal para adicionar/editar grupo */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select,
+        .modal-form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tertiary-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .modal-form-group input:focus,
+        .modal-form-group select:focus,
+        .modal-form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Modal para visualizar foto */
+        .photo-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--neutral-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .photo-modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .photo-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .photo-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--tertiary-color);
+        }
+        
+        .photo-modal-body {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .photo-modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 4px;
+        }
+        
+        .photo-modal-info {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 14px;
+            color: var(--tertiary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <i class="material-icons" onclick="window.location.href='dashboard.html'">arrow_back</i>
+            <span class="header-title">Compras</span>
+        </div>
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="material-icons">person</i>
+            </div>
+            <span class="user-nickname">João Silva</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="compras-header">
+            <h1 class="compras-title">Lista de Compras</h1>
+            <div class="compras-filters">
+                <div class="compras-filter">
+                    <label for="statusCompra">Status:</label>
+                    <select id="statusCompra">
+                        <option value="">Todos</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="comprado">Comprados</option>
+                    </select>
+                </div>
+                <div class="compras-search">
+                    <i class="material-icons">search</i>
+                    <input type="text" placeholder="Buscar produto...">
+                </div>
+            </div>
+        </div>
+        
+        <div class="grupos-section">
+            <div class="grupos-header">
+                <h2 class="grupos-title">Grupos de Compras</h2>
+                <button class="btn-secondary" onclick="abrirModalNovoGrupo()">
+                    <i class="material-icons">add</i> Novo Grupo
+                </button>
+            </div>
+            
+            <div class="grupos-list">
+                <div class="grupo-item active" onclick="selecionarGrupo(1)">
+                    <div class="grupo-icon">
+                        <i class="material-icons">shopping_cart</i>
+                    </div>
+                    <div class="grupo-info">
+                        <div class="grupo-name">Supermercado</div>
+                        <div class="grupo-count">12 itens</div>
+                    </div>
+                    <div class="grupo-actions">
+                        <button class="grupo-action" onclick="editarGrupo(1, event)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grupo-item" onclick="selecionarGrupo(2)">
+                    <div class="grupo-icon">
+                        <i class="material-icons">spa</i>
+                    </div>
+                    <div class="grupo-info">
+                        <div class="grupo-name">Hortifruti</div>
+                        <div class="grupo-count">8 itens</div>
+                    </div>
+                    <div class="grupo-actions">
+                        <button class="grupo-action" onclick="editarGrupo(2, event)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="grupo-action delete" onclick="excluirGrupo(2, event)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grupo-item" onclick="selecionarGrupo(3)">
+                    <div class="grupo-icon">
+                        <i class="material-icons">cake</i>
+                    </div>
+                    <div class="grupo-info">
+                        <div class="grupo-name">Aniversário</div>
+                        <div class="grupo-count">5 itens</div>
+                    </div>
+                    <div class="grupo-actions">
+                        <button class="grupo-action" onclick="editarGrupo(3, event)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="grupo-action delete" onclick="excluirGrupo(3, event)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grupo-item" onclick="selecionarGrupo(4)">
+                    <div class="grupo-icon">
+                        <i class="material-icons">outdoor_grill</i>
+                    </div>
+                    <div class="grupo-info">
+                        <div class="grupo-name">Churrasco</div>
+                        <div class="grupo-count">7 itens</div>
+                    </div>
+                    <div class="grupo-actions">
+                        <button class="grupo-action" onclick="editarGrupo(4, event)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="grupo-action delete" onclick="excluirGrupo(4, event)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="produtos-section">
+            <div class="produtos-header">
+                <h2 class="produtos-title">Produtos - Supermercado</h2>
+                <button class="btn-primary" onclick="abrirModalNovoProduto()">
+                    <i class="material-icons">add</i> Novo Produto
+                </button>
+            </div>
+            
+            <div class="produtos-list">
+                <div class="produto-item">
+                    <div class="produto-check">
+                        <input type="checkbox" onchange="marcarProduto(this, 1)">
+                    </div>
+                    <div class="produto-photo" onclick="visualizarFoto(1)">
+                        <img src="https://via.placeholder.com/60" alt="Foto do produto">
+                    </div>
+                    <div class="produto-content">
+                        <div class="produto-title">Arroz Integral</div>
+                        <div class="produto-details">
+                            <div class="produto-detail">
+                                <i class="material-icons">inventory_2</i>
+                                <span>2 pacotes</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">branding_watermark</i>
+                                <span>Marca: Tio João</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">person</i>
+                                <span>Responsável: João Silva</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">event</i>
+                                <span>Adicionado: 05/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="produto-actions">
+                        <button class="produto-action" onclick="editarProduto(1)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="produto-action delete" onclick="excluirProduto(1)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="produto-item">
+                    <div class="produto-check">
+                        <input type="checkbox" checked onchange="marcarProduto(this, 2)">
+                    </div>
+                    <div class="produto-photo" onclick="visualizarFoto(2)">
+                        <img src="https://via.placeholder.com/60" alt="Foto do produto">
+                    </div>
+                    <div class="produto-content">
+                        <div class="produto-title completed">Feijão Carioca</div>
+                        <div class="produto-details">
+                            <div class="produto-detail">
+                                <i class="material-icons">inventory_2</i>
+                                <span>3 pacotes</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">branding_watermark</i>
+                                <span>Marca: Camil</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">person</i>
+                                <span>Responsável: Maria Oliveira</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">event</i>
+                                <span>Adicionado: 04/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="produto-actions">
+                        <button class="produto-action" onclick="editarProduto(2)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="produto-action delete" onclick="excluirProduto(2)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="produto-item">
+                    <div class="produto-check">
+                        <input type="checkbox" onchange="marcarProduto(this, 3)">
+                    </div>
+                    <div class="produto-photo" onclick="visualizarFoto(3)">
+                        <img src="https://via.placeholder.com/60" alt="Foto do produto">
+                    </div>
+                    <div class="produto-content">
+                        <div class="produto-title">Óleo de Soja</div>
+                        <div class="produto-details">
+                            <div class="produto-detail">
+                                <i class="material-icons">inventory_2</i>
+                                <span>2 garrafas</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">branding_watermark</i>
+                                <span>Marca: Liza</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">person</i>
+                                <span>Responsável: João Silva</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">event</i>
+                                <span>Adicionado: 05/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="produto-actions">
+                        <button class="produto-action" onclick="editarProduto(3)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="produto-action delete" onclick="excluirProduto(3)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="produto-item">
+                    <div class="produto-check">
+                        <input type="checkbox" checked onchange="marcarProduto(this, 4)">
+                    </div>
+                    <div class="produto-photo" onclick="visualizarFoto(4)">
+                        <img src="https://via.placeholder.com/60" alt="Foto do produto">
+                    </div>
+                    <div class="produto-content">
+                        <div class="produto-title completed">Açúcar Refinado</div>
+                        <div class="produto-details">
+                            <div class="produto-detail">
+                                <i class="material-icons">inventory_2</i>
+                                <span>1 pacote</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">branding_watermark</i>
+                                <span>Marca: União</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">person</i>
+                                <span>Responsável: Carlos Santos</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">event</i>
+                                <span>Adicionado: 03/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="produto-actions">
+                        <button class="produto-action" onclick="editarProduto(4)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="produto-action delete" onclick="excluirProduto(4)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="produto-item">
+                    <div class="produto-check">
+                        <input type="checkbox" onchange="marcarProduto(this, 5)">
+                    </div>
+                    <div class="produto-photo" onclick="visualizarFoto(5)">
+                        <img src="https://via.placeholder.com/60" alt="Foto do produto">
+                    </div>
+                    <div class="produto-content">
+                        <div class="produto-title">Café em Pó</div>
+                        <div class="produto-details">
+                            <div class="produto-detail">
+                                <i class="material-icons">inventory_2</i>
+                                <span>2 pacotes</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">branding_watermark</i>
+                                <span>Marca: Pilão</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">person</i>
+                                <span>Responsável: Ana Ferreira</span>
+                            </div>
+                            <div class="produto-detail">
+                                <i class="material-icons">event</i>
+                                <span>Adicionado: 05/04/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="produto-actions">
+                        <button class="produto-action" onclick="editarProduto(5)">
+                            <i class="material-icons">edit</i>
+                        </button>
+                        <button class="produto-action delete" onclick="excluirProduto(5)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="produtos-footer">
+                <div class="produtos-summary">
+                    Total: 5 produtos (2 comprados, 3 pendentes)
+                </div>
+                <button class="btn-outline" onclick="window.location.href='dashboard.html'">
+                    Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar grupo -->
+    <div class="modal-backdrop" id="grupoModalBackdrop"></div>
+    <div class="modal" id="grupoModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="grupoModalTitle">Novo Grupo de Compras</h2>
+            <button class="modal-close" onclick="fecharModal('grupo')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="grupoForm">
+                <div class="modal-form-group">
+                    <label for="grupoNome">Nome do Grupo*</label>
+                    <input type="text" id="grupoNome" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="grupoIcone">Ícone</label>
+                    <select id="grupoIcone">
+                        <option value="shopping_cart">Carrinho de Compras</option>
+                        <option value="spa">Hortifruti</option>
+                        <option value="cake">Aniversário</option>
+                        <option value="outdoor_grill">Churrasco</option>
+                        <option value="local_pharmacy">Farmácia</option>
+                        <option value="pets">Pet Shop</option>
+                        <option value="home">Casa</option>
+                        <option value="school">Escola</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="grupoDescricao">Descrição</label>
+                    <textarea id="grupoDescricao" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('grupo')">Cancelar</button>
+            <button class="btn-primary" onclick="salvarGrupo()">Salvar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar produto -->
+    <div class="modal-backdrop" id="produtoModalBackdrop"></div>
+    <div class="modal" id="produtoModal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="produtoModalTitle">Novo Produto</h2>
+            <button class="modal-close" onclick="fecharModal('produto')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="produtoForm">
+                <div class="modal-form-group">
+                    <label for="produtoNome">Nome do Produto*</label>
+                    <input type="text" id="produtoNome" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoQuantidade">Quantidade*</label>
+                    <input type="number" id="produtoQuantidade" min="1" value="1" required>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoUnidade">Unidade*</label>
+                    <select id="produtoUnidade" required>
+                        <option value="unidade">Unidade</option>
+                        <option value="pacote">Pacote</option>
+                        <option value="kg">Kg</option>
+                        <option value="g">g</option>
+                        <option value="l">L</option>
+                        <option value="ml">ml</option>
+                        <option value="caixa">Caixa</option>
+                        <option value="garrafa">Garrafa</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoMarca">Marca</label>
+                    <input type="text" id="produtoMarca">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoResponsavel">Responsável</label>
+                    <select id="produtoResponsavel">
+                        <option value="1">João Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Carlos Santos</option>
+                        <option value="4">Ana Ferreira</option>
+                    </select>
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoFoto">Foto</label>
+                    <input type="file" id="produtoFoto" accept="image/*">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="produtoObservacao">Observação</label>
+                    <textarea id="produtoObservacao" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="fecharModal('produto')">Cancelar</button>
+            <button class="btn-primary" onclick="salvarProduto()">Salvar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para visualizar foto -->
+    <div class="modal-backdrop" id="photoModalBackdrop"></div>
+    <div class="photo-modal" id="photoModal">
+        <div class="photo-modal-header">
+            <h2 class="photo-modal-title" id="photoModalTitle">Foto do Produto</h2>
+            <button class="photo-modal-close" onclick="fecharModal('photo')">&times;</button>
+        </div>
+        <div class="photo-modal-body">
+            <img src="https://via.placeholder.com/600x400" alt="Foto do produto" class="photo-modal-image" id="photoModalImage">
+            <div class="photo-modal-info" id="photoModalInfo">
+                Arroz Integral - Marca: Tio João
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Controle dos modais
+        function abrirModalNovoGrupo() {
+            document.getElementById('grupoModalTitle').textContent = 'Novo Grupo de Compras';
+            document.getElementById('grupoForm').reset();
+            document.getElementById('grupoModalBackdrop').style.display = 'block';
+            document.getElementById('grupoModal').style.display = 'block';
+        }
+        
+        function abrirModalNovoProduto() {
+            document.getElementById('produtoModalTitle').textContent = 'Novo Produto';
+            document.getElementById('produtoForm').reset();
+            document.getElementById('produtoModalBackdrop').style.display = 'block';
+            document.getElementById('produtoModal').style.display = 'block';
+        }
+        
+        function fecharModal(tipo) {
+            document.getElementById(tipo + 'ModalBackdrop').style.display = 'none';
+            document.getElementById(tipo + 'Modal').style.display = 'none';
+        }
+        
+        function editarGrupo(id, event) {
+            // Evitar que o clique propague para o elemento pai
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            document.getElementById('grupoModalTitle').textContent = 'Editar Grupo de Compras';
+            
+            // Simulação de carregamento de dados do grupo
+            const grupos = {
+                1: {
+                    nome: 'Supermercado',
+                    icone: 'shopping_cart',
+                    descricao: 'Itens para comprar no supermercado mensalmente.'
+                },
+                2: {
+                    nome: 'Hortifruti',
+                    icone: 'spa',
+                    descricao: 'Frutas, legumes e verduras para comprar semanalmente.'
+                },
+                3: {
+                    nome: 'Aniversário',
+                    icone: 'cake',
+                    descricao: 'Itens para a festa de aniversário.'
+                },
+                4: {
+                    nome: 'Churrasco',
+                    icone: 'outdoor_grill',
+                    descricao: 'Itens para o churrasco do final de semana.'
+                }
+            };
+            
+            const grupo = grupos[id];
+            
+            if (grupo) {
+                document.getElementById('grupoNome').value = grupo.nome;
+                document.getElementById('grupoIcone').value = grupo.icone;
+                document.getElementById('grupoDescricao').value = grupo.descricao;
+            }
+            
+            document.getElementById('grupoModalBackdrop').style.display = 'block';
+            document.getElementById('grupoModal').style.display = 'block';
+        }
+        
+        function editarProduto(id) {
+            document.getElementById('produtoModalTitle').textContent = 'Editar Produto';
+            
+            // Simulação de carregamento de dados do produto
+            const produtos = {
+                1: {
+                    nome: 'Arroz Integral',
+                    quantidade: 2,
+                    unidade: 'pacote',
+                    marca: 'Tio João',
+                    responsavel: '1',
+                    observacao: 'Pacote de 1kg'
+                },
+                2: {
+                    nome: 'Feijão Carioca',
+                    quantidade: 3,
+                    unidade: 'pacote',
+                    marca: 'Camil',
+                    responsavel: '2',
+                    observacao: 'Pacote de 1kg'
+                },
+                3: {
+                    nome: 'Óleo de Soja',
+                    quantidade: 2,
+                    unidade: 'garrafa',
+                    marca: 'Liza',
+                    responsavel: '1',
+                    observacao: 'Garrafa de 900ml'
+                },
+                4: {
+                    nome: 'Açúcar Refinado',
+                    quantidade: 1,
+                    unidade: 'pacote',
+                    marca: 'União',
+                    responsavel: '3',
+                    observacao: 'Pacote de 1kg'
+                },
+                5: {
+                    nome: 'Café em Pó',
+                    quantidade: 2,
+                    unidade: 'pacote',
+                    marca: 'Pilão',
+                    responsavel: '4',
+                    observacao: 'Pacote de 500g'
+                }
+            };
+            
+            const produto = produtos[id];
+            
+            if (produto) {
+                document.getElementById('produtoNome').value = produto.nome;
+                document.getElementById('produtoQuantidade').value = produto.quantidade;
+                document.getElementById('produtoUnidade').value = produto.unidade;
+                document.getElementById('produtoMarca').value = produto.marca;
+                document.getElementById('produtoResponsavel').value = produto.responsavel;
+                document.getElementById('produtoObservacao').value = produto.observacao;
+            }
+            
+            document.getElementById('produtoModalBackdrop').style.display = 'block';
+            document.getElementById('produtoModal').style.display = 'block';
+        }
+        
+        function visualizarFoto(id) {
+            // Simulação de carregamento de dados da foto
+            const fotos = {
+                1: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Arroz Integral - Marca: Tio João'
+                },
+                2: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Feijão Carioca - Marca: Camil'
+                },
+                3: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Óleo de Soja - Marca: Liza'
+                },
+                4: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Açúcar Refinado - Marca: União'
+                },
+                5: {
+                    url: 'https://via.placeholder.com/600x400',
+                    info: 'Café em Pó - Marca: Pilão'
+                }
+            };
+            
+            const foto = fotos[id];
+            
+            if (foto) {
+                document.getElementById('photoModalTitle').textContent = 'Foto do Produto';
+                document.getElementById('photoModalImage').src = foto.url;
+                document.getElementById('photoModalInfo').textContent = foto.info;
+            }
+            
+            document.getElementById('photoModalBackdrop').style.display = 'block';
+            document.getElementById('photoModal').style.display = 'block';
+        }
+        
+        function salvarGrupo() {
+            const nome = document.getElementById('grupoNome').value;
+            
+            if (!nome) {
+                alert('Por favor, informe o nome do grupo.');
+                return;
+            }
+            
+            // Simulação de salvamento
+            alert('Grupo salvo com sucesso!');
+            fecharModal('grupo');
+        }
+        
+        function salvarProduto() {
+            const nome = document.getElementById('produtoNome').value;
+            const quantidade = document.getElementById('produtoQuantidade').value;
+            const unidade = document.getElementById('produtoUnidade').value;
+            
+            if (!nome || !quantidade || !unidade) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Simulação de salvamento
+            alert('Produto salvo com sucesso!');
+            fecharModal('produto');
+        }
+        
+        function excluirGrupo(id, event) {
+            // Evitar que o clique propague para o elemento pai
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            // Simulação de exclusão
+            if (confirm('Tem certeza que deseja excluir este grupo de compras?')) {
+                alert('Grupo excluído com sucesso!');
+            }
+        }
+        
+        function excluirProduto(id) {
+            // Simulação de exclusão
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                alert('Produto excluído com sucesso!');
+            }
+        }
+        
+        function marcarProduto(checkbox, id) {
+            const produtoTitle = checkbox.parentElement.nextElementSibling.nextElementSibling.querySelector('.produto-title');
+            
+            if (checkbox.checked) {
+                produtoTitle.classList.add('completed');
+            } else {
+                produtoTitle.classList.remove('completed');
+            }
+        }
+        
+        function selecionarGrupo(id) {
+            // Remover classe active de todos os itens
+            document.querySelectorAll('.grupo-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao item clicado
+            event.currentTarget.classList.add('active');
+            
+            // Simulação de carregamento de grupo
+            const grupos = {
+                1: 'Supermercado',
+                2: 'Hortifruti',
+                3: 'Aniversário',
+                4: 'Churrasco'
+            };
+            
+            // Atualizar título da seção de produtos
+            document.querySelector('.produtos-title').textContent = 'Produtos - ' + grupos[id];
+            
+            // Simulação de carregamento de produtos do grupo
+            alert('Carregando produtos do grupo: ' + grupos[id]);
+        }
+        
+        // Filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('statusCompra').addEventListener('change', filtrarProdutos);
+            
+            function filtrarProdutos() {
+                const status = document.getElementById('statusCompra').value;
+                
+                // Simulação de filtro
+                alert(`Filtrando produtos: Status=${status || 'Todos'}`);
+            }
+        });
+    </script>
+</body>
+</html>
