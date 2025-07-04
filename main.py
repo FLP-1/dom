@@ -22,13 +22,31 @@ from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
+import base64
+import re
 
 # Importar módulos do domcore
 import sys
 sys.path.append('domcore')
 
-from domcore.core.db import SessionLocal, engine
-from domcore.models.user import UserDB, UserSessionDB
+# Adicionar logs para debug
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+try:
+    from domcore.core.db import SessionLocal, engine
+    logger.info("✅ Engine importado com sucesso")
+except Exception as e:
+    logger.error(f"❌ Erro ao importar engine: {e}")
+    raise
+
+try:
+    from domcore.models.user import UserDB, UserSessionDB
+    logger.info("✅ Modelos importados com sucesso")
+except Exception as e:
+    logger.error(f"❌ Erro ao importar modelos: {e}")
+    raise
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -81,11 +99,21 @@ class TokenData(BaseModel):
 
 # Dependency para obter sessão do banco
 def get_db():
-    db = SessionLocal()
+    logger.info("🔄 Iniciando get_db()")
     try:
-        yield db
-    finally:
-        db.close()
+        logger.info("🔄 Criando SessionLocal...")
+        db = SessionLocal()
+        logger.info("✅ SessionLocal criado com sucesso")
+        try:
+            yield db
+        finally:
+            logger.info("🔄 Fechando sessão...")
+            db.close()
+            logger.info("✅ Sessão fechada")
+    except Exception as e:
+        logger.error(f"❌ Erro em get_db(): {type(e).__name__}: {str(e)}")
+        logger.error(f"Detalhes do erro: {e}")
+        raise
 
 # Funções utilitárias
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -103,9 +131,14 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def clean_cpf(cpf: str) -> str:
+    """Remove qualquer máscara do CPF"""
+    return re.sub(r'\D', '', cpf)
+
 def get_user_by_cpf(db: Session, cpf: str):
-    """Busca usuário por CPF no banco de dados"""
-    return db.query(UserDB).filter(UserDB.cpf == cpf, UserDB.ativo == True).first()
+    """Busca usuário por CPF limpo no banco de dados"""
+    cpf_clean = clean_cpf(cpf)
+    return db.query(UserDB).filter(UserDB.cpf == cpf_clean, UserDB.ativo == True).first()
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     """Obtém usuário atual baseado no token"""
@@ -147,7 +180,7 @@ async def health_check():
         "version": "1.0.0"
     }
 
-@app.post("/api/auth/login", response_model=UserResponse)
+@app.post("/api/auth/login")
 async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     """Endpoint de login"""
     # Buscar usuário no banco
@@ -158,44 +191,45 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
             detail="CPF ou senha incorretos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Verificar senha
     if not verify_password(user_credentials.password, user.senha_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="CPF ou senha incorretos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Atualizar último login
     user.ultimo_login = datetime.utcnow()
     db.commit()
-    
-    # Criar token de acesso
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.cpf, "profile": user.perfil}, 
+        data={"sub": user.cpf, "profile": user.perfil},
         expires_delta=access_token_expires
     )
-    
-    return UserResponse(
-        id=user.id,
-        name=user.nome,
-        cpf=user.cpf,
-        profile=user.perfil,
-        access_token=access_token
-    )
+    photo_b64 = base64.b64encode(user.user_photo).decode() if user.user_photo else None
+    return {
+        "id": user.id,
+        "name": user.nome,
+        "nickname": user.nickname,
+        "cpf": user.cpf,
+        "profile": user.perfil,
+        "email": user.email,
+        "celular": user.celular,
+        "user_photo": photo_b64,
+        "access_token": access_token
+    }
 
 @app.get("/api/auth/me")
 async def get_current_user_info(current_user: UserDB = Depends(get_current_user)):
     """Obtém informações do usuário atual"""
+    photo_b64 = base64.b64encode(current_user.user_photo).decode() if current_user.user_photo else None
     return {
         "id": current_user.id,
         "name": current_user.nome,
+        "nickname": current_user.nickname,
         "cpf": current_user.cpf,
         "profile": current_user.perfil,
         "email": current_user.email,
-        "telefone": current_user.telefone
+        "celular": current_user.celular,
+        "user_photo": photo_b64
     }
 
 @app.get("/api/dashboard/stats")

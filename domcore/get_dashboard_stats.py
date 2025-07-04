@@ -13,8 +13,8 @@ Script para buscar estatísticas do dashboard do banco de dados
 import sys
 import json
 from datetime import datetime
-from services.dashboard_service import DashboardService
-from core.enums import UserProfile
+from domcore.services.dashboard_service import DashboardService
+from domcore.core.enums import UserProfile
 
 def main():
     """Função principal do script"""

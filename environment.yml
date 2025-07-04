@@ -1,34 +1,35 @@
-name: domv1
+name: dom-v1
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.11
-  - jupyter
-  - notebook
-  - ipywidgets
-  - pandas
-  - numpy
-  - matplotlib
-  - seaborn
-  - plotly
-  - fastapi
-  - uvicorn
-  - pydantic
-  - sqlalchemy
-  - alembic
-  - psycopg2
-  - pytest
-  - black
-  - flake8
-  - mypy
-  - python-dotenv
   - pip
   - pip:
-      - python-jose[cryptography]
-      - passlib[bcrypt]
-      - python-multipart
-      - pytest-asyncio
-      - pytest-cov
-      - sphinx
-      - sphinx-rtd-theme 
+    - fastapi==0.104.1
+    - uvicorn==0.24.0
+    - sqlalchemy==2.0.23
+    - psycopg2-binary==2.9.9
+    - pydantic==2.5.0
+    - python-multipart==0.0.6
+    - python-jose[cryptography]==3.3.0
+    - passlib[bcrypt]==1.7.4
+    - python-dotenv==1.0.0
+    - requests==2.31.0
+    - aiofiles==23.2.1
+    - pillow==10.1.0
+    - pandas==2.1.4
+    - numpy==1.25.2
+    - matplotlib==3.8.2
+    - seaborn==0.13.0
+    - jupyter==1.0.0
+    - ipykernel==6.27.1
+
+# Configurações do Banco de Dados
+# Host: localhost
+# Porta: 5432
+# Banco: db_dom
+# Usuário: user_dom
+# Senha: FLP*2025
+# Encoding: UTF-8
+# Collation: Portuguese_Brazil, 1252 

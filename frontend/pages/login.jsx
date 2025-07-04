@@ -273,8 +273,9 @@ const LoginPage = () => {
       if (response.ok) {
         const data = await response.json()
         // Salva o token e perfil
-        localStorage.setItem('userToken', data.token || 'mock-token')
+        localStorage.setItem('userToken', data.access_token || 'mock-token')
         localStorage.setItem('userProfile', data.profile || 'empregador')
+        localStorage.setItem('userData', JSON.stringify(data))
         // Redireciona para o dashboard
         router.push(`/dashboard?profile=${data.profile || 'empregador'}`)
       } else {

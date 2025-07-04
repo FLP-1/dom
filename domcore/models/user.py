@@ -11,7 +11,7 @@ Modelo de Usuário - Entidade principal do sistema
 
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON
+from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, Field, validator
 from ..core.enums import UserProfile, Platform
@@ -24,10 +24,11 @@ class UserDB(Base):
     __tablename__ = "users"
     
     id = Column(String(50), primary_key=True, index=True)
-    cpf = Column(String(14), unique=True, index=True, nullable=False)
+    cpf = Column(String(11), unique=True, index=True, nullable=False)
     nome = Column(String(100), nullable=False)
-    email = Column(String(100), unique=True, index=True, nullable=False)
-    telefone = Column(String(20), nullable=True)
+    nickname = Column(String(20), nullable=True, comment="Nome curto/apelido do usuário")
+    email = Column(String(100), index=True, nullable=False)
+    celular = Column(String(20), nullable=True)
     perfil = Column(String(20), nullable=False, default="empregador")
     senha_hash = Column(String(255), nullable=False)
     ativo = Column(Boolean, default=True)
@@ -36,6 +37,7 @@ class UserDB(Base):
     ultimo_login = Column(DateTime, nullable=True)
     plataformas = Column(JSON, default=list)
     permissoes = Column(JSON, default=list)
+    user_photo = Column(LargeBinary, nullable=True, comment="Foto do usuário (binário)")
 
 class UserSessionDB(Base):
     """Tabela de sessões de usuário"""
@@ -57,8 +59,9 @@ class UserBase(BaseModel):
     
     cpf: str = Field(..., description="CPF do usuário")
     nome: str = Field(..., min_length=2, max_length=100, description="Nome completo")
+    nickname: Optional[str] = Field(None, max_length=50, description="Nome curto/apelido do usuário")
     email: str = Field(..., description="Email do usuário")
-    telefone: Optional[str] = Field(None, description="Telefone do usuário")
+    celular: Optional[str] = Field(None, description="Celular do usuário")
     perfil: UserProfile = Field(..., description="Perfil do usuário")
     
     @validator('cpf')
@@ -94,8 +97,9 @@ class UserUpdate(BaseModel):
     """Modelo para atualização de usuário"""
     
     nome: Optional[str] = Field(None, min_length=2, max_length=100)
+    nickname: Optional[str] = Field(None, max_length=50)
     email: Optional[str] = Field(None)
-    telefone: Optional[str] = Field(None)
+    celular: Optional[str] = Field(None)
     perfil: Optional[UserProfile] = Field(None)
     ativo: Optional[bool] = Field(None)
     
@@ -128,8 +132,9 @@ class User(UserBase):
                 "id": "user_123",
                 "cpf": "123.456.789-01",
                 "nome": "Maria Silva Santos",
+                "nickname": "Maria",
                 "email": "maria@exemplo.com",
-                "telefone": "(11) 99999-9999",
+                "celular": "(11) 99999-9999",
                 "perfil": "empregador",
                 "ativo": True,
                 "data_criacao": "2024-12-19T10:00:00",

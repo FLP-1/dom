@@ -9,13 +9,32 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from .config import config
 import os
+
+# Usar configurações do config.py
+db_config = config.database
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://user_dom:FLP*2025@localhost:5432/dom"
+    f"postgresql://{db_config.username}:{db_config.password}@{db_config.host}:{db_config.port}/{db_config.database}"
 )
 
-engine = create_engine(DATABASE_URL, echo=True, future=True)
+# Configurações de encoding mais robustas
+connect_args = {
+    "client_encoding": "utf8",
+    "options": "-c client_encoding=utf8",
+    "connect_timeout": 10
+}
+
+engine = create_engine(
+    DATABASE_URL, 
+    echo=True, 
+    future=True, 
+    connect_args=connect_args,
+    pool_size=db_config.pool_size,
+    max_overflow=db_config.max_overflow
+)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base() 

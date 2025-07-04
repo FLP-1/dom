@@ -112,53 +112,100 @@ function MenuItem(props) {
 }
 
 function User(props) {
-  const { name, cpf, profile } = props;
+  const { name, nickname, cpf, profile, user_photo, email, celular } = props;
   const { setUser } = props;
+  const { t } = useTranslation('common');
 
   // Função para formatar CPF
   const formatCPF = (cpf) => {
+    if (typeof cpf !== 'string') return ''
     const numbers = cpf.replace(/\D/g, '')
     return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
   }
 
+  // Função para formatar celular
+  const formatCelular = (celular) => {
+    if (typeof celular !== 'string') return ''
+    const numbers = celular.replace(/\D/g, '')
+    if (numbers.length === 11) {
+      return `(${numbers.slice(0,2)}) ${numbers.slice(2,7)}-${numbers.slice(7)}`
+    }
+    return celular
+  }
+
+  // Usar nickname se disponível, senão usar primeira palavra do nome
+  const displayName = nickname || (typeof name === 'string' && name ? name.split(' ')[0] : 'Usuário')
+  const welcomeLabel = t('dashboard.welcome')
+
   return (
     <Grid item xs={12} md={6} lg={4}>
-      <Card sx={getProfileCardStyle(profile)}>
-        <CardContent>
-          <Box display="flex" alignItems="center" gap={2} mb={2}>
-            <Avatar sx={{ 
-              bgcolor: props.getProfileColor(profile),
-              width: props.getProfileAvatarSize(profile),
-              height: props.getProfileAvatarSize(profile)
-            }}>
-              {name.charAt(0).toUpperCase()}
-            </Avatar>
-            <Box>
-              <Typography 
-                variant="h6" 
-                gutterBottom
-                sx={{ fontSize: props.getProfileFontSize(profile, 'large') }}
-              >
-                {t('dashboard.welcome', 'Bem-vindo')}, {name}! 👋
-              </Typography>
-              <Chip 
-                label={profile.charAt(0).toUpperCase() + profile.slice(1)}
-                size="small"
-                sx={{ 
-                  bgcolor: props.getProfileColor(profile),
-                  color: 'white',
-                  fontSize: props.getProfileFontSize(profile, 'small')
-                }}
+      <Card sx={{
+        ...getProfileCardStyle(profile),
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+          {/* Foto à esquerda */}
+          <Box display="flex" alignItems="center" justifyContent="center" minWidth={96} minHeight={96}>
+            {user_photo ? (
+              <Avatar
+                src={`data:image/jpeg;base64,${user_photo}`}
+                alt={displayName}
+                sx={{ width: 96, height: 96, border: `2px solid ${getProfileColor(profile)}`, bgcolor: '#fff' }}
               />
-            </Box>
+            ) : (
+              <Avatar
+                sx={{ bgcolor: getProfileColor(profile), width: 96, height: 96, fontSize: 40 }}
+              >
+                {displayName.charAt(0).toUpperCase()}
+              </Avatar>
+            )}
           </Box>
-          <Typography 
-            variant="body2" 
-            color="text.secondary"
-            sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
-          >
-            CPF: {formatCPF(cpf)}
-          </Typography>
+          {/* Dados à direita */}
+          <Box flex={1} display="flex" flexDirection="column" justifyContent="center" gap={1}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontSize: getProfileFontSize(profile, 'large') }}
+            >
+              {welcomeLabel} {displayName}
+            </Typography>
+            <Chip
+              label={typeof profile === 'string' && profile ? profile.charAt(0).toUpperCase() + profile.slice(1) : 'Perfil'}
+              size="small"
+              sx={{
+                bgcolor: getProfileColor(profile),
+                color: 'white',
+                fontSize: getProfileFontSize(profile, 'small')
+              }}
+            />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontSize: getProfileFontSize(profile, 'small') }}
+            >
+              CPF: {formatCPF(cpf)}
+            </Typography>
+            {email && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontSize: getProfileFontSize(profile, 'small') }}
+              >
+                Email: {email}
+              </Typography>
+            )}
+            {celular && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontSize: getProfileFontSize(profile, 'small') }}
+              >
+                Celular: {formatCelular(celular)}
+              </Typography>
+            )}
+          </Box>
         </CardContent>
       </Card>
     </Grid>
@@ -168,6 +215,11 @@ function User(props) {
 function TaskStatsCard(props) {
   const { task_stats, profile } = props;
   const router = useRouter();
+  const { t } = useTranslation('common');
+
+  console.log('PROFILE:', profile)
+  console.log('KEY BUSCADA TASKS:', `${profile}.dashboard.tasks`)
+  console.log('VALOR TASKS:', t(`${profile}.dashboard.tasks`))
 
   const handleAddTask = () => {
     router.push('/tasks/new')
@@ -177,10 +229,31 @@ function TaskStatsCard(props) {
     router.push('/tasks')
   }
 
+  const totalMsg = t(`${profile}.dashboard.total`)
+  const totalLabel = t(`${profile}.dashboard.total`, t('dashboard.total'))
+  const completedMsg = t(`${profile}.dashboard.completed`)
+  const completedLabel = t(`${profile}.dashboard.completed`, t('dashboard.completed'))
+  const progressMsg = t(`${profile}.dashboard.progress`)
+  const progressLabel = t(`${profile}.dashboard.progress`, t('dashboard.progress'))
+  const urgentMsg = t(`${profile}.dashboard.urgent`)
+  const urgentLabel = t(`${profile}.dashboard.urgent`, t('dashboard.urgent'))
+  const viewUrgentMsg = t(`${profile}.dashboard.view_urgent`)
+  const viewUrgentLabel = t(`${profile}.dashboard.view_urgent`, t('dashboard.view_urgent'))
+  const addTaskMsg = t(`${profile}.dashboard.add_task`)
+  const addTaskLabel = t(`${profile}.dashboard.add_task`, t('dashboard.add_task'))
+
+  const tasksMsg = t(`${profile}.dashboard.tasks`)
+  const tasksLabel = t(`${profile}.dashboard.tasks`, t('dashboard.tasks'))
+
   return (
     <Grid item xs={12} md={6} lg={4}>
-      <Card sx={getProfileCardStyle(profile)}>
-        <CardContent>
+      <Card sx={{
+        ...getProfileCardStyle(profile),
+        height: '100%', // Garantir que todos os cards tenham a mesma altura
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <AssignmentIcon sx={{ color: props.getProfileColor(profile) }} />
@@ -188,10 +261,10 @@ function TaskStatsCard(props) {
               variant="h6" 
               sx={{ fontSize: props.getProfileFontSize(profile, 'medium') }}
             >
-              {t('dashboard.tasks', 'Tarefas')}
+              {tasksLabel}
             </Typography>
             </Box>
-            <Tooltip title={t('dashboard.add_task', 'Adicionar nova tarefa')} arrow>
+            <Tooltip title={addTaskLabel} arrow>
               <span>
                 <IconButton
                   size="small"
@@ -224,7 +297,7 @@ function TaskStatsCard(props) {
                   color="text.secondary"
                   sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
                 >
-                  {t('dashboard.total', 'Total')}
+                  {totalLabel}
                 </Typography>
               </Box>
             </Grid>
@@ -244,7 +317,7 @@ function TaskStatsCard(props) {
                   color="text.secondary"
                   sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
                 >
-                  {t('dashboard.completed', 'Concluídas')}
+                  {completedLabel}
                 </Typography>
               </Box>
             </Grid>
@@ -257,7 +330,7 @@ function TaskStatsCard(props) {
                   variant="body2"
                   sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
                 >
-                  {t('dashboard.progress', 'Progresso')}
+                  {progressLabel}
                 </Typography>
                 <Typography 
                   variant="body2"
@@ -299,6 +372,11 @@ function TaskStatsCard(props) {
 function NotificationStatsCard(props) {
   const { notification_stats, profile } = props;
   const router = useRouter();
+  const { t } = useTranslation('common');
+
+  console.log('PROFILE:', profile)
+  console.log('KEY BUSCADA NOTIFICATIONS:', `${profile}.dashboard.notifications`)
+  console.log('VALOR NOTIFICATIONS:', t(`${profile}.dashboard.notifications`))
 
   const handleAddNotification = () => {
     router.push('/notifications/new')
@@ -308,10 +386,29 @@ function NotificationStatsCard(props) {
     router.push('/notifications?filter=urgent')
   }
 
+  const totalMsg = t(`${profile}.dashboard.total`)
+  const totalLabel = t(`${profile}.dashboard.total`, t('dashboard.total'))
+  const completedMsg = t(`${profile}.dashboard.completed`)
+  const completedLabel = t(`${profile}.dashboard.completed`, t('dashboard.completed'))
+  const urgentMsg = t(`${profile}.dashboard.urgent`)
+  const urgentLabel = t(`${profile}.dashboard.urgent`, t('dashboard.urgent'))
+  const viewUrgentMsg = t(`${profile}.dashboard.view_urgent`)
+  const viewUrgentLabel = t(`${profile}.dashboard.view_urgent`, t('dashboard.view_urgent'))
+  const addNotificationMsg = t(`${profile}.dashboard.add_notification`)
+  const addNotificationLabel = t(`${profile}.dashboard.add_notification`, t('dashboard.add_notification'))
+
+  const notificationsMsg = t(`${profile}.dashboard.notifications`)
+  const notificationsLabel = t(`${profile}.dashboard.notifications`, t('dashboard.notifications'))
+
   return (
     <Grid item xs={12} md={6} lg={4}>
-      <Card sx={getProfileCardStyle(profile)}>
-        <CardContent>
+      <Card sx={{
+        ...getProfileCardStyle(profile),
+        height: '100%', // Garantir que todos os cards tenham a mesma altura
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <NotificationsIcon sx={{ color: props.getProfileColor(profile) }} />
@@ -319,10 +416,10 @@ function NotificationStatsCard(props) {
                 variant="h6"
                 sx={{ fontSize: props.getProfileFontSize(profile, 'medium') }}
               >
-                Notificações
+                {notificationsLabel}
               </Typography>
             </Box>
-            <Tooltip title="Adicionar nova notificação" arrow>
+            <Tooltip title={addNotificationLabel} arrow>
               <IconButton
                 size="small"
                 onClick={handleAddNotification}
@@ -343,10 +440,8 @@ function NotificationStatsCard(props) {
               <Box textAlign="center">
                 <Typography 
                   variant="h4" 
-                  sx={{ 
-                    color: '#2196f3',
-                    fontSize: props.getProfileFontSize(profile, 'xlarge')
-                  }}
+                  color="primary"
+                  sx={{ fontSize: props.getProfileFontSize(profile, 'xlarge') }}
                 >
                   {notification_stats?.total_notificacoes || 0}
                 </Typography>
@@ -355,7 +450,7 @@ function NotificationStatsCard(props) {
                   color="text.secondary"
                   sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
                 >
-                  Total
+                  {totalLabel}
                 </Typography>
               </Box>
             </Grid>
@@ -364,45 +459,46 @@ function NotificationStatsCard(props) {
                 <Typography 
                   variant="h4" 
                   sx={{ 
-                    color: '#f44336',
+                    color: '#ff9800',
                     fontSize: props.getProfileFontSize(profile, 'xlarge')
                   }}
                 >
-                  {notification_stats?.notificacoes_nao_lidas || 0}
+                  {notification_stats?.notificacoes_urgentes || 0}
                 </Typography>
                 <Typography 
                   variant="body2" 
                   color="text.secondary"
                   sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
                 >
-                  Não lidas
+                  {urgentLabel}
                 </Typography>
               </Box>
             </Grid>
           </Grid>
           
-          {notification_stats?.notificacoes_urgentes > 0 && (
-            <Box 
-              mt={2} 
-              p={1} 
-              bgcolor="#fff3e0" 
-              borderRadius={1}
-              onClick={handleUrgentClick}
-              sx={{ 
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: '#ffe0b2'
-                }
-              }}
-            >
-              <Box display="flex" alignItems="center" gap={1}>
-                <WarningIcon sx={{ color: '#ff9800', fontSize: 16 }} />
-                <Typography 
-                  variant="body2"
-                  sx={{ fontSize: props.getProfileFontSize(profile, 'small') }}
-                >
-                  {notification_stats.notificacoes_urgentes} notificação(s) urgente(s)
-                </Typography>
+          {notification_stats?.notificacoes_urgentes && notification_stats.notificacoes_urgentes > 0 && (
+            <Box mt={2}>
+              <Box 
+                onClick={handleUrgentClick}
+                sx={{ 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    opacity: 0.8
+                  }
+                }}
+              >
+                <Chip 
+                  icon={<WarningIcon />}
+                  label={`${viewUrgentLabel} (${notification_stats.notificacoes_urgentes})`}
+                  color="warning"
+                  variant="outlined"
+                  sx={{ 
+                    fontSize: props.getProfileFontSize(profile, 'small'),
+                    '&:hover': {
+                      bgcolor: '#ff980010'
+                    }
+                  }}
+                />
               </Box>
             </Box>
           )}
@@ -413,9 +509,11 @@ function NotificationStatsCard(props) {
 }
 
 function HeaderInfo({ profile, getProfileFontSize }) {
+  const { t } = useTranslation('common');
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [wifiStatus, setWifiStatus] = useState('online')
-  const [location, setLocation] = useState('Carregando...')
+  const [connectionType, setConnectionType] = useState('')
+  const [location, setLocation] = useState(t('dashboard.location_loading', 'Carregando...'))
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
     // Atualizar hora a cada segundo
@@ -423,29 +521,46 @@ function HeaderInfo({ profile, getProfileFontSize }) {
       setCurrentTime(new Date())
     }, 1000)
 
-    // Simular status do wifi
-    const wifiInterval = setInterval(() => {
-      setWifiStatus(navigator.onLine ? 'online' : 'offline')
-    }, 5000)
+    // Detectar tipo de conexão
+    if (navigator.connection) {
+      const type = navigator.connection.type || navigator.connection.effectiveType
+      if (type === 'wifi') setConnectionType('Wi-Fi')
+      else if (type === 'cellular') setConnectionType('Rede móvel')
+      else setConnectionType(type || 'Online')
+    } else {
+      setConnectionType(navigator.onLine ? 'Online' : 'Offline')
+    }
 
-    // Obter geolocalização
+    // Obter geolocalização e buscar endereço
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords
-          setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`)
+          try {
+            // Buscar endereço via proxy Next.js
+            const response = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`)
+            const data = await response.json()
+            if (data && data.display_name) {
+              setLocation(data.display_name)
+            } else {
+              setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`)
+            }
+          } catch (e) {
+            setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`)
+          }
         },
         (error) => {
-          setLocation('Não disponível')
+          setLocation(t('dashboard.location_unavailable', 'Não disponível'))
         }
       )
     } else {
-      setLocation('Não suportado')
+      setLocation(t('dashboard.location_unsupported', 'Não suportado'))
     }
+
+    setIsClient(true)
 
     return () => {
       clearInterval(timeInterval)
-      clearInterval(wifiInterval)
     }
   }, [])
 
@@ -454,15 +569,6 @@ function HeaderInfo({ profile, getProfileFontSize }) {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
-    })
-  }
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
     })
   }
 
@@ -476,30 +582,27 @@ function HeaderInfo({ profile, getProfileFontSize }) {
         color: '#ffffff80'
       }}
     >
+      {isClient && (
+        <Box display="flex" alignItems="center" gap={1}>
+          <ScheduleIcon sx={{ fontSize: 16 }} />
+          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
+            {formatTime(currentTime)}
+          </Typography>
+        </Box>
+      )}
       <Box display="flex" alignItems="center" gap={1}>
-        <ScheduleIcon sx={{ fontSize: 16 }} />
+        <WifiIcon sx={{ fontSize: 16, color: connectionType === 'Offline' ? '#f44336' : '#4caf50' }} />
         <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
-          {formatTime(currentTime)}
+          {connectionType}
         </Typography>
       </Box>
-      
-      <Box display="flex" alignItems="center" gap={1}>
-        <WifiIcon 
-          sx={{ 
-            fontSize: 16,
-            color: wifiStatus === 'online' ? '#4caf50' : '#f44336'
-          }} 
-        />
-        <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
-          {wifiStatus === 'online' ? 'Online' : 'Offline'}
-        </Typography>
-      </Box>
-      
       <Box display="flex" alignItems="center" gap={1}>
         <LocationIcon sx={{ fontSize: 16 }} />
-        <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
-          {location}
-        </Typography>
+        <Tooltip title={location}>
+          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small'), maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {location}
+          </Typography>
+        </Tooltip>
       </Box>
     </Box>
   )
@@ -574,8 +677,14 @@ export default function Dashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const { t } = useTranslation('common')
   
-  const [profile, setProfile] = useState('empregador')
-  const [user, setUser] = useState({ name: 'Usuário DOM', cpf: '00000000000', profile: 'empregador' })
+  const profile = router.query.profile || 'empregador'
+  const [user, setUser] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const data = localStorage.getItem('userData');
+      if (data) return JSON.parse(data);
+    }
+    return { name: '', nickname: '', cpf: '', user_photo: '', profile: '' };
+  })
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState('dashboard')
   const [dashboardStats, setDashboardStats] = useState(null)
@@ -606,13 +715,14 @@ export default function Dashboard() {
   const drawer = (
     <Box>
       <Box sx={{ 
-        p: 2, 
         backgroundColor: getProfileColor(profile),
         color: '#ffffff',
         display: 'flex',
         alignItems: 'center',
-        gap: 2,
-        minHeight: 80
+        height: 64,
+        minHeight: 64,
+        px: 2, // padding horizontal
+        boxSizing: 'border-box',
       }}>
         <Image
           src="/Logo_CasaMaoCoracao.png"
@@ -625,12 +735,8 @@ export default function Dashboard() {
           <Typography variant="h6" noWrap sx={{ fontWeight: 'bold' }}>
             DOM
           </Typography>
-          <Typography variant="caption" sx={{ opacity: 0.8 }}>
-            {profile.charAt(0).toUpperCase() + profile.slice(1)}
-          </Typography>
         </Box>
       </Box>
-      
       <Divider />
       
       <List>
@@ -661,7 +767,7 @@ export default function Dashboard() {
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText 
-              primary="Sair do Sistema"
+              primary={t('dashboard.logout', 'Sair do Sistema')}
               sx={{ 
                 '& .MuiTypography-root': {
                   color: '#f44336',
@@ -674,6 +780,33 @@ export default function Dashboard() {
       </List>
     </Box>
   )
+
+  // Carregar dados do usuário se não estiverem no localStorage
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userData = localStorage.getItem('userData')
+      if (!userData || !JSON.parse(userData).name) {
+        try {
+          const token = localStorage.getItem('userToken')
+          if (token) {
+            const response = await fetch('/api/auth/me', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            })
+            if (response.ok) {
+              const userInfo = await response.json()
+              setUser(userInfo)
+              localStorage.setItem('userData', JSON.stringify(userInfo))
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao carregar dados do usuário:', error)
+        }
+      }
+    }
+    loadUserData()
+  }, [])
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -690,7 +823,7 @@ export default function Dashboard() {
         const data = await response.json()
         setDashboardStats(data)
       } catch (err) {
-        setStatsError('Erro ao carregar estatísticas do dashboard')
+        setStatsError(t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard'))
       } finally {
         setLoadingStats(false)
       }
@@ -703,7 +836,7 @@ export default function Dashboard() {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
           <Typography sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
-            Carregando dados do dashboard...
+            {t('dashboard.loading', 'Carregando dados do dashboard...')}
           </Typography>
         </Box>
       )
@@ -712,38 +845,60 @@ export default function Dashboard() {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
           <Typography color="error" sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
-            {statsError}
+            {t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard')}
           </Typography>
         </Box>
       )
     }
-    return (
-      <Grid container spacing={3}>
-        <User
-          name={user.name}
-          cpf={user.cpf}
-          profile={user.profile}
-          setUser={setUser}
-          getProfileColor={getProfileColor}
-          getProfileFontSize={getProfileFontSize}
-          getProfileAvatarSize={getProfileAvatarSize}
-        />
-        <TaskStatsCard
-          task_stats={dashboardStats?.task_stats}
-          profile={profile}
-          getProfileColor={getProfileColor}
-          getProfileFontSize={getProfileFontSize}
-          getProfileSpacing={getProfileSpacing}
-        />
-        <NotificationStatsCard
-          notification_stats={dashboardStats?.notification_stats}
-          profile={profile}
-          getProfileColor={getProfileColor}
-          getProfileFontSize={getProfileFontSize}
-          getProfileSpacing={getProfileSpacing}
-        />
-      </Grid>
-    )
+
+    switch (selectedMenu) {
+      case 'dashboard':
+        return (
+          <Grid container spacing={3}>
+            <User
+              name={user.name}
+              nickname={user.nickname}
+              cpf={user.cpf}
+              profile={profile}
+              user_photo={user.user_photo}
+              email={user.email}
+              celular={user.celular}
+              setUser={setUser}
+              getProfileColor={getProfileColor}
+              getProfileFontSize={getProfileFontSize}
+              getProfileAvatarSize={getProfileAvatarSize}
+            />
+            <TaskStatsCard
+              task_stats={dashboardStats?.task_stats}
+              profile={profile}
+              getProfileColor={getProfileColor}
+              getProfileFontSize={getProfileFontSize}
+              getProfileSpacing={getProfileSpacing}
+            />
+            <NotificationStatsCard
+              notification_stats={dashboardStats?.notification_stats}
+              profile={profile}
+              getProfileColor={getProfileColor}
+              getProfileFontSize={getProfileFontSize}
+              getProfileSpacing={getProfileSpacing}
+            />
+          </Grid>
+        )
+      case 'tasks':
+        if (typeof window !== 'undefined') window.location.href = '/tasks'
+        return null
+      case 'people':
+        if (typeof window !== 'undefined') window.location.href = '/people'
+        return null
+      case 'notifications':
+        if (typeof window !== 'undefined') window.location.href = '/notifications'
+        return null
+      case 'settings':
+        if (typeof window !== 'undefined') window.location.href = '/settings'
+        return null
+      default:
+        return null
+    }
   }
 
   return (
@@ -779,7 +934,7 @@ export default function Dashboard() {
                 mb: 0.5
               }}
             >
-              {filteredMenuItems.find(item => item.id === selectedMenu)?.label || 'Dashboard'}
+              {filteredMenuItems.find(item => item.id === selectedMenu)?.label || t('dashboard.dashboard', 'Dashboard')}
             </Typography>
             <HeaderInfo 
               profile={profile}

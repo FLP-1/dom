@@ -46,14 +46,16 @@ interface LoginRequest {
 interface LoginResponse {
   success: boolean
   message?: string
+  // Retornar todos os dados do usuário do backend
+  id?: string
+  name?: string
+  nickname?: string
+  cpf?: string
   profile?: string
-  token?: string
-  user?: {
-    id: string
-    name: string
-    cpf: string
-    profile: string
-  }
+  email?: string
+  celular?: string
+  user_photo?: string
+  access_token?: string
 }
 
 export default async function handler(
@@ -120,12 +122,18 @@ export default async function handler(
 
     const data = await response.json()
 
-    // Retorna sucesso com dados do usuário
+    // Retorna sucesso com todos os dados do usuário do backend
     return res.status(200).json({
       success: true,
+      id: data.id,
+      name: data.name,
+      nickname: data.nickname,
+      cpf: data.cpf,
       profile: data.profile,
-      token: data.token,
-      user: data.user
+      email: data.email,
+      celular: data.celular,
+      user_photo: data.user_photo,
+      access_token: data.access_token
     })
 
   } catch (error) {
