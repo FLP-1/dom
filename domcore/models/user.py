@@ -11,19 +11,23 @@ Modelo de Usuário - Entidade principal do sistema
 
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, LargeBinary
+from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, LargeBinary, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, Field, validator
 from ..core.enums import UserProfile, Platform
 from ..utils.cpf_validator import CPFValidator
 from ..core.db import Base
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+import uuid
+from sqlalchemy import func
 
 # Modelos SQLAlchemy para tabelas
 class UserDB(Base):
     """Tabela de usuários no banco de dados"""
     __tablename__ = "users"
     
-    id = Column(String(50), primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     cpf = Column(String(11), unique=True, index=True, nullable=False)
     nome = Column(String(100), nullable=False)
     nickname = Column(String(20), nullable=True, comment="Nome curto/apelido do usuário")
@@ -39,20 +43,28 @@ class UserDB(Base):
     permissoes = Column(JSON, default=list)
     user_photo = Column(LargeBinary, nullable=True, comment="Foto do usuário (binário)")
 
-class UserSessionDB(Base):
-    """Tabela de sessões de usuário"""
-    __tablename__ = "user_sessions"
+class UserSession(Base):
+    __tablename__ = 'user_sessions'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
+    session_token = Column(String, nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    expires_at = Column(DateTime)
+    active_context_group_id = Column(UUID(as_uuid=True), ForeignKey('groups.id'))
+    active_context_role = Column(String)
+    user_agent = Column(String)
+    ip_address = Column(String)
+
+class UserGroupRole(Base):
+    """Tabela de papéis dos usuários nos grupos (contextos)"""
+    __tablename__ = 'user_group_roles'
     
-    id = Column(String(50), primary_key=True, index=True)
-    user_id = Column(String(50), nullable=False, index=True)
-    token = Column(String(500), unique=True, nullable=False)
-    refresh_token = Column(String(500), unique=True, nullable=False)
-    expira_em = Column(DateTime, nullable=False)
-    plataforma = Column(String(20), nullable=False)
-    ip_address = Column(String(45), nullable=True)
-    user_agent = Column(Text, nullable=True)
-    ativo = Column(Boolean, default=True)
-    data_criacao = Column(DateTime, default=datetime.utcnow)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    group_id = Column(UUID(as_uuid=True), ForeignKey('groups.id'), nullable=False)
+    role = Column(String(50), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
 class UserBase(BaseModel):
     """Modelo base para usuário"""
@@ -160,24 +172,6 @@ class UserLogin(BaseModel):
         return CPFValidator.format_cpf(v)
 
 
-class UserSession(BaseModel):
-    """Modelo para sessão do usuário"""
-    
-    user_id: str = Field(..., description="ID do usuário")
-    token: str = Field(..., description="Token de acesso")
-    refresh_token: str = Field(..., description="Token de renovação")
-    expira_em: datetime = Field(..., description="Data de expiração")
-    plataforma: Platform = Field(..., description="Plataforma da sessão")
-    ip_address: Optional[str] = Field(None, description="Endereço IP")
-    user_agent: Optional[str] = Field(None, description="User Agent")
-    
-    class Config:
-        """Configuração do modelo"""
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
 class UserProfileInfo(BaseModel):
     """Informações do perfil do usuário"""
     
@@ -218,4 +212,7 @@ class UserProfileInfo(BaseModel):
             tema=tema,
             permissoes=permissoes_map.get(profile, []),
             funcionalidades=funcionalidades_map.get(profile, [])
-        ) 
+        )
+
+# Nota: Os relacionamentos SQLAlchemy serão configurados após a importação de todos os modelos
+# para evitar importações circulares. Ver arquivo de configuração de relacionamentos. 

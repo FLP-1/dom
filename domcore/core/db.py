@@ -29,7 +29,7 @@ connect_args = {
 
 engine = create_engine(
     DATABASE_URL, 
-    echo=True, 
+    echo=False, 
     future=True, 
     connect_args=connect_args,
     pool_size=db_config.pool_size,

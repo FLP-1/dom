@@ -82,16 +82,31 @@ async function getStatsFromDatabase(profile: string, user_id: string): Promise<D
     pythonProcess.on('close', (code) => {
       if (code !== 0) {
         console.error('Erro no script Python:', error)
+        console.error('Dados recebidos:', data)
         // Retorna dados simulados em caso de erro
         resolve(getFallbackStats(profile))
         return
       }
       
+      // Limpa dados de saída (remove logs do Python)
+      const cleanData = data.trim()
+      const jsonStart = cleanData.indexOf('{')
+      const jsonEnd = cleanData.lastIndexOf('}') + 1
+      
+      if (jsonStart === -1 || jsonEnd === 0) {
+        console.error('Nenhum JSON encontrado nos dados:', cleanData)
+        resolve(getFallbackStats(profile))
+        return
+      }
+      
+      const jsonData = cleanData.substring(jsonStart, jsonEnd)
+      
       try {
-        const stats = JSON.parse(data)
+        const stats = JSON.parse(jsonData)
         resolve(stats)
       } catch (parseError) {
         console.error('Erro ao fazer parse dos dados:', parseError)
+        console.error('Dados que falharam no parse:', jsonData)
         resolve(getFallbackStats(profile))
       }
     })

@@ -38,6 +38,7 @@ import {
 } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 import theme from '@/theme'
+import { useUser } from '@/context/UserContext'
 
 // Função simples de validação de CPF
 const validateCPF = (cpf) => {
@@ -191,6 +192,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
+  const { setUser } = useUser()
 
   // Carrossel de frases motivacionais
   const motivationalPhrases = getMotivationalPhrases(t)
@@ -203,6 +205,12 @@ const LoginPage = () => {
       return () => clearInterval(interval)
     }
   }, [motivationalPhrases.length])
+
+  // Limpa localStorage ao acessar a tela de login
+  useEffect(() => {
+    localStorage.removeItem('userToken')
+    localStorage.removeItem('userData')
+  }, [])
 
   // Máscara de CPF
   const formatCPF = (value) => {
@@ -272,11 +280,11 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json()
-        // Salva o token e perfil
-        localStorage.setItem('userToken', data.access_token || 'mock-token')
-        localStorage.setItem('userProfile', data.profile || 'empregador')
         localStorage.setItem('userData', JSON.stringify(data))
-        // Redireciona para o dashboard
+        if (data.access_token) {
+          localStorage.setItem('userToken', data.access_token)
+        }
+        setUser(data)
         router.push(`/dashboard?profile=${data.profile || 'empregador'}`)
       } else {
         const errorData = await response.json()

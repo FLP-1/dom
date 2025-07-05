@@ -69,6 +69,9 @@ import {
   getProfileAvatarSize,
   getProfileCardStyle 
 } from '@/theme/profile-themes'
+import MainLayout from '@/components/MainLayout'
+import { useUser } from '@/context/UserContext'
+import { useActiveContext } from '@/context/ActiveContext'
 
 function MenuItem(props) {
   const { id, label, icon, path, profiles } = props;
@@ -113,7 +116,6 @@ function MenuItem(props) {
 
 function User(props) {
   const { name, nickname, cpf, profile, user_photo, email, celular } = props;
-  const { setUser } = props;
   const { t } = useTranslation('common');
 
   // Função para formatar CPF
@@ -676,20 +678,46 @@ export default function Dashboard() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const { t } = useTranslation('common')
-  
-  const profile = router.query.profile || 'empregador'
-  const [user, setUser] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const data = localStorage.getItem('userData');
-      if (data) return JSON.parse(data);
-    }
-    return { name: '', nickname: '', cpf: '', user_photo: '', profile: '' };
-  })
+  const { user, loading } = useUser()
+  const { groupId, groupName, role, profile: activeProfile, refreshTrigger } = useActiveContext()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState('dashboard')
   const [dashboardStats, setDashboardStats] = useState(null)
   const [loadingStats, setLoadingStats] = useState(false)
   const [statsError, setStatsError] = useState(null)
+  
+  // Usar perfil do contexto ativo se disponível, senão usar perfil do usuário
+  const profile = activeProfile || user?.profile || 'empregador'
+  
+  // Função para buscar estatísticas do dashboard
+  const fetchStats = async () => {
+    setLoadingStats(true)
+    setStatsError(null)
+    try {
+      const token = localStorage.getItem('userToken')
+      const response = await fetch(`/api/dashboard/stats?profile=${profile}&user_id=user_123`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (!response.ok) throw new Error('Erro ao buscar estatísticas')
+      const data = await response.json()
+      setDashboardStats(data)
+    } catch (err) {
+      setStatsError(t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard'))
+    } finally {
+      setLoadingStats(false)
+    }
+  }
+
+  // Recarregar dados quando o contexto mudar ou quando refreshTrigger for acionado
+  useEffect(() => {
+    if (groupId && groupName && role) {
+      console.log('Contexto ativo mudou no dashboard:', { groupId, groupName, role, profile: activeProfile })
+      // Recarregar estatísticas do dashboard
+      fetchStats()
+    }
+  }, [groupId, groupName, role, activeProfile, refreshTrigger])
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -808,26 +836,8 @@ export default function Dashboard() {
     loadUserData()
   }, [])
 
+  // Carregar estatísticas iniciais
   useEffect(() => {
-    const fetchStats = async () => {
-      setLoadingStats(true)
-      setStatsError(null)
-      try {
-        const token = localStorage.getItem('userToken')
-        const response = await fetch(`/api/dashboard/stats?profile=${profile}&user_id=user_123`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-        if (!response.ok) throw new Error('Erro ao buscar estatísticas')
-        const data = await response.json()
-        setDashboardStats(data)
-      } catch (err) {
-        setStatsError(t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard'))
-      } finally {
-        setLoadingStats(false)
-      }
-    }
     fetchStats()
   }, [profile])
 
@@ -863,7 +873,6 @@ export default function Dashboard() {
               user_photo={user.user_photo}
               email={user.email}
               celular={user.celular}
-              setUser={setUser}
               getProfileColor={getProfileColor}
               getProfileFontSize={getProfileFontSize}
               getProfileAvatarSize={getProfileAvatarSize}
@@ -901,92 +910,16 @@ export default function Dashboard() {
     }
   }
 
+  if (loading) {
+    return <Box p={4}><Typography>Carregando...</Typography></Box>
+  }
+  if (!user) {
+    return <Box p={4}><Typography>Usuário não autenticado.</Typography></Box>
+  }
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar 
-        position="fixed" 
-        sx={{ 
-          backgroundColor: getProfileColor(profile),
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` }
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="abrir menu"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography 
-              variant="h6" 
-              component="div" 
-              sx={{ 
-                color: '#ffffff',
-                fontSize: getProfileFontSize(profile, 'large'),
-                fontWeight: 'bold',
-                mb: 0.5
-              }}
-            >
-              {filteredMenuItems.find(item => item.id === selectedMenu)?.label || t('dashboard.dashboard', 'Dashboard')}
-            </Typography>
-            <HeaderInfo 
-              profile={profile}
-              getProfileFontSize={getProfileFontSize}
-            />
-          </Box>
-        </Toolbar>
-      </AppBar>
-      
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: getProfileSpacing(profile) === 'compact' ? 2 : getProfileSpacing(profile) === 'generous' ? 4 : 3,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          mt: 8,
-          backgroundColor: '#f5f5f5',
-          minHeight: '100vh'
-        }}
-      >
-        {renderDashboardContent()}
-      </Box>
-    </Box>
+    <MainLayout profile={profile} userName={user.name} title="Dashboard">
+      {/* Conteúdo principal do dashboard, sem Drawer/AppBar locais */}
+      {renderDashboardContent()}
+    </MainLayout>
   )
 }

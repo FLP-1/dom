@@ -10,11 +10,11 @@ Servidor principal do sistema de gestão doméstica
 @author Equipe DOM v1
 """
 
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import uvicorn
 from datetime import datetime, timedelta
 import jwt
@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 import base64
 import re
+import uuid
 
 # Importar módulos do domcore
 import sys
@@ -42,7 +43,8 @@ except Exception as e:
     raise
 
 try:
-    from domcore.models.user import UserDB, UserSessionDB
+    from domcore.models.user import UserDB, UserSession, UserGroupRole
+    from domcore.models.group import Group
     logger.info("✅ Modelos importados com sucesso")
 except Exception as e:
     logger.error(f"❌ Erro ao importar modelos: {e}")
@@ -205,6 +207,20 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
         expires_delta=access_token_expires
     )
     photo_b64 = base64.b64encode(user.user_photo).decode() if user.user_photo else None
+    # Cria uma nova sessão (mantendo múltiplas sessões)
+    session = UserSession(
+        id=uuid.uuid4(),
+        user_id=user.id,
+        session_token=access_token,
+        created_at=datetime.utcnow(),
+        expires_at=datetime.utcnow() + access_token_expires,
+        active_context_group_id=None,
+        active_context_role=None,
+        user_agent=None,
+        ip_address=None
+    )
+    db.add(session)
+    db.commit()
     return {
         "id": user.id,
         "name": user.nome,
@@ -257,6 +273,60 @@ async def get_users(db: Session = Depends(get_db)):
         }
         for user in users
     ]
+
+# Endpoint: Buscar contextos disponíveis do usuário logado
+@app.get("/api/auth/contexts")
+async def get_user_contexts(current_user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Retorna todos os contextos (grupo/perfil) do usuário logado"""
+    roles = db.query(UserGroupRole).filter(UserGroupRole.user_id == current_user.id).all()
+    return [
+        {
+            'groupId': str(r.group_id),
+            'groupName': r.group.name if r.group else "Grupo não encontrado",
+            'role': r.role,
+            'profile': r.role  # ou mapeie para o profile correto
+        }
+        for r in roles
+    ]
+
+# Endpoint: Atualizar o contexto ativo da sessão
+class ContextUpdateRequest(BaseModel):
+    groupId: str
+    role: str
+
+@app.post("/api/auth/session/context")
+async def update_session_context(
+    req: Request,
+    context: ContextUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(get_current_user)
+):
+    """Atualiza o contexto ativo da sessão do usuário"""
+    # Recuperar token do header Authorization
+    token = req.headers.get('authorization', '').replace('Bearer ', '')
+    session = db.query(UserSession).filter_by(user_id=current_user.id, session_token=token).first()
+    if not session:
+        raise HTTPException(status_code=401, detail="Sessão não encontrada")
+    session.active_context_group_id = context.groupId
+    session.active_context_role = context.role
+    db.commit()
+    return {"ok": True, "active_context_group_id": context.groupId, "active_context_role": context.role}
+
+# Endpoint: Retornar o contexto ativo da sessão
+@app.get("/api/auth/session/context")
+async def get_session_context(
+    req: Request,
+    db: Session = Depends(get_db),
+    current_user: UserDB = Depends(get_current_user)
+):
+    token = req.headers.get('authorization', '').replace('Bearer ', '')
+    session = db.query(UserSession).filter_by(user_id=current_user.id, session_token=token).first()
+    if not session:
+        raise HTTPException(status_code=401, detail="Sessão não encontrada")
+    return {
+        "active_context_group_id": session.active_context_group_id,
+        "active_context_role": session.active_context_role
+    }
 
 if __name__ == "__main__":
     uvicorn.run(

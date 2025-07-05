@@ -123,6 +123,7 @@ export default async function handler(
     const data = await response.json()
 
     // Retorna sucesso com todos os dados do usuário do backend
+    // IMPORTANTE: No frontend, salve o access_token em localStorage como 'userToken' e os dados completos como 'userData'.
     return res.status(200).json({
       success: true,
       id: data.id,
