@@ -57,13 +57,38 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '../../../components/ui/Button'
 ```
 
-### Proibição de "any" e TypeScript
-```javascript
-// ❌ NUNCA fazer
-const data: any = response.data
+### ⚠️ PROIBIÇÃO TOTAL DE TYPESCRIPT - APENAS JAVASCRIPT
 
-// ✅ Sempre fazer
-const data = response.data
+**Esta regra é ABSOLUTA e deve ser seguida por TODOS os desenvolvedores e IAs.**
+
+#### ❌ PROIBIDO (NUNCA FAZER):
+- **TypeScript** (.ts, .tsx)
+- **Interfaces TypeScript** (`interface`, `type`)
+- **Tipagens explícitas** (`: string`, `: number`, `: boolean`)
+- **Generics** (`<T>`, `Array<T>`)
+- **Enums TypeScript** (`enum`)
+- **Imports de tipos** (`import type`)
+
+#### ✅ OBRIGATÓRIO (SEMPRE FAZER):
+- **JavaScript puro** (.js, .jsx)
+- **JSDoc para documentação** (opcional, mas recomendado)
+- **Comentários descritivos** para explicar estruturas de dados
+
+```javascript
+// ❌ NUNCA fazer (TypeScript)
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+}
+const data: UserData = response.data;
+
+// ✅ Sempre fazer (JavaScript puro)
+/**
+ * @param {Object} response - Resposta da API
+ * @returns {Object} Dados do usuário
+ */
+const data = response.data;
 ```
 
 ### Internacionalização Obrigatória
@@ -193,6 +218,7 @@ O projeto suporta três idiomas:
 - [Perfis de Usuários](docs/PERFIS_USUARIOS.md)
 - [Diretrizes de Desenvolvimento](docs/DIRETRIZES_DESENVOLVIMENTO.md)
 - [Exemplos de Componentes](docs/EXEMPLOS_COMPONENTES.md)
+- **[🚫 Regras JavaScript - PROIBIÇÃO TypeScript](docs/REGRAS_JAVASCRIPT.md)**
 
 ## 🤝 Contribuindo
 

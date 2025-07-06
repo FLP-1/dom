@@ -235,97 +235,165 @@ export const theme = createTheme({
 
 ---
 
-## 🔒 Tipagem e TypeScript
+## 🔒 JavaScript Puro - PROIBIÇÃO TOTAL DE TYPESCRIPT
 
-### Proibição de "any"
+### ⚠️ REGRA OBRIGATÓRIA: APENAS JAVASCRIPT
 
+**Esta regra é ABSOLUTA e deve ser seguida por TODOS os desenvolvedores e IAs.**
+
+### ❌ PROIBIDO (NUNCA FAZER):
+
+- **TypeScript** (.ts, .tsx)
+- **Interfaces TypeScript** (`interface`, `type`)
+- **Tipagens explícitas** (`: string`, `: number`, `: boolean`)
+- **Generics** (`<T>`, `Array<T>`)
+- **Enums TypeScript** (`enum`)
+- **Namespaces** (`namespace`)
+- **Decorators TypeScript** (`@Component`)
+- **Imports de tipos** (`import type`)
+
+### ✅ OBRIGATÓRIO (SEMPRE FAZER):
+
+- **JavaScript puro** (.js, .jsx)
+- **JSDoc para documentação** (opcional, mas recomendado)
+- **PropTypes** (se necessário para validação)
+- **Comentários descritivos** para explicar estruturas de dados
+
+### 📋 EXEMPLOS DE CONVERSÃO:
+
+#### ❌ TypeScript (PROIBIDO):
 ```typescript
-// ❌ NUNCA usar any
-const data: any = response.data;
-
-// ✅ Sempre tipar corretamente
-interface UserData {
+interface UserProps {
   id: string;
   name: string;
   email: string;
+  isActive?: boolean;
 }
 
-const data: UserData = response.data;
+const UserCard: React.FC<UserProps> = ({ id, name, email, isActive = true }) => {
+  return <div>{name}</div>;
+};
 ```
 
-### Interfaces Obrigatórias
+#### ✅ JavaScript (OBRIGATÓRIO):
+```javascript
+/**
+ * @fileoverview UserCard Component
+ * @description Card para exibição de informações do usuário
+ * @param {Object} props - Propriedades do componente
+ * @param {string} props.id - ID do usuário
+ * @param {string} props.name - Nome do usuário
+ * @param {string} props.email - Email do usuário
+ * @param {boolean} [props.isActive=true] - Status ativo do usuário
+ */
+const UserCard = ({ id, name, email, isActive = true }) => {
+  return <div>{name}</div>;
+};
+```
 
+### 🎯 VALIDAÇÃO DE DADOS:
+
+#### ❌ TypeScript (PROIBIDO):
 ```typescript
-// Sempre definir interfaces para props e dados
-interface ComponentProps {
-  title: string;
-  description?: string;
-  onAction: (id: string) => void;
-}
+const validateUser = (user: User): boolean => {
+  return user.id && user.name && user.email;
+};
+```
 
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
+#### ✅ JavaScript (OBRIGATÓRIO):
+```javascript
+/**
+ * Valida se o objeto usuário tem todas as propriedades obrigatórias
+ * @param {Object} user - Objeto do usuário
+ * @param {string} user.id - ID do usuário
+ * @param {string} user.name - Nome do usuário
+ * @param {string} user.email - Email do usuário
+ * @returns {boolean} True se válido, false caso contrário
+ */
+const validateUser = (user) => {
+  return user && user.id && user.name && user.email;
+};
+```
+
+### 🔧 CONFIGURAÇÃO DO PROJETO:
+
+#### Arquivos de Configuração:
+- **jsconfig.json** (não tsconfig.json)
+- **next.config.js** (não next.config.ts)
+- **package.json** sem dependências TypeScript
+
+#### Dependências PROIBIDAS:
+```json
+{
+  "typescript": "❌ REMOVER",
+  "@types/node": "❌ REMOVER", 
+  "@types/react": "❌ REMOVER",
+  "@types/react-dom": "❌ REMOVER",
+  "@typescript-eslint/eslint-plugin": "❌ REMOVER",
+  "@typescript-eslint/parser": "❌ REMOVER"
 }
 ```
 
-### Tipos Union e Literal
+### 🚨 CHECKLIST DE VERIFICAÇÃO:
 
-```typescript
-type UserRole = 'admin' | 'user' | 'moderator';
-type Status = 'pending' | 'approved' | 'rejected';
+Antes de cada commit, verificar:
+- [ ] Nenhum arquivo `.ts` ou `.tsx` criado
+- [ ] Nenhuma interface TypeScript (`interface`, `type`)
+- [ ] Nenhuma tipagem explícita (`: string`, `: number`)
+- [ ] Nenhum import de tipos (`import type`)
+- [ ] Apenas JavaScript puro em todos os arquivos
+- [ ] JSDoc usado para documentação (quando necessário)
 
-interface User {
-  id: string;
-  role: UserRole;
-  status: Status;
-}
+### 🤖 REGRA ESPECIAL PARA IAs:
+
+**ATENÇÃO: Se você é uma IA, NUNCA sugira ou implemente:**
+- TypeScript
+- Interfaces TypeScript
+- Tipagens explícitas
+- Arquivos .ts ou .tsx
+- Configurações TypeScript
+
+**SEMPRE use apenas:**
+- JavaScript puro (.js, .jsx)
+- JSDoc para documentação
+- Comentários descritivos
+- PropTypes se necessário
+
+### 📚 DOCUMENTAÇÃO E COMENTÁRIOS:
+
+```javascript
+/**
+ * @fileoverview Nome do arquivo
+ * @directory caminho/do/diretorio
+ * @description Descrição detalhada da função do arquivo
+ * @created 2024-12-19
+ * @lastModified 2024-12-19
+ * @author Nome do Desenvolvedor
+ */
+
+/**
+ * Função para buscar dados do usuário
+ * @param {string} userId - ID do usuário
+ * @param {Object} options - Opções de busca
+ * @param {boolean} [options.includeProfile=false] - Incluir perfil completo
+ * @returns {Promise<Object>} Dados do usuário
+ */
+const getUserData = async (userId, options = {}) => {
+  // implementação
+};
 ```
 
----
+### ⚡ PERFORMANCE E MANUTENIBILIDADE:
 
-## 🛡️ Regras de Tipagem, Props e Ambiente (Boas Práticas)
+**Vantagens do JavaScript puro:**
+- ✅ Build mais rápido
+- ✅ Menos dependências
+- ✅ Configuração mais simples
+- ✅ Menor curva de aprendizado
+- ✅ Compatibilidade total
+- ✅ Debugging mais direto
 
-### Tipagem e Uso de Hooks
-
-- Sempre utilize os nomes corretos das propriedades retornadas por hooks customizados.
-  - Exemplo: `useUserProfile` retorna `currentProfile`, não `profile`.
-- Se um hook for alterado, atualize todos os usos no projeto.
-
-### Props de Componentes
-
-- Props opcionais devem ser tipadas com `?` e, ao passar para componentes, nunca envie `undefined` explicitamente.
-  - Exemplo:
-    ```tsx
-    // Correto
-    trend={trend ? trend : undefined}
-    // Melhor ainda
-    {...(trend ? { trend } : {})}
-    ```
-- Sempre tipar arrays de dados (ex: `Record<string, StatData[]>`) para garantir segurança de acesso.
-
-### Valores Permitidos em Props
-
-- Só utilize valores permitidos pelo tipo da prop.
-  - Exemplo: Para cor de botão, use apenas `"primary" | "secondary" | "success" | "warning" | "info" | "error"`.
-
-### NODE_ENV
-
-- Nunca defina `NODE_ENV` em arquivos `.env` para projetos Next.js. O valor deve ser controlado pelo ambiente do terminal ou pelo comando de build.
-- Só use os valores: `development`, `production` ou `test`.
-
-### Fallbacks para Arrays
-
-- Sempre use fallback para arrays que podem ser `undefined` ao fazer `.map()`.
-  - Exemplo:
-    ```tsx
-    {(statsData ?? []).map(...)}
-    ```
-
-### Padronização de Componentes
-
-- Se um componente espera uma prop de cor, defina um valor padrão e documente os valores aceitos na interface.
+**Esta regra é FUNDAMENTAL para o projeto DOM v1.**
 
 ---
 
