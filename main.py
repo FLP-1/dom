@@ -44,8 +44,11 @@ except Exception as e:
 
 try:
     from domcore.models.user import UserDB, UserSession, UserGroupRole
-    from domcore.models.group import Group
-    logger.info("✅ Modelos importados com sucesso")
+    from domcore.models.group import Group, GroupCreate, GroupUpdate
+    from domcore.models.task import TaskCreate, TaskUpdate, Task, TaskStats
+    from domcore.services.task_service import TaskService
+    from domcore.services.group_service import GroupService
+    logger.info("✅ Modelos e serviços importados com sucesso")
 except Exception as e:
     logger.error(f"❌ Erro ao importar modelos: {e}")
     raise
@@ -327,6 +330,613 @@ async def get_session_context(
         "active_context_group_id": session.active_context_group_id,
         "active_context_role": session.active_context_role
     }
+
+# ============================================================================
+# ENDPOINTS DE TAREFAS
+# ============================================================================
+
+@app.get("/api/tasks")
+async def get_tasks(
+    status: Optional[str] = None,
+    categoria: Optional[str] = None,
+    responsavel_id: Optional[str] = None,
+    criador_id: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Lista tarefas com filtros"""
+    try:
+        from domcore.core.enums import TaskStatus
+        
+        # Converter string para enum se fornecido
+        status_enum = None
+        if status:
+            try:
+                status_enum = TaskStatus(status)
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Status inválido: {status}"
+                )
+        
+        tasks = TaskService.get_tasks(
+            db=db,
+            current_user=current_user,
+            status=status_enum,
+            categoria=categoria,
+            responsavel_id=responsavel_id,
+            criador_id=criador_id,
+            limit=limit,
+            offset=offset
+        )
+        
+        return {
+            "tasks": [task.dict() for task in tasks],
+            "total": len(tasks),
+            "limit": limit,
+            "offset": offset
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao listar tarefas: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+
+@app.get("/api/tasks/stats")
+async def get_task_stats(
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém estatísticas de tarefas"""
+    try:
+        stats = TaskService.get_task_stats(db=db, current_user=current_user)
+        return stats.dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao obter estatísticas: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+
+@app.get("/api/tasks/{task_id}")
+async def get_task(
+    task_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém uma tarefa específica"""
+    try:
+        task = TaskService.get_task(db=db, task_id=task_id, current_user=current_user)
+        return task.dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao buscar tarefa {task_id}: {e}")
+        if "não encontrada" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tarefa não encontrada"
+            )
+        elif "permissão" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.post("/api/tasks")
+async def create_task(
+    task_data: TaskCreate,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Cria uma nova tarefa"""
+    try:
+        task = TaskService.create_task(db=db, task_data=task_data, current_user=current_user)
+        return task.dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao criar tarefa: {e}")
+        if "permissão" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.put("/api/tasks/{task_id}")
+async def update_task(
+    task_id: str,
+    task_data: TaskUpdate,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Atualiza uma tarefa"""
+    try:
+        task = TaskService.update_task(db=db, task_id=task_id, task_data=task_data, current_user=current_user)
+        return task.dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar tarefa {task_id}: {e}")
+        if "não encontrada" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tarefa não encontrada"
+            )
+        elif "permissão" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.delete("/api/tasks/{task_id}")
+async def delete_task(
+    task_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Remove uma tarefa"""
+    try:
+        success = TaskService.delete_task(db=db, task_id=task_id, current_user=current_user)
+        return {"success": success, "message": "Tarefa removida com sucesso"}
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao deletar tarefa {task_id}: {e}")
+        if "não encontrada" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tarefa não encontrada"
+            )
+        elif "permissão" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.patch("/api/tasks/{task_id}/status")
+async def update_task_status(
+    task_id: str,
+    status: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Atualiza apenas o status de uma tarefa"""
+    try:
+        from domcore.core.enums import TaskStatus
+        
+        try:
+            status_enum = TaskStatus(status)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Status inválido: {status}"
+            )
+        
+        task = TaskService.update_task_status(db=db, task_id=task_id, status=status_enum, current_user=current_user)
+        return task.dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar status da tarefa {task_id}: {e}")
+        if "não encontrada" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tarefa não encontrada"
+            )
+        elif "permissão" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+# ============================================================================
+# ENDPOINTS DE GRUPOS
+# ============================================================================
+
+@app.get("/api/groups")
+async def get_groups(
+    search: Optional[str] = None,
+    tipo: Optional[str] = None,
+    ativo: Optional[bool] = None,
+    user_id: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Lista grupos com filtros"""
+    try:
+        result = GroupService.get_groups(
+            db=db,
+            skip=offset,
+            limit=limit,
+            search=search,
+            tipo=tipo,
+            ativo=ativo,
+            user_id=user_id or str(current_user.id)
+        )
+        return result
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao listar grupos: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor"
+        )
+
+@app.get("/api/groups/{group_id}")
+async def get_group(
+    group_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém um grupo específico"""
+    try:
+        group = GroupService.get_group(db=db, group_id=group_id)
+        return group.to_dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao buscar grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.post("/api/groups")
+async def create_group(
+    group_data: GroupCreate,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Cria um novo grupo"""
+    try:
+        group = GroupService.create_group(
+            db=db,
+            group_data=group_data,
+            created_by=str(current_user.id)
+        )
+        return group.to_dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao criar grupo: {e}")
+        if "já existe" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e)
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.put("/api/groups/{group_id}")
+async def update_group(
+    group_id: str,
+    group_data: GroupUpdate,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Atualiza um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Apenas administradores podem editar grupos."
+            )
+        
+        group = GroupService.update_group(db=db, group_id=group_id, group_data=group_data)
+        return group.to_dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo não encontrado"
+            )
+        elif "já existe" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e)
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.delete("/api/groups/{group_id}")
+async def delete_group(
+    group_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Remove um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Apenas administradores podem excluir grupos."
+            )
+        
+        success = GroupService.delete_group(db=db, group_id=group_id)
+        return {"success": success, "message": "Grupo removido com sucesso"}
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao deletar grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo não encontrado"
+            )
+        elif "não é possível excluir" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e)
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.get("/api/groups/{group_id}/members")
+async def get_group_members(
+    group_id: str,
+    role: Optional[str] = None,
+    ativo: Optional[bool] = None,
+    limit: int = 50,
+    offset: int = 0,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Lista membros de um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "member"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Você não é membro deste grupo."
+            )
+        
+        result = GroupService.get_group_members(
+            db=db,
+            group_id=group_id,
+            skip=offset,
+            limit=limit,
+            role=role,
+            ativo=ativo
+        )
+        return result
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao listar membros do grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.post("/api/groups/{group_id}/members")
+async def add_group_member(
+    group_id: str,
+    user_id: str,
+    role: str = "member",
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Adiciona um usuário a um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Apenas administradores podem adicionar membros."
+            )
+        
+        user_group = GroupService.add_member_to_group(
+            db=db,
+            group_id=group_id,
+            user_id=user_id,
+            role=role,
+            added_by=str(current_user.id)
+        )
+        return user_group.to_dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao adicionar membro ao grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo ou usuário não encontrado"
+            )
+        elif "já é membro" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e)
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.delete("/api/groups/{group_id}/members/{user_id}")
+async def remove_group_member(
+    group_id: str,
+    user_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Remove um usuário de um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Apenas administradores podem remover membros."
+            )
+        
+        success = GroupService.remove_member_from_group(db=db, group_id=group_id, user_id=user_id)
+        return {"success": success, "message": "Membro removido com sucesso"}
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao remover membro do grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo ou usuário não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.patch("/api/groups/{group_id}/members/{user_id}/role")
+async def update_member_role(
+    group_id: str,
+    user_id: str,
+    role: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Atualiza o papel de um membro no grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "admin"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Apenas administradores podem alterar papéis."
+            )
+        
+        user_group = GroupService.update_member_role(db=db, group_id=group_id, user_id=user_id, new_role=role)
+        return user_group.to_dict()
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar papel do membro {user_id} no grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo ou usuário não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.get("/api/groups/{group_id}/stats")
+async def get_group_stats(
+    group_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém estatísticas de um grupo"""
+    try:
+        # Verificar permissão
+        if not GroupService.check_user_permission(db, str(current_user.id), group_id, "member"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Acesso negado. Você não é membro deste grupo."
+            )
+        
+        stats = GroupService.get_group_stats(db=db, group_id=group_id)
+        return stats
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao obter estatísticas do grupo {group_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grupo não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
+
+@app.get("/api/users/{user_id}/groups")
+async def get_user_groups(
+    user_id: str,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém todos os grupos de um usuário"""
+    try:
+        # Verificar se é o próprio usuário ou admin
+        if str(current_user.id) != user_id:
+            # Verificar se current_user é admin em algum grupo do usuário
+            user_groups = GroupService.get_user_groups(db, user_id)
+            has_permission = False
+            
+            for group in user_groups:
+                if GroupService.check_user_permission(db, str(current_user.id), group['id'], "admin"):
+                    has_permission = True
+                    break
+            
+            if not has_permission:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Acesso negado. Você não tem permissão para ver os grupos deste usuário."
+                )
+        
+        groups = GroupService.get_user_groups(db=db, user_id=user_id)
+        return {"groups": groups}
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao obter grupos do usuário {user_id}: {e}")
+        if "não encontrado" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro interno do servidor"
+            )
 
 if __name__ == "__main__":
     uvicorn.run(

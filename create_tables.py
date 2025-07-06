@@ -21,7 +21,8 @@ import uuid
 sys.path.append(os.path.join(os.path.dirname(__file__), 'domcore'))
 
 from domcore.core.db import Base, engine, SessionLocal
-from domcore.models.user import UserDB, UserSessionDB
+from domcore.models.user import UserDB, UserSession
+from domcore.models.task import TaskDB
 
 # Configuração de senhas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

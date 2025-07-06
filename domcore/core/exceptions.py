@@ -86,8 +86,36 @@ class TaskError(DOMException):
         super().__init__(message, "TASK_ERROR", {"task_id": task_id})
 
 
+class NotFoundException(DOMException):
+    """Recurso não encontrado"""
+    
+    def __init__(self, message: str, resource_type: str = None, resource_id: str = None):
+        super().__init__(message, "NOT_FOUND", {"resource_type": resource_type, "resource_id": resource_id})
+
+
+class ValidationException(DOMException):
+    """Erro de validação de dados"""
+    
+    def __init__(self, message: str, field: str = None, value: str = None):
+        super().__init__(message, "VALIDATION_ERROR", {"field": field, "value": value})
+
+
+class PermissionException(DOMException):
+    """Erro de permissão/acesso"""
+    
+    def __init__(self, message: str, required_permission: str = None):
+        super().__init__(message, "PERMISSION_ERROR", {"required_permission": required_permission})
+
+
 class ConfigurationError(DOMException):
     """Erro de configuração"""
     
     def __init__(self, message: str, config_key: str = None):
-        super().__init__(message, "CONFIGURATION_ERROR", {"config_key": config_key}) 
+        super().__init__(message, "CONFIGURATION_ERROR", {"config_key": config_key})
+
+
+class DuplicateError(DOMException):
+    """Erro de duplicação de dados"""
+    
+    def __init__(self, message: str, field: str = None, value: str = None):
+        super().__init__(message, "DUPLICATE_ERROR", {"field": field, "value": value}) 

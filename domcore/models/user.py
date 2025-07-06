@@ -31,7 +31,7 @@ class UserDB(Base):
     cpf = Column(String(11), unique=True, index=True, nullable=False)
     nome = Column(String(100), nullable=False)
     nickname = Column(String(20), nullable=True, comment="Nome curto/apelido do usuário")
-    email = Column(String(100), index=True, nullable=False)
+    email = Column(String(100), index=True, nullable=True)  # Tornando opcional
     celular = Column(String(20), nullable=True)
     perfil = Column(String(20), nullable=False, default="empregador")
     senha_hash = Column(String(255), nullable=False)
@@ -42,6 +42,51 @@ class UserDB(Base):
     plataformas = Column(JSON, default=list)
     permissoes = Column(JSON, default=list)
     user_photo = Column(LargeBinary, nullable=True, comment="Foto do usuário (binário)")
+    
+    # Relacionamentos
+    grupos = relationship("UserGroupRole", back_populates="user")
+    # Relacionamentos temporariamente comentados para evitar importação circular
+    # tarefas_criadas = relationship("Task", foreign_keys="Task.criador_id", back_populates="criador")
+    # tarefas_responsavel = relationship("Task", foreign_keys="Task.responsavel_id", back_populates="responsavel")
+    # notificacoes = relationship("Notification", back_populates="usuario")
+    
+    def to_dict(self):
+        """Converte o usuário para dicionário"""
+        return {
+            "id": str(self.id),
+            "name": self.nome,
+            "nickname": self.nickname,
+            "cpf": self.cpf,
+            "email": self.email,
+            "celular": self.celular,
+            "perfil": self.perfil,
+            "status": "active" if self.ativo else "inactive",  # Mapear ativo para status
+            "ativo": self.ativo,
+            "user_photo": self.user_photo,
+            "data_criacao": self.data_criacao.isoformat() if self.data_criacao else None,
+            "data_atualizacao": self.data_atualizacao.isoformat() if self.data_atualizacao else None,
+            "ultimo_acesso": self.ultimo_login.isoformat() if self.ultimo_login else None,  # Usar ultimo_login como ultimo_acesso
+            "ultimo_login": self.ultimo_login.isoformat() if self.ultimo_login else None
+        }
+    
+    def to_api_dict(self):
+        """Converte o usuário para formato da API (sem dados sensíveis)"""
+        return {
+            "id": str(self.id),
+            "name": self.nome,
+            "nickname": self.nickname,
+            "cpf": self.cpf,
+            "email": self.email,
+            "celular": self.celular,
+            "perfil": self.perfil,
+            "status": "active" if self.ativo else "inactive",  # Mapear ativo para status
+            "ativo": self.ativo,
+            "user_photo": self.user_photo,
+            "data_criacao": self.data_criacao.isoformat() if self.data_criacao else None,
+            "data_atualizacao": self.data_atualizacao.isoformat() if self.data_atualizacao else None,
+            "ultimo_acesso": self.ultimo_login.isoformat() if self.ultimo_login else None,  # Usar ultimo_login como ultimo_acesso
+            "grupos": [grupo.grupo.to_dict() for grupo in self.grupos if grupo.grupo and grupo.grupo.ativo] if self.grupos else []
+        }
 
 class UserSession(Base):
     __tablename__ = 'user_sessions'
@@ -62,9 +107,26 @@ class UserGroupRole(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     group_id = Column(UUID(as_uuid=True), ForeignKey('groups.id'), nullable=False)
-    role = Column(String(50), nullable=False)
+    role = Column(String(50), nullable=False, default="member")
+    ativo = Column(Boolean, default=True, comment="Se o relacionamento está ativo")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    # Relacionamentos
+    user = relationship("UserDB", back_populates="grupos")
+    grupo = relationship("Group", back_populates="usuarios")
+    
+    def to_dict(self):
+        """Converte para dicionário"""
+        return {
+            "id": str(self.id),
+            "user_id": str(self.user_id),
+            "group_id": str(self.group_id),
+            "role": self.role,
+            "ativo": self.ativo,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
 
 class UserBase(BaseModel):
     """Modelo base para usuário"""
@@ -216,3 +278,8 @@ class UserProfileInfo(BaseModel):
 
 # Nota: Os relacionamentos SQLAlchemy serão configurados após a importação de todos os modelos
 # para evitar importações circulares. Ver arquivo de configuração de relacionamentos. 
+
+# Imports para resolver relacionamentos circulares
+# from .task import TaskDB as Task
+# from .notification import NotificationDB as Notification
+# from .group import Group 
