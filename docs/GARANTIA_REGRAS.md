@@ -8,7 +8,7 @@ Este documento descreve o sistema completo implementado para **garantir** que **
 
 Como observado, mesmo com regras bem definidas, **IAs e desenvolvedores humanos** podem:
 - ❌ Ignorar mensagens centralizadas
-- ❌ Usar `any` no TypeScript
+- ❌ Usar `any` no JavaScript
 - ❌ Fazer imports relativos longos
 - ❌ Hardcodar strings
 - ❌ Esquecer JSDoc
@@ -44,7 +44,7 @@ npm run quality-check
 - 🚫 **Bloqueia commits** se regras não forem respeitadas
 - 🔄 **Executa validação** automaticamente
 - 🧹 **Aplica linting** e formatação
-- ✅ **Verifica tipos** TypeScript
+- ✅ **Verifica JavaScript** e JSDoc
 
 #### Resultado:
 ```
@@ -57,7 +57,13 @@ npm run quality-check
 #### Regras Implementadas:
 ```javascript
 // ❌ PROIBIDO: Uso de 'any'
-'@typescript-eslint/no-explicit-any': 'error',
+'no-restricted-syntax': [
+  'error',
+  {
+    selector: 'Identifier[name="any"]',
+    message: 'NUNCA use "any" - sempre defina tipos específicos'
+  }
+],
 
 // ❌ PROIBIDO: Imports relativos longos
 'no-restricted-imports': [
@@ -111,7 +117,7 @@ npm run quality-check
 - `dom-hook` - Hook personalizado com regras
 - `dom-message` - Mensagem centralizada
 - `dom-import` - Import com alias `@/`
-- `dom-interface` - Interface TypeScript
+- `dom-interface` - Definição de dados JavaScript
 - `dom-function` - Função com JSDoc
 - `dom-tooltip` - Componente com tooltip
 - `dom-permission` - Validação de permissões
@@ -127,7 +133,7 @@ npm run quality-check
    # VS Code Extensions
    - ESLint
    - Prettier
-   - TypeScript Importer
+   - JavaScript (ES6) code snippets
    - Material Icon Theme
    ```
 

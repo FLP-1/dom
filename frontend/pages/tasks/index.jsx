@@ -7,7 +7,7 @@
  * @author DOM Team
  */
 
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import Head from 'next/head'
 import { Box, Container, Typography, Grid, IconButton, Tooltip, Avatar, useTheme, Button, Chip, Fade, Snackbar, Fab, Card, CardContent, CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
@@ -121,7 +121,7 @@ const TasksPage = () => {
   }, [errorStats])
 
   // Função para filtrar por período
-  const isInPeriod = (date) => {
+  const isInPeriod = useCallback((date) => {
     if (!date) return false
     const now = new Date()
     if (period === 'today') {
@@ -137,7 +137,7 @@ const TasksPage = () => {
     }
     // custom: mostrar tudo (ou implementar intervalo customizado futuramente)
     return true
-  }
+  }, [period])
 
   // Filtrar tarefas (agora usando dados reais do backend)
   const filteredTarefas = useMemo(() => {
@@ -181,7 +181,7 @@ const TasksPage = () => {
       const priorityOrder = { 3: 4, 2: 3, 1: 2 }
       return priorityOrder[b.prioridade] - priorityOrder[a.prioridade]
     })
-  }, [tasks, filter, period])
+  }, [tasks, filter, isInPeriod])
 
   const handleEditTask = (task) => {
     setSnackbarMessage(`Editando tarefa: ${task.title}`)

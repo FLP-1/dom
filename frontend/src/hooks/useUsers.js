@@ -7,7 +7,7 @@
  * @author Equipe DOM v1
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getUsers } from '@/services/userService';
 import { UserApi } from '@/types/users';
 import { UserQueryParams } from '@/types/api';
@@ -19,6 +19,9 @@ export function useUsers({ token, params = {} }) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
+
+  // Criar uma string estável dos parâmetros para evitar re-renders desnecessários
+  const paramsString = useMemo(() => JSON.stringify(params), [params]);
 
   useEffect(() => {
     if (!token) return;
@@ -42,7 +45,7 @@ export function useUsers({ token, params = {} }) {
         setTotal(0);
       })
       .finally(() => setLoading(false));
-  }, [token, JSON.stringify(params), page, limit]);
+  }, [token, paramsString, page, limit, params]);
 
   const refreshUsers = () => {
     setPage(1);

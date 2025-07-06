@@ -16,7 +16,7 @@ import { appWithTranslation } from 'next-i18next'
 import { UserProvider, useUser } from '@/context/UserContext'
 import { ActiveContextProvider, useActiveContext } from '@/context/ActiveContext'
 import ContextSelectModal from '@/components/ContextSelectModal'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { logout } from '@/logout'
 import { useRouter } from 'next/router'
 
@@ -28,7 +28,7 @@ function ContextSelectorWrapper({ children }) {
   const router = useRouter()
 
   // Função para buscar contextos e decidir se mostrar modal
-  const fetchContextsAndShowModal = async () => {
+  const fetchContextsAndShowModal = useCallback(async () => {
     const token = localStorage.getItem('userToken')
     
     if (!token) {
@@ -74,7 +74,7 @@ function ContextSelectorWrapper({ children }) {
     } catch (error) {
       console.error('ContextSelectorWrapper: Erro ao buscar contextos:', error)
     }
-  }
+  }, [groupId, groupName, role, profile, setActiveContext])
 
   // Função para forçar exibição do modal (usada pelo botão "Trocar contexto")
   const forceShowModal = async () => {
@@ -122,7 +122,7 @@ function ContextSelectorWrapper({ children }) {
     }
     
     fetchContextsAndShowModal()
-  }, [user, loading, router.pathname])
+  }, [user, loading, router.pathname, fetchContextsAndShowModal])
 
   // Expor função para forçar exibição do modal
   useEffect(() => {

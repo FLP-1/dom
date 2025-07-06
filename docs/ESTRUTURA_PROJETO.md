@@ -20,7 +20,7 @@ dom-v1/
 │   │   │   ├── hooks/                # Hooks customizados
 │   │   │   ├── services/             # Serviços de API
 │   │   │   ├── utils/                # Utilitários
-│   │   │   ├── types/                # Tipos TypeScript
+│   │   │   ├── types/                # Definições de dados (JavaScript)
 │   │   │   ├── styles/               # Estilos globais
 │   │   │   └── app/                  # App Router (Next.js 13+)
 │   │   ├── public/                   # Arquivos estáticos
@@ -36,7 +36,7 @@ dom-v1/
 │   │   │   ├── hooks/                # Hooks customizados
 │   │   │   ├── services/             # Serviços de API
 │   │   │   ├── utils/                # Utilitários
-│   │   │   ├── types/                # Tipos TypeScript
+│   │   │   ├── types/                # Definições de dados (JavaScript)
 │   │   │   └── assets/               # Imagens, ícones, etc.
 │   │   ├── android/                  # Configuração Android
 │   │   ├── ios/                      # Configuração iOS
@@ -50,7 +50,7 @@ dom-v1/
 │       │   ├── hooks/                # Hooks customizados
 │       │   ├── services/             # Serviços admin
 │       │   ├── utils/                # Utilitários
-│       │   ├── types/                # Tipos TypeScript
+│       │   ├── types/                # Definições de dados (JavaScript)
 │       │   └── layouts/              # Layouts admin
 │       ├── public/
 │       └── package.json
@@ -84,14 +84,14 @@ dom-v1/
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   │
-│   ├── types/                        # Tipos TypeScript compartilhados
+│   ├── types/                        # Definições de dados compartilhadas (JavaScript)
 │   │   ├── src/
-│   │   │   ├── api/                  # Tipos de API
-│   │   │   ├── entities/             # Tipos de entidades
-│   │   │   ├── common/               # Tipos comuns
-│   │   │   └── index.ts
+│   │   │   ├── api/                  # Definições de API
+│   │   │   ├── entities/             # Definições de entidades
+│   │   │   ├── common/               # Definições comuns
+│   │   │   └── index.js
 │   │   ├── package.json
-│   │   └── tsconfig.json
+│   │   └── jsconfig.json
 │   │
 │   └── database/                     # Configuração Prisma
 │       ├── prisma/
@@ -151,7 +151,7 @@ dom-v1/
 │
 ├── turbo.json                        # Configuração Turbo
 ├── package.json                      # Package.json raiz
-├── tsconfig.json                     # Configuração TypeScript
+├── jsconfig.json                     # Configuração JavaScript
 ├── .eslintrc.js                      # Configuração ESLint
 ├── .prettierrc                       # Configuração Prettier
 ├── .gitignore                        # Arquivos ignorados pelo Git
@@ -215,7 +215,6 @@ dom-v1/
   },
   "devDependencies": {
     "turbo": "^1.10.0",
-    "typescript": "^5.0.0",
     "eslint": "^8.0.0",
     "prettier": "^3.0.0"
   }
@@ -383,17 +382,16 @@ export interface ApiError {
 
 ## 🔧 Configurações de Desenvolvimento
 
-### TypeScript Config
+### JavaScript Config
 
 ```json
-// tsconfig.json (raiz)
+// jsconfig.json (raiz)
 {
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -401,8 +399,7 @@ export interface ApiError {
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -413,7 +410,7 @@ export interface ApiError {
       "@/types/*": ["./src/types/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["**/*.js", "**/*.jsx"],
   "exclude": ["node_modules"]
 }
 ```
@@ -426,21 +423,19 @@ module.exports = {
   root: true,
   extends: [
     'next/core-web-vitals',
-    '@typescript-eslint/recommended',
     'prettier'
   ],
-  plugins: ['@typescript-eslint', 'react-hooks'],
+  plugins: ['react-hooks'],
   rules: {
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/no-explicit-any': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'prefer-const': 'error',
-    'no-var': 'error'
+    'no-var': 'error',
+    'no-unused-vars': 'error'
   },
   overrides: [
     {
-      files: ['**/*.test.ts', '**/*.test.tsx'],
+      files: ['**/*.test.js', '**/*.test.jsx'],
       env: {
         jest: true
       }
@@ -492,9 +487,9 @@ cd ../..
 echo "🔨 Fazendo build dos pacotes..."
 npm run build
 
-# Verificar tipos
-echo "🔍 Verificando tipos..."
-npm run type-check
+# Verificar JavaScript
+echo "🔍 Verificando JavaScript..."
+npm run lint
 
 # Rodar lint
 echo "🧹 Executando lint..."
@@ -557,7 +552,7 @@ echo "✅ Deploy concluído!"
 - [ ] Scripts de automação
 
 ### ✅ Configurações
-- [ ] TypeScript configurado
+- [ ] JavaScript configurado
 - [ ] ESLint configurado
 - [ ] Prettier configurado
 - [ ] Path aliases configurados
@@ -567,7 +562,7 @@ echo "✅ Deploy concluído!"
 - [ ] Cabeçalhos em todos os arquivos
 - [ ] Nomenclatura consistente
 - [ ] Estrutura de componentes
-- [ ] Tipos compartilhados
+- [ ] Definições de dados compartilhadas
 - [ ] Utilitários organizados
 
 ---

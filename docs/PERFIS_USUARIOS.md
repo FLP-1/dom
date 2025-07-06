@@ -51,8 +51,8 @@ O DOM v1 atende 7 perfis distintos. Cada perfil tem necessidades, habilidades e 
 ## 🎨 Padrões de Desenvolvimento
 
 ### Sistema de Temas Adaptativo
-```typescript
-const getThemeByProfile = (profile: UserProfile): ThemeConfig => {
+```javascript
+const getThemeByProfile = (profile) => {
   const themes = {
     empregador: empregadorTheme,
     empregado: empregadoTheme,
@@ -67,8 +67,13 @@ const getThemeByProfile = (profile: UserProfile): ThemeConfig => {
 ```
 
 ### Componentes Adaptativos
-```typescript
-const AdaptiveComponent = ({ profile, children }: AdaptiveComponentProps) => {
+```javascript
+/**
+ * @param {Object} props
+ * @param {string} props.profile
+ * @param {React.ReactNode} props.children
+ */
+const AdaptiveComponent = ({ profile, children }) => {
   const theme = getThemeByProfile(profile)
   return (
     <ThemeProvider theme={theme}>
@@ -81,10 +86,12 @@ const AdaptiveComponent = ({ profile, children }: AdaptiveComponentProps) => {
 ```
 
 ### Detecção de Perfil
-```typescript
-const useUserProfile = () => {
-  const [profile, setProfile] = useState<UserProfile>('empregador')
-  const [permissions, setPermissions] = useState<Permission[]>([])
+```javascript
+import { useState, useEffect } from 'react'
+
+const useUserProfile = (userData) => {
+  const [profile, setProfile] = useState('empregador')
+  const [permissions, setPermissions] = useState([])
   
   useEffect(() => {
     const detectedProfile = detectUserProfile(userData)

@@ -15,13 +15,12 @@
 3. [Arquitetura e Organização](#arquitetura-e-organização)
 4. [Componentes e Reutilização](#componentes-e-reutilização)
 5. [UI/UX e Material-UI](#uiux-e-material-ui)
-6. [Tipagem e TypeScript](#tipagem-e-typescript)
-7. [Banco de Dados e Prisma](#banco-de-dados-e-prisma)
-8. [Internacionalização](#internacionalização)
-9. [Performance e Otimização](#performance-e-otimização)
-10. [Testes e Qualidade](#testes-e-qualidade)
-11. [Documentação](#documentação)
-12. [Versionamento e Deploy](#versionamento-e-deploy)
+6. [Banco de Dados e Prisma](#banco-de-dados-e-prisma)
+7. [Internacionalização](#internacionalização)
+8. [Performance e Otimização](#performance-e-otimização)
+9. [Testes e Qualidade](#testes-e-qualidade)
+10. [Documentação](#documentação)
+11. [Versionamento e Deploy](#versionamento-e-deploy)
 
 ---
 
@@ -38,7 +37,7 @@ dom-v1/
 ├── packages/
 │   ├── ui/                  # Componentes compartilhados
 │   ├── utils/               # Utilitários compartilhados
-│   ├── types/               # Tipos TypeScript compartilhados
+│   ├── types/               # Definições de dados compartilhadas (JavaScript)
 │   └── database/            # Configuração Prisma
 ├── docs/                    # Documentação
 ├── scripts/                 # Scripts de automação
@@ -54,13 +53,13 @@ dom-v1/
 
 ### Arquivos e Diretórios
 
-- **kebab-case** para arquivos e diretórios: `user-profile.tsx`, `api-routes/`
-- **PascalCase** para componentes React: `UserProfile.tsx`, `ProductCard.tsx`
+- **kebab-case** para arquivos e diretórios: `user-profile.js`, `api-routes/`
+- **PascalCase** para componentes React: `UserProfile.jsx`, `ProductCard.jsx`
 - **camelCase** para variáveis, funções e métodos: `getUserData()`, `isLoading`
 
 ### Componentes
 
-```typescript
+```javascript
 // ✅ Correto
 export const UserProfile = () => { ... }
 export const ProductCard = () => { ... }
@@ -81,7 +80,7 @@ export const product_card = () => { ... }
 
 ### Cabeçalho Obrigatório em Todos os Arquivos
 
-```typescript
+```javascript
 /**
  * @fileoverview Nome do arquivo
  * @directory caminho/do/diretorio
@@ -98,9 +97,9 @@ export const product_card = () => { ... }
 - Arquivos maiores devem ser divididos em módulos menores
 - Cada arquivo deve ter uma responsabilidade única
 
-### Imports com Alias "@/"
+### Imports com Alias @/
 
-```typescript
+```javascript
 // ✅ Correto
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
@@ -118,12 +117,12 @@ import { Button } from '../../../components/ui/Button';
 
 1. **Componentes Atômicos**: Criar componentes pequenos e reutilizáveis
 2. **Composição sobre Herança**: Preferir composição de componentes
-3. **Props Interface**: Sempre definir interface para props
+3. **Props documentadas via JSDoc**
 4. **Default Props**: Usar default props quando apropriado
 
 ### Estrutura de Componente
 
-```typescript
+```javascript
 /**
  * @fileoverview UserCard
  * @directory components/ui/UserCard
@@ -134,14 +133,17 @@ import { Button } from '../../../components/ui/Button';
 
 import React from 'react'
 import { Card, CardContent, Typography, Avatar } from '@mui/material'
-import { UserCardProps } from './UserCard.types'
 
-export const UserCard: React.FC<UserCardProps> = ({
-  user,
-  onEdit,
-  onDelete,
-  ...props
-}) => {
+/**
+ * @param {Object} props
+ * @param {Object} props.user
+ * @param {string} props.user.avatar
+ * @param {string} props.user.name
+ * @param {string} props.user.email
+ * @param {Function} [props.onEdit]
+ * @param {Function} [props.onDelete]
+ */
+export const UserCard = ({ user, onEdit = () => {}, onDelete = () => {}, ...props }) => {
   return (
     <Card {...props}>
       <CardContent>
@@ -151,11 +153,6 @@ export const UserCard: React.FC<UserCardProps> = ({
       </CardContent>
     </Card>
   )
-}
-
-UserCard.defaultProps = {
-  onEdit: () => {},
-  onDelete: () => {}
 }
 ```
 
@@ -177,7 +174,7 @@ UserCard.defaultProps = {
 
 ### Tooltips Obrigatórios
 
-```typescript
+```javascript
 // ✅ Todos os inputs devem ter tooltips
 <TextField
   label={t('user.email')}
@@ -193,44 +190,15 @@ UserCard.defaultProps = {
 
 ### Ícones e Cards
 
-```typescript
+```javascript
 // ✅ Preferir cards com ícones
 <Card onClick={handleAction}>
   <CardContent>
     <IconButton>
-      <AddIcon />
+      {/* ... */}
     </IconButton>
-    <Typography>Adicionar Item</Typography>
   </CardContent>
 </Card>
-
-// ❌ Evitar botões simples
-<Button onClick={handleAction}>Adicionar Item</Button>
-```
-
-### Tema Centralizado
-
-```typescript
-// shared/theme/index.ts
-export const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-        },
-      },
-    },
-  },
-});
 ```
 
 ---

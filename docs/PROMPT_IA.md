@@ -16,17 +16,18 @@ Este é um aplicativo multiplataforma (web, iOS, Android) com regras RIGOROSAS q
 - ✅ SEMPRE usar: `t('common.actions.save')`, `t('navigation.dashboard')`
 - ✅ SEMPRE considerar o perfil do usuário: `t('empregador.dashboard.title')`
 
-### 2. **TypeScript Rigoroso (OBRIGATÓRIO)**
-- ❌ NUNCA usar `any`
-- ✅ SEMPRE tipar corretamente: `interface UserData { id: string; name: string }`
-- ✅ SEMPRE usar tipos específicos
+### 2. **JavaScript Puro (OBRIGATÓRIO)**
+- ❌ NUNCA usar arquivos .ts/.tsx
+- ❌ NUNCA usar tipagens explícitas, interfaces, enums, generics
+- ✅ SEMPRE usar JavaScript puro (.js/.jsx)
+- ✅ SEMPRE documentar props e funções com JSDoc
 
 ### 3. **Imports com Alias (OBRIGATÓRIO)**
 - ❌ NUNCA usar: `import { Button } from '../../../components/Button'`
 - ✅ SEMPRE usar: `import { Button } from '@/components/Button'`
 
 ### 4. **JSDoc Completo (OBRIGATÓRIO)**
-```typescript
+```javascript
 /**
  * @fileoverview Nome do arquivo
  * @directory caminho/do/diretorio
@@ -50,14 +51,14 @@ SEMPRE considerar os 7 perfis:
 
 ### 7. **Componentes Reutilizáveis (OBRIGATÓRIO)**
 - ✅ Máximo 300 linhas por arquivo
-- ✅ Props interface obrigatória
+- ✅ Props documentadas via JSDoc
 - ✅ Memoização com React.memo
 - ✅ Adaptação por perfil obrigatória
 
 ## 🎯 ESTRUTURA OBRIGATÓRIA
 
 ### Para Componentes React:
-```typescript
+```javascript
 /**
  * @fileoverview Nome do Componente
  * @directory apps/web/src/components
@@ -71,12 +72,11 @@ import { memo } from 'react'
 import { useMessages } from '@/hooks/useMessages'
 import { useUserProfile } from '@/hooks/useUserProfile'
 
-interface ComponentNameProps {
-  profile?: UserProfile
-  // outras props
-}
-
-const ComponentName = memo<ComponentNameProps>(({ profile }) => {
+/**
+ * @param {Object} props
+ * @param {string} [props.profile]
+ */
+const ComponentName = memo(({ profile }) => {
   const { t } = useMessages({ profile })
   const { currentProfile } = useUserProfile()
 
@@ -92,7 +92,7 @@ export default ComponentName
 ```
 
 ### Para Hooks:
-```typescript
+```javascript
 /**
  * @fileoverview Nome do Hook
  * @directory apps/web/src/hooks
@@ -103,13 +103,12 @@ export default ComponentName
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { UserProfile } from '@/hooks/useMessages'
 
-interface UseHookNameOptions {
-  profile?: UserProfile
-}
-
-export const useHookName = (options: UseHookNameOptions = {}) => {
+/**
+ * @param {Object} options
+ * @param {string} [options.profile]
+ */
+export const useHookName = (options = {}) => {
   const { profile = 'empregador' } = options
 
   // implementação
@@ -125,57 +124,42 @@ export const useHookName = (options: UseHookNameOptions = {}) => {
 O projeto tem validação automática que:
 - ❌ BLOQUEIA commits se regras não forem seguidas
 - 🔍 DETECTA strings hardcoded automaticamente
-- 🚫 PROÍBE uso de 'any'
+- 🚫 PROÍBE uso de tipagens e arquivos TypeScript
 - 📝 VERIFICA JSDoc obrigatório
 - 🎯 VALIDA consideração de perfis
 
 ## 📝 EXEMPLOS CORRETOS
 
 ### ✅ Correto - Mensagem Centralizada:
-```typescript
+```javascript
 <Typography>{t('empregador.dashboard.title')}</Typography>
 <Button>{t('common.actions.save')}</Button>
 ```
 
 ### ❌ Incorreto - String Hardcoded:
-```typescript
+```javascript
 <Typography>Painel do Empregador</Typography>
 <Button>Salvar</Button>
 ```
 
 ### ✅ Correto - Import com Alias:
-```typescript
+```javascript
 import { Button } from '@/components/Button'
 import { useMessages } from '@/hooks/useMessages'
 ```
 
 ### ❌ Incorreto - Import Relativo:
-```typescript
+```javascript
 import { Button } from '../../../components/Button'
 import { useMessages } from '../../hooks/useMessages'
-```
-
-### ✅ Correto - Tipagem Específica:
-```typescript
-interface UserData {
-  id: string
-  name: string
-  email: string
-}
-const data: UserData = response.data
-```
-
-### ❌ Incorreto - Uso de Any:
-```typescript
-const data: any = response.data
 ```
 
 ## 🎨 TEMAS POR PERFIL
 
 SEMPRE implementar temas adaptativos:
 
-```typescript
-const createProfileTheme = (profile: UserProfile) => {
+```javascript
+const createProfileTheme = (profile) => {
   switch (profile) {
     case 'empregador':
       return createTheme({
@@ -244,7 +228,4 @@ A IA irá:
 - ✅ Implementar temas por perfil
 - ✅ Incluir JSDoc completo
 - ✅ Usar imports com @/
-- ✅ Tipar corretamente
-- ✅ Considerar todos os perfis
-- ✅ Implementar tooltips
 - ✅ Seguir todas as regras

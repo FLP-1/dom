@@ -9,7 +9,7 @@
  * @author DOM Team
  */
 
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -564,7 +564,7 @@ function HeaderInfo({ profile, getProfileFontSize }) {
     return () => {
       clearInterval(timeInterval)
     }
-  }, [])
+  }, [t])
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('pt-BR', {
@@ -690,7 +690,7 @@ export default function Dashboard() {
   const profile = activeProfile || user?.profile || 'empregador'
   
   // Função para buscar estatísticas do dashboard
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoadingStats(true)
     setStatsError(null)
     try {
@@ -708,7 +708,7 @@ export default function Dashboard() {
     } finally {
       setLoadingStats(false)
     }
-  }
+  }, [profile, t])
 
   // Recarregar dados quando o contexto mudar ou quando refreshTrigger for acionado
   useEffect(() => {
@@ -717,7 +717,7 @@ export default function Dashboard() {
       // Recarregar estatísticas do dashboard
       fetchStats()
     }
-  }, [groupId, groupName, role, activeProfile, refreshTrigger])
+  }, [groupId, groupName, role, activeProfile, refreshTrigger, fetchStats])
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -839,7 +839,7 @@ export default function Dashboard() {
   // Carregar estatísticas iniciais
   useEffect(() => {
     fetchStats()
-  }, [profile])
+  }, [fetchStats])
 
   const renderDashboardContent = () => {
     if (loadingStats) {

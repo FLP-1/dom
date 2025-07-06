@@ -1,13 +1,13 @@
-# Refatoração DOM v1 - TypeScript → Python
+# Refatoração DOM v1 - JavaScript → Python
 
 ## 🎯 Motivação
 
-A refatoração do DOM v1 de TypeScript para Python foi motivada pela necessidade de:
+A refatoração do DOM v1 de frontend tipado para backend Python foi motivada pela necessidade de:
 
-### ❌ Problemas com TypeScript:
+### ❌ Problemas com Frontend Tipado:
 - **Complexidade excessiva** de configuração de monorepo
 - **Muitos erros** de imports e aliases
-- **Configurações complexas** de TypeScript, Jest, Turbo
+- **Configurações complexas** de ferramentas
 - **Tempo perdido** com setup e debugging
 - **Barreira de entrada** alta para novos desenvolvedores
 - **Foco desviado** da lógica de negócio para configuração
@@ -24,7 +24,7 @@ A refatoração do DOM v1 de TypeScript para Python foi motivada pela necessidad
 
 ### 1. Estrutura do Projeto
 
-**Antes (TypeScript):**
+**Antes (Frontend Tipado):**
 ```
 dom-v1/
 ├── apps/
@@ -37,7 +37,7 @@ dom-v1/
 │   ├── ui/
 │   └── utils/
 ├── shared/
-├── tsconfig.json
+├── jsconfig.json
 ├── turbo.json
 ├── jest.config.js
 └── package.json
@@ -68,11 +68,11 @@ dom-v1/
 
 ### 2. Validação de CPF
 
-**Antes (TypeScript):**
-```typescript
-// packages/utils/src/validation/cpf.ts
+**Antes (Frontend Tipado):**
+```javascript
+// packages/utils/src/validation/cpf.js
 export class CPFValidator {
-  static validateCPF(cpf: string): boolean {
+  static validateCPF(cpf) {
     // 50+ linhas de código
     // Múltiplas validações
     // Imports complexos
@@ -93,12 +93,12 @@ class CPFValidator:
 
 ### 3. Perfis de Usuário
 
-**Antes (TypeScript):**
-```typescript
-// packages/types/src/entities/profile.ts
-export enum UserProfile {
-  EMPREGADOR = 'empregador',
-  EMPREGADO = 'empregado',
+**Antes (Frontend Tipado):**
+```javascript
+// packages/types/src/entities/profile.js
+export const UserProfile = {
+  EMPREGADOR: 'empregador',
+  EMPREGADO: 'empregado',
   // ...
 }
 
@@ -122,10 +122,10 @@ class UserProfile(str, Enum):
 
 ### 4. Configuração
 
-**Antes (TypeScript):**
-```typescript
+**Antes (Frontend Tipado):**
+```javascript
 // Múltiplos arquivos de configuração
-// tsconfig.json, jest.config.js, turbo.json
+// jsconfig.json, jest.config.js, turbo.json
 // package.json com scripts complexos
 // Imports com aliases (@/components)
 ```
@@ -143,8 +143,8 @@ class DOMConfig:
 
 ## 📊 Comparação de Complexidade
 
-| Aspecto | TypeScript | Python | Redução |
-|---------|------------|--------|---------|
+| Aspecto | Frontend Tipado | Python | Redução |
+|---------|-----------------|--------|---------|
 | Arquivos de configuração | 8+ | 2 | 75% |
 | Linhas de setup | 200+ | 50 | 75% |
 | Tempo de configuração | 2-3 horas | 15 minutos | 90% |

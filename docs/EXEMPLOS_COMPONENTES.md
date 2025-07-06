@@ -1185,8 +1185,8 @@ ConfirmationModal.defaultProps = {
 
 ### ✅ Componentes
 - [ ] Cabeçalho em todos os arquivos
-- [ ] Tipos TypeScript definidos
-- [ ] Props interface criada
+- [ ] JSDoc para documentação
+- [ ] Props documentadas
 - [ ] Default props configurados
 - [ ] Tooltips implementados
 - [ ] Testes escritos
@@ -1194,7 +1194,7 @@ ConfirmationModal.defaultProps = {
 
 ### ✅ Hooks
 - [ ] Lógica reutilizável
-- [ ] Tipagem correta
+- [ ] JSDoc para documentação
 - [ ] Tratamento de erros
 - [ ] Cleanup adequado
 - [ ] Performance otimizada
@@ -1203,8 +1203,8 @@ ConfirmationModal.defaultProps = {
 - [ ] Métodos bem definidos
 - [ ] JSDoc completo
 - [ ] Tratamento de erros
-- [ ] Tipos de retorno
 - [ ] Validação de parâmetros
+- [ ] Comentários descritivos
 
 ### ✅ Páginas
 - [ ] Componentes reutilizáveis

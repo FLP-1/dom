@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { GetServerSideProps } from 'next'
+
 import Head from 'next/head'
 
 import MainLayout from '@/components/MainLayout'
