@@ -18,8 +18,8 @@ import {
   MenuItem,
   Button,
   Stack,
-  useTheme
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { getProfileTheme } from '@/theme/profile-themes'

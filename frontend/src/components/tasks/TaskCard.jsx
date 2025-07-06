@@ -37,17 +37,19 @@ import {
   Warning as WarningIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material'
+import { getProfileTheme } from '@/theme/profile-themes'
 
 const TaskCard = ({
   task,
   responsible,
-  profile,
+  profile = 'empregador',
   onEdit,
   onDelete,
   onToggleStatus,
   onPhotoUpload
 }) => {
   const [expanded, setExpanded] = useState(false)
+  const profileTheme = getProfileTheme(profile)
 
   const getStatusColor = (status) => {
     switch (status) {

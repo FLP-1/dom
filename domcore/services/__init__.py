@@ -11,5 +11,6 @@ Serviços do DOM v1
 
 from .dashboard_service import DashboardService
 from .task_service import TaskService
+from .notification_service import NotificationService
 
-__all__ = ['DashboardService', 'TaskService'] 
+__all__ = ['DashboardService', 'TaskService', 'NotificationService'] 

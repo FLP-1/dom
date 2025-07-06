@@ -29,14 +29,16 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon
 } from '@mui/icons-material'
+import { getProfileTheme } from '@/theme/profile-themes'
 
 const TaskFilters = ({
   filter,
   onFilterChange,
   responsaveis,
-  profile
+  profile = 'empregador'
 }) => {
   const [expanded, setExpanded] = useState(false)
+  const profileTheme = getProfileTheme(profile)
 
   const handleFilterChange = (key, value) => {
     onFilterChange({ ...filter, [key]: value })

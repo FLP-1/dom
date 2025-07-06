@@ -31,12 +31,12 @@ import {
   Grid,
   IconButton,
   Tooltip,
-  useTheme,
   useMediaQuery,
   Avatar,
   Chip,
   LinearProgress
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { 
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,
