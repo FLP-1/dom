@@ -16,22 +16,28 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('🔍 UserContext Debug: Iniciando carregamento...')
+    
     const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
     const data = typeof window !== 'undefined' ? localStorage.getItem('userData') : null
+    
+    console.log('🔍 UserContext Debug:', { token: !!token, data: !!data })
     
     // Só carregar dados do usuário se há token válido
     if (token && data) {
       try {
         const userData = JSON.parse(data)
+        console.log('🔍 UserContext Debug: Dados do usuário carregados:', userData)
         setUser(userData)
       } catch (error) {
-        console.error('Erro ao carregar dados do usuário:', error)
+        console.error('❌ UserContext Debug: Erro ao carregar dados do usuário:', error)
         // Limpar dados inválidos
         localStorage.removeItem('userData')
         localStorage.removeItem('userToken')
         localStorage.removeItem('activeContext')
       }
     } else {
+      console.log('🔍 UserContext Debug: Sem token ou dados, limpando localStorage')
       // Limpar dados se não há token
       if (typeof window !== 'undefined') {
         localStorage.removeItem('userData')
@@ -39,6 +45,7 @@ export const UserProvider = ({ children }) => {
       }
     }
     setLoading(false)
+    console.log('🔍 UserContext Debug: Carregamento finalizado')
   }, [])
 
   return (

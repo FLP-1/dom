@@ -8,8 +8,7 @@
  */
 
 import React from 'react'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { 
   Box, 
   Typography, 
@@ -22,13 +21,7 @@ import {
 } from '@mui/material'
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material'
 
-export async function getStaticProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-}
+
 
 export default function NewTaskPage() {
   const { t } = useTranslation('common')

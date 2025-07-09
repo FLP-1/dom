@@ -11,8 +11,7 @@
 
 import React, { useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { 
   Box, 
   Typography, 
@@ -610,13 +609,7 @@ function HeaderInfo({ profile, getProfileFontSize }) {
   )
 }
 
-export async function getStaticProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-}
+
 
 const menuItems = [
   {
@@ -686,27 +679,55 @@ export default function Dashboard() {
   const [loadingStats, setLoadingStats] = useState(false)
   const [statsError, setStatsError] = useState(null)
   
+  // DEBUG: Logs para identificar o problema
+  console.log('🔍 Dashboard Debug:', {
+    user,
+    loading,
+    groupId,
+    groupName,
+    role,
+    activeProfile,
+    refreshTrigger,
+    localStorage: {
+      userToken: typeof window !== 'undefined' ? localStorage.getItem('userToken') : null,
+      userData: typeof window !== 'undefined' ? localStorage.getItem('userData') : null
+    }
+  })
+  
   // Usar perfil do contexto ativo se disponível, senão usar perfil do usuário
   const profile = activeProfile || user?.profile || 'empregador'
   
   // Função para buscar estatísticas do dashboard
   const fetchStats = useCallback(async () => {
+    console.log('🔍 Dashboard Debug: Iniciando busca de estatísticas...')
     setLoadingStats(true)
     setStatsError(null)
     try {
       const token = localStorage.getItem('userToken')
+      console.log('🔍 Dashboard Debug: Token disponível:', !!token)
+      
       const response = await fetch(`/api/dashboard/stats?profile=${profile}&user_id=user_123`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      if (!response.ok) throw new Error('Erro ao buscar estatísticas')
+      
+      console.log('🔍 Dashboard Debug: Status da resposta:', response.status)
+      
+      if (!response.ok) {
+        console.log('❌ Dashboard Debug: Erro na resposta:', response.status, response.statusText)
+        throw new Error('Erro ao buscar estatísticas')
+      }
+      
       const data = await response.json()
+      console.log('✅ Dashboard Debug: Dados recebidos:', data)
       setDashboardStats(data)
     } catch (err) {
+      console.error('❌ Dashboard Debug: Erro ao buscar estatísticas:', err)
       setStatsError(t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard'))
     } finally {
       setLoadingStats(false)
+      console.log('🔍 Dashboard Debug: Busca de estatísticas finalizada')
     }
   }, [profile, t])
 
@@ -824,7 +845,7 @@ export default function Dashboard() {
             })
             if (response.ok) {
               const userInfo = await response.json()
-              setUser(userInfo)
+              // setUser(userInfo) // This line was removed as per the new_code, as setUser is no longer defined.
               localStorage.setItem('userData', JSON.stringify(userInfo))
             }
           }
@@ -842,7 +863,10 @@ export default function Dashboard() {
   }, [fetchStats])
 
   const renderDashboardContent = () => {
+    console.log('🔍 Dashboard Debug: Renderizando conteúdo, selectedMenu:', selectedMenu)
+    
     if (loadingStats) {
+      console.log('🔍 Dashboard Debug: Mostrando loading')
       return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
           <Typography sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
@@ -852,6 +876,7 @@ export default function Dashboard() {
       )
     }
     if (statsError) {
+      console.log('🔍 Dashboard Debug: Mostrando erro:', statsError)
       return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
           <Typography color="error" sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
@@ -861,21 +886,21 @@ export default function Dashboard() {
       )
     }
 
+    console.log('🔍 Dashboard Debug: Renderizando menu:', selectedMenu)
+    
     switch (selectedMenu) {
       case 'dashboard':
+        console.log('🔍 Dashboard Debug: Renderizando dashboard principal')
         return (
           <Grid container spacing={3}>
             <User
-              name={user.name}
-              nickname={user.nickname}
-              cpf={user.cpf}
+              name={user?.name || 'Usuário'}
+              nickname={user?.nickname || 'Usuário'}
+              cpf={user?.cpf || '000.000.000-00'}
               profile={profile}
-              user_photo={user.user_photo}
-              email={user.email}
-              celular={user.celular}
-              getProfileColor={getProfileColor}
-              getProfileFontSize={getProfileFontSize}
-              getProfileAvatarSize={getProfileAvatarSize}
+              user_photo={user?.user_photo}
+              email={user?.email || 'email@exemplo.com'}
+              celular={user?.celular || '(00) 00000-0000'}
             />
             <TaskStatsCard
               task_stats={dashboardStats?.task_stats}

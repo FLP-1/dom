@@ -33,8 +33,7 @@ import {
   Add as AddIcon,
   Group as GroupIcon,
 } from '@mui/icons-material'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 
 import Head from 'next/head'
 
@@ -42,6 +41,7 @@ import MainLayout from '@/components/MainLayout'
 import { useGroups, Group, GroupFilters } from '@/hooks/useGroups'
 import { GroupCard, GroupFilters as GroupFiltersComponent, GroupStatsCards } from '@/components/groups'
 import { useUser } from '@/context/UserContext'
+import { ProtectedRoute } from '@/components/auth'
 
 const GroupsPage = () => {
   const { t } = useTranslation()
@@ -226,13 +226,14 @@ const GroupsPage = () => {
   }
 
   return (
-    <>
-      <Head>
-        <title>{t('groups.page.title')} - DOM v1</title>
-        <meta name="description" content={t('groups.page.description')} />
-      </Head>
+    <ProtectedRoute allowedProfiles={['empregador', 'parceiro', 'admin', 'owner']}>
+      <>
+        <Head>
+          <title>{t('groups.page.title')} - DOM v1</title>
+          <meta name="description" content={t('groups.page.description')} />
+        </Head>
 
-      <MainLayout>
+        <MainLayout>
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -276,7 +277,7 @@ const GroupsPage = () => {
             ) : (
               <Grid container spacing={3}>
                 {groups.map((group) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={group.id}>
+                  <Grid xs={12} sm={6} md={4} lg={3} key={group.id}>
                     <GroupCard
                       group={group}
                       onEdit={handleEditGroup}
@@ -448,16 +449,9 @@ const GroupsPage = () => {
           </Snackbar>
         </Container>
       </MainLayout>
-    </>
+      </>
+    </ProtectedRoute>
   )
-}
-
-export const getServerSideProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale || 'pt-BR', ['common', 'groups'])),
-    },
-  }
 }
 
 export default GroupsPage 

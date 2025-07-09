@@ -149,7 +149,7 @@ export const UserStatsCards = ({ stats, profile }) => {
       
       <Grid container spacing={isSimpleInterface ? 3 : 2}>
         {/* Total de Usuários */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Total de Usuários"
             value={stats.total_usuarios}
@@ -160,7 +160,7 @@ export const UserStatsCards = ({ stats, profile }) => {
         </Grid>
 
         {/* Usuários Ativos */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Usuários Ativos"
             value={stats.usuarios_ativos}
@@ -172,7 +172,7 @@ export const UserStatsCards = ({ stats, profile }) => {
         </Grid>
 
         {/* Novos Usuários */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Novos este Mês"
             value={stats.novos_usuarios_mes}
@@ -183,7 +183,7 @@ export const UserStatsCards = ({ stats, profile }) => {
         </Grid>
 
         {/* Usuários Online */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Usuários Online"
             value={stats.usuarios_online}
@@ -211,7 +211,7 @@ export const UserStatsCards = ({ stats, profile }) => {
               : 0;
             
             return (
-              <Grid item xs={12} sm={6} md={4} key={perfil}>
+              <Grid xs={12} sm={6} md={4} key={perfil}>
                 <Card>
                   <CardContent sx={{ p: cardPadding }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>

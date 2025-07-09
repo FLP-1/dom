@@ -40,6 +40,7 @@ import { useUsers } from '@/hooks/useUsers';
 import { useUser } from '@/context/UserContext';
 import { UserApi, UserProfile, UserStatus } from '@/types/users';
 import { createUser, updateUser, deleteUser, activateUser, deactivateUser } from '@/services/userService';
+import { ProtectedRoute } from '@/components/auth';
 
 // Dados mockados para estatísticas (será substituído por dados reais)
 const mockStats = {
@@ -191,8 +192,9 @@ export default function PeoplePage() {
   const isSimpleInterface = user?.perfil === 'empregado' || user?.perfil === 'familiar';
 
   return (
-    <MainLayout>
-      <Container maxWidth="xl">
+    <ProtectedRoute allowedProfiles={['empregador', 'admin', 'owner']}>
+      <MainLayout>
+        <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
@@ -276,7 +278,7 @@ export default function PeoplePage() {
               <>
                 <Grid container spacing={isSimpleInterface ? 3 : 2}>
                   {users.map((userItem) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={userItem.id}>
+                    <Grid xs={12} sm={6} md={4} lg={3} key={userItem.id}>
                       <UserCard
                         user={userItem}
                         onEdit={handleEditUser}
@@ -345,5 +347,6 @@ export default function PeoplePage() {
         </Snackbar>
       </Container>
     </MainLayout>
+    </ProtectedRoute>
   );
 } 

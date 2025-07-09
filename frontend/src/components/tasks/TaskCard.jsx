@@ -207,7 +207,7 @@ const TaskCard = ({
 
         {/* Datas */}
         <Grid container spacing={2} mb={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box display="flex" alignItems="center" gap={1}>
               <CalendarIcon fontSize="small" color="primary" />
               <Typography fontSize={profileTheme.textSize.small} color="text.secondary">
@@ -215,7 +215,7 @@ const TaskCard = ({
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box display="flex" alignItems="center" gap={1}>
               <ScheduleIcon fontSize="small" color="primary" />
               <Typography 
@@ -288,28 +288,28 @@ const TaskCard = ({
           {/* Informações adicionais */}
           <Grid container spacing={2}>
             {task.location && (
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography fontSize={profileTheme.textSize.small} color="text.secondary">
                   <strong>Local:</strong> {task.location}
                 </Typography>
               </Grid>
             )}
             {task.estimatedTime && (
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography fontSize={profileTheme.textSize.small} color="text.secondary">
                   <strong>Tempo estimado:</strong> {task.estimatedTime} min
                 </Typography>
               </Grid>
             )}
             {task.actualTime && (
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography fontSize={profileTheme.textSize.small} color="text.secondary">
                   <strong>Tempo real:</strong> {task.actualTime} min
                 </Typography>
               </Grid>
             )}
             {task.completedAt && (
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography fontSize={profileTheme.textSize.small} color="text.secondary">
                   <strong>Concluída em:</strong> {task.completedAt.toLocaleDateString()}
                 </Typography>

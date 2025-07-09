@@ -222,6 +222,7 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     return tasks.filter(task => {
       if (filters.status && task.status !== filters.status) return false;
       if (filters.priority && task.priority !== filters.priority) return false;
+      if (filters.responsibleId && task.responsibleId !== filters.responsibleId) return false;
       if (filters.assignedTo && task.assignedTo !== filters.assignedTo) return false;
       if (filters.createdBy && task.createdBy !== filters.createdBy) return false;
       if (filters.search) {

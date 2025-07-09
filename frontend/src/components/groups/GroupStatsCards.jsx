@@ -173,7 +173,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
       
       {/* Cards principais */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title={t('groups.stats.totalGroups')}
             value={stats?.total_groups || 0}
@@ -182,7 +182,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
           />
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title={t('groups.stats.activeGroups')}
             value={stats?.active_groups || 0}
@@ -192,7 +192,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
           />
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title={t('groups.stats.totalMembers')}
             value={stats?.total_members || 0}
@@ -201,7 +201,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
           />
         </Grid>
         
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title={t('groups.stats.inactiveGroups')}
             value={stats?.inactive_groups || 0}
@@ -220,7 +220,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
           </Typography>
           
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <TypeCard
                 type="family"
                 count={stats.groups_by_type.family}
@@ -228,7 +228,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <TypeCard
                 type="work"
                 count={stats.groups_by_type.work}
@@ -236,7 +236,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <TypeCard
                 type="community"
                 count={stats.groups_by_type.community}
@@ -244,7 +244,7 @@ const GroupStatsCards = memo(({ stats, loading = false }) => {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
               <TypeCard
                 type="other"
                 count={stats.groups_by_type.other}

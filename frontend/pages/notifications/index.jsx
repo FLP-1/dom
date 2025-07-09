@@ -8,8 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { 
   Box, 
   Typography, 
@@ -36,14 +35,9 @@ import { useActiveContext } from '@/context/ActiveContext'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationCard } from '@/components/notifications'
 import { getProfileTheme } from '@/theme/profile-themes'
+import { ProtectedRoute } from '@/components/auth'
 
-export async function getStaticProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-}
+
 
 export default function NotificationsPage() {
   const { t } = useTranslation('common')
@@ -125,7 +119,8 @@ export default function NotificationsPage() {
   }
   
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <ProtectedRoute allowedProfiles={['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Cabeçalho */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Box display="flex" alignItems="center" gap={2}>
@@ -231,7 +226,7 @@ export default function NotificationsPage() {
       
       {/* Estatísticas */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ textAlign: 'center', p: 2 }}>
             <Typography variant="h4" color="primary">
               {stats.total}
@@ -241,7 +236,7 @@ export default function NotificationsPage() {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ textAlign: 'center', p: 2 }}>
             <Typography variant="h4" color="warning.main">
               {stats.unread}
@@ -251,7 +246,7 @@ export default function NotificationsPage() {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ textAlign: 'center', p: 2 }}>
             <Typography variant="h4" color="success.main">
               {stats.today}
@@ -261,7 +256,7 @@ export default function NotificationsPage() {
             </Typography>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card sx={{ textAlign: 'center', p: 2 }}>
             <Typography variant="h4" color="error.main">
               {stats.urgent}
@@ -291,7 +286,7 @@ export default function NotificationsPage() {
       {!loading && !error && (
         <Grid container spacing={2}>
           {filteredNotifications.length === 0 ? (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Card>
                 <CardContent sx={{ textAlign: 'center', py: 4 }}>
                   <NotificationIcon sx={{ fontSize: '64px', color: 'grey.400', mb: 2 }} />
@@ -306,7 +301,7 @@ export default function NotificationsPage() {
             </Grid>
           ) : (
             filteredNotifications.map((notification) => (
-              <Grid item xs={12} key={notification.id}>
+              <Grid xs={12} key={notification.id}>
                 <NotificationCard
                   notification={notification}
                   profile={profile}
@@ -320,5 +315,6 @@ export default function NotificationsPage() {
         </Grid>
       )}
     </Container>
+    </ProtectedRoute>
   )
 } 

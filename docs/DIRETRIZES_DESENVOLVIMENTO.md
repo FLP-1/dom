@@ -21,6 +21,7 @@
 9. [Testes e Qualidade](#testes-e-qualidade)
 10. [Documentação](#documentação)
 11. [Versionamento e Deploy](#versionamento-e-deploy)
+12. [🚫 PROIBIÇÃO TypeScript](#proibição-typescript)
 
 ---
 
@@ -37,7 +38,7 @@ dom-v1/
 ├── packages/
 │   ├── ui/                  # Componentes compartilhados
 │   ├── utils/               # Utilitários compartilhados
-│   ├── types/               # Definições de dados compartilhadas (JavaScript)
+│   ├── constants/           # Constantes compartilhadas (JavaScript)
 │   └── database/            # Configuração Prisma
 ├── docs/                    # Documentação
 ├── scripts/                 # Scripts de automação
@@ -73,6 +74,13 @@ export const product_card = () => { ... }
 
 - **snake_case** para tabelas e colunas: `user_profiles`, `created_at`
 - **PascalCase** para modelos Prisma: `UserProfile`, `Product`
+
+### 🚫 PROIBIÇÃO TypeScript
+
+- **NUNCA** usar arquivos `.ts` ou `.tsx`
+- **NUNCA** usar interfaces TypeScript
+- **NUNCA** usar tipos TypeScript
+- **SEMPRE** usar JavaScript puro (.js, .jsx)
 
 ---
 
@@ -543,8 +551,8 @@ tests/
 
 ### Testes Obrigatórios
 
-```typescript
-// components/__tests__/UserCard.test.tsx
+```javascript
+// components/__tests__/UserCard.test.jsx
 import { render, screen } from '@testing-library/react'
 import { UserCard } from '../UserCard'
 
@@ -566,7 +574,7 @@ describe('UserCard', () => {
 
 ### Code Quality
 
-- ESLint configurado para TypeScript
+- ESLint configurado para JavaScript
 - Prettier para formatação
 - Husky para pre-commit hooks
 - SonarQube para análise de qualidade
@@ -584,20 +592,16 @@ describe('UserCard', () => {
 
 ### JSDoc para Funções
 
-```typescript
+```javascript
 /**
  * Calcula o total de vendas para um período específico
- * @param startDate - Data de início do período
- * @param endDate - Data de fim do período
- * @param userId - ID do usuário (opcional)
- * @returns Promise com o total de vendas
+ * @param {Date} startDate - Data de início do período
+ * @param {Date} endDate - Data de fim do período
+ * @param {string} [userId] - ID do usuário (opcional)
+ * @returns {Promise<number>} Promise com o total de vendas
  * @throws {ValidationError} Se as datas forem inválidas
  */
-export const calculateSalesTotal = async (
-  startDate: Date,
-  endDate: Date,
-  userId?: string
-): Promise<number> => {
+export const calculateSalesTotal = async (startDate, endDate, userId) => {
   // implementação
 };
 ```
@@ -643,7 +647,7 @@ test: adiciona testes para UserService
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "type-check": "turbo run type-check",
+    "check-js": "turbo run check-js",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"
@@ -665,7 +669,7 @@ test: adiciona testes para UserService
 - [ ] Mensagens centralizadas
 - [ ] Testes passando
 - [ ] Lint sem erros
-- [ ] TypeScript sem erros
+- [ ] JavaScript puro (sem TypeScript)
 - [ ] Documentação atualizada
 
 ### Antes de Fazer Deploy
@@ -693,3 +697,108 @@ Para dúvidas sobre estas diretrizes:
 **Última atualização:** 2024-12-19
 **Versão:** 1.0.0
 **Responsável:** Equipe de Desenvolvimento
+
+---
+
+## 🚫 PROIBIÇÃO TypeScript
+
+### ❌ **REGRA ABSOLUTA**
+
+**O projeto DOM v1 usa APENAS JavaScript puro. TypeScript é PROIBIDO.**
+
+### 🚫 **PROIBIDO:**
+- ❌ Arquivos `.ts` ou `.tsx`
+- ❌ Interfaces TypeScript (`interface`, `type`)
+- ❌ Tipagens explícitas (`: string`, `: User`)
+- ❌ Enums TypeScript (`enum`)
+- ❌ Configurações TypeScript (`tsconfig.json`)
+- ❌ Dependências TypeScript (`typescript`, `@types/*`)
+
+### ✅ **OBRIGATÓRIO:**
+- ✅ JavaScript puro (.js, .jsx)
+- ✅ JSDoc para documentação
+- ✅ PropTypes para validação
+- ✅ Objetos JavaScript para constantes
+- ✅ Validação com JavaScript puro
+
+### 🚨 **PENALIDADES:**
+- ❌ Rejeição automática de pull requests
+- ❌ Reversão obrigatória de commits
+- ❌ Necessidade de refatoração completa
+
+### 🔍 **Verificação Automática**
+
+#### Script Linux/Mac:
+```bash
+# Adicione ao seu CI ou rode localmente antes de commitar
+if find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "tsconfig.json" \) ! -path "./node_modules/*" | grep .; then
+  echo "❌ Arquivos TypeScript encontrados! Remova antes de commitar."
+  exit 1
+fi
+```
+
+#### Script Windows/PowerShell:
+```powershell
+Get-ChildItem -Recurse -Include *.ts,*.tsx,tsconfig.json | Where-Object { $_.FullName -notmatch 'node_modules' }
+if ($?) {
+  Write-Host '❌ Arquivos TypeScript encontrados! Remova antes de commitar.'
+  exit 1
+}
+```
+
+### 📋 **Checklist de Verificação:**
+- [ ] ❌ Nenhum arquivo `.ts` ou `.tsx` criado
+- [ ] ❌ Nenhuma interface TypeScript (`interface`, `type`)
+- [ ] ❌ Nenhuma tipagem TypeScript (`: string`, `: User`)
+- [ ] ❌ Nenhum enum TypeScript (`enum`)
+- [ ] ❌ Nenhuma configuração TypeScript
+- [ ] ✅ Apenas JavaScript puro em todos os arquivos
+- [ ] ✅ JSDoc usado para documentação
+- [ ] ✅ PropTypes usado para validação
+- [ ] ✅ Objetos JavaScript para constantes
+
+### 🎯 **EXEMPLO CORRETO:**
+```javascript
+/**
+ * @fileoverview Componente UserCard
+ * @directory components/ui/UserCard
+ * @description Card para exibição de informações do usuário
+ * @created 2024-12-19
+ * @lastModified 2024-12-19
+ * @author DOM Team
+ */
+
+import React from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * @param {Object} props
+ * @param {Object} props.user
+ * @param {string} props.user.id
+ * @param {string} props.user.name
+ * @param {string} props.user.email
+ */
+const UserCard = ({ user }) => {
+  return (
+    <div>
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
+    </div>
+  );
+};
+
+UserCard.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
+  }).isRequired
+};
+
+export default UserCard;
+```
+
+### 🚨 **LEMBRETE FINAL:**
+**SEMPRE use JavaScript puro. NUNCA use TypeScript.**
+
+---

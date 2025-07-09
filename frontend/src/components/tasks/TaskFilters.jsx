@@ -108,7 +108,7 @@ const TaskFilters = ({
 
       {/* Filtros básicos sempre visíveis */}
       <Grid container spacing={2} mb={2}>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Responsável</InputLabel>
             <Select
@@ -125,7 +125,7 @@ const TaskFilters = ({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Status</InputLabel>
             <Select
@@ -142,7 +142,7 @@ const TaskFilters = ({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Prioridade</InputLabel>
             <Select
@@ -163,7 +163,7 @@ const TaskFilters = ({
       {/* Filtros avançados */}
       <Collapse in={expanded}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               size="small"
@@ -177,7 +177,7 @@ const TaskFilters = ({
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               size="small"
@@ -191,7 +191,7 @@ const TaskFilters = ({
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               size="small"

@@ -1,68 +1,42 @@
 /** @type {import('next').NextConfig} */
-const { i18n } = require('./next-i18next.config');
 const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
-  i18n,
-  webpack: (config, { isServer, dev }) => {
+  i18n: {
+    defaultLocale: 'pt-BR',
+    locales: ['pt-BR', 'en', 'es']
+  },
+  webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = path.join(__dirname, 'src');
     
-    // Configuração específica para Material-UI
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@mui/material': path.resolve(__dirname, 'node_modules/@mui/material'),
-      '@mui/icons-material': path.resolve(__dirname, 'node_modules/@mui/icons-material'),
-    };
-    
-    // Desabilita completamente barrel optimization
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      cacheGroups: {
-        default: {
-          minChunks: 1,
-          priority: -20,
-          reuseExistingChunk: true,
+    // Otimizações apenas para client-side (não SSR)
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: {
+            minChunks: 1,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+          },
         },
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          priority: -10,
-          chunks: 'all',
-        },
-      },
-    };
-    
-    // Suprime todos os warnings
-    config.infrastructureLogging = {
-      level: 'error',
-    };
-    
-    // Configuração para suprimir warnings específicos
-    config.stats = {
-      warnings: false,
-      errors: true,
-    };
-    
-    // Desabilita warnings do webpack
-    config.ignoreWarnings = [
-      /Critical dependency/,
-      /Module not found/,
-      /Can't resolve/,
-      /__barrel_optimize__/,
-    ];
+      };
+    }
     
     return config;
   },
-  // Configurações para otimizar o build
+  // Otimizações de build
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Desabilita experimental features
-  experimental: {
-    optimizePackageImports: [],
-  },
-  // Configuração para suprimir warnings
+  // Configuração para suprimir warnings específicos
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,

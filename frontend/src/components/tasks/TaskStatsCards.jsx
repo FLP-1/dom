@@ -89,7 +89,7 @@ const TaskStatsCards = ({
   return (
     <Grid container spacing={2} mb={3}>
       {statCards.map((card, index) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
+                        <Grid xs={6} sm={4} md={3} lg={2} key={index}>
           <Card
             sx={{
               cursor: onCardClick ? 'pointer' : 'default',

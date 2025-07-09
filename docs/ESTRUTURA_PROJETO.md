@@ -60,19 +60,18 @@ dom-v1/
 │   │   ├── src/
 │   │   │   ├── components/           # Componentes base
 │   │   │   │   ├── Button/
-│   │   │   │   │   ├── Button.tsx
-│   │   │   │   │   ├── Button.types.ts
-│   │   │   │   │   ├── Button.test.tsx
-│   │   │   │   │   └── index.ts
+│   │   │   │   │   ├── Button.jsx
+│   │   │   │   │   ├── Button.test.jsx
+│   │   │   │   │   └── index.js
 │   │   │   │   ├── Card/
 │   │   │   │   ├── Input/
 │   │   │   │   ├── Modal/
 │   │   │   │   └── ...
 │   │   │   ├── theme/                # Configuração de tema
 │   │   │   ├── utils/                # Utilitários de UI
-│   │   │   └── index.ts
+│   │   │   └── index.js
 │   │   ├── package.json
-│   │   └── tsconfig.json
+│   │   └── jsconfig.json
 │   │
 │   ├── utils/                        # Utilitários compartilhados
 │   │   ├── src/
@@ -80,15 +79,15 @@ dom-v1/
 │   │   │   ├── formatting/           # Formatação de dados
 │   │   │   ├── date/                 # Utilitários de data
 │   │   │   ├── storage/              # Utilitários de storage
-│   │   │   └── index.ts
+│   │   │   └── index.js
 │   │   ├── package.json
-│   │   └── tsconfig.json
+│   │   └── jsconfig.json
 │   │
-│   ├── types/                        # Definições de dados compartilhadas (JavaScript)
+│   ├── constants/                    # Constantes compartilhadas (JavaScript)
 │   │   ├── src/
-│   │   │   ├── api/                  # Definições de API
-│   │   │   ├── entities/             # Definições de entidades
-│   │   │   ├── common/               # Definições comuns
+│   │   │   ├── api/                  # Constantes de API
+│   │   │   ├── entities/             # Constantes de entidades
+│   │   │   ├── common/               # Constantes comuns
 │   │   │   └── index.js
 │   │   ├── package.json
 │   │   └── jsconfig.json
@@ -97,31 +96,31 @@ dom-v1/
 │       ├── prisma/
 │       │   ├── schema.prisma         # Schema do banco
 │       │   ├── migrations/           # Migrations
-│       │   └── seed.ts               # Seeds
+│       │   └── seed.js               # Seeds
 │       ├── src/
-│       │   ├── client.ts             # Cliente Prisma
+│       │   ├── client.js             # Cliente Prisma
 │       │   ├── repositories/         # Repositórios
-│       │   └── index.ts
+│       │   └── index.js
 │       ├── package.json
-│       └── tsconfig.json
+│       └── jsconfig.json
 │
 ├── shared/
 │   ├── constants/                    # Constantes compartilhadas
-│   │   ├── api.ts                    # Constantes de API
-│   │   ├── routes.ts                 # Constantes de rotas
-│   │   ├── validation.ts             # Constantes de validação
-│   │   └── index.ts
+│   │   ├── api.js                    # Constantes de API
+│   │   ├── routes.js                 # Constantes de rotas
+│   │   ├── validation.js             # Constantes de validação
+│   │   └── index.js
 │   │
 │   ├── messages/                     # Mensagens centralizadas
-│   │   ├── pt-BR.ts                  # Português Brasil
-│   │   ├── en-US.ts                  # Inglês EUA
-│   │   ├── es-ES.ts                  # Espanhol
-│   │   └── index.ts
+│   │   ├── pt-BR.js                  # Português Brasil
+│   │   ├── en-US.js                  # Inglês EUA
+│   │   ├── es-ES.js                  # Espanhol
+│   │   └── index.js
 │   │
 │   └── validations/                  # Validações compartilhadas
 │       ├── schemas/                  # Schemas de validação
 │       ├── rules/                    # Regras de validação
-│       └── index.ts
+│       └── index.js
 │
 ├── docs/                             # Documentação
 │   ├── DIRETRIZES_DESENVOLVIMENTO.md
@@ -305,16 +304,27 @@ export const validateEmail = (email: string): string | null => {
 }
 ```
 
-```typescript
-// packages/utils/src/formatting/currency.ts
-export const formatCurrency = (value: number, currency = 'BRL'): string => {
+```javascript
+// packages/utils/src/formatting/currency.js
+/**
+ * Formata um valor como moeda
+ * @param {number} value - Valor a ser formatado
+ * @param {string} [currency='BRL'] - Código da moeda
+ * @returns {string} Valor formatado como moeda
+ */
+export const formatCurrency = (value, currency = 'BRL') => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency
   }).format(value)
 }
 
-export const formatPercentage = (value: number): string => {
+/**
+ * Formata um valor como porcentagem
+ * @param {number} value - Valor a ser formatado
+ * @returns {string} Valor formatado como porcentagem
+ */
+export const formatPercentage = (value) => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'percent',
     minimumFractionDigits: 2
@@ -322,59 +332,108 @@ export const formatPercentage = (value: number): string => {
 }
 ```
 
-### Package Types (Tipos Compartilhados)
+### Package Constants (Constantes Compartilhadas)
 
-```typescript
-// packages/types/src/entities/User.ts
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: UserRole
-  status: UserStatus
-  createdAt: Date
-  updatedAt: Date
+```javascript
+// packages/constants/src/entities/User.js
+/**
+ * Constantes relacionadas ao usuário
+ * @fileoverview Constantes de usuário
+ * @directory packages/constants/src/entities
+ * @description Constantes e validações para entidade User
+ * @created 2024-12-19
+ * @lastModified 2024-12-19
+ */
+
+/**
+ * Perfis de usuário disponíveis
+ */
+export const UserRole = {
+  ADMIN: 'admin',
+  USER: 'user',
+  MODERATOR: 'moderator'
 }
 
-export type UserRole = 'admin' | 'user' | 'moderator'
-export type UserStatus = 'active' | 'inactive' | 'pending'
-
-export interface CreateUserRequest {
-  name: string
-  email: string
-  role?: UserRole
+/**
+ * Status de usuário disponíveis
+ */
+export const UserStatus = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  PENDING: 'pending'
 }
 
-export interface UpdateUserRequest {
-  name?: string
-  email?: string
-  role?: UserRole
-  status?: UserStatus
+/**
+ * Validação de dados de usuário
+ * @param {Object} user - Dados do usuário
+ * @returns {Object} Resultado da validação
+ */
+export const validateUser = (user) => {
+  const errors = []
+  
+  if (!user.name || typeof user.name !== 'string') {
+    errors.push('Nome é obrigatório e deve ser uma string')
+  }
+  
+  if (!user.email || typeof user.email !== 'string') {
+    errors.push('Email é obrigatório e deve ser uma string')
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
 }
 ```
 
-```typescript
-// packages/types/src/api/ApiResponse.ts
-export interface ApiResponse<T> {
-  data: T
-  status: number
-  message: string
-  timestamp: Date
+```javascript
+// packages/constants/src/api/ApiResponse.js
+/**
+ * Constantes e utilitários para respostas de API
+ * @fileoverview Constantes de API
+ * @directory packages/constants/src/api
+ * @description Constantes e validações para respostas de API
+ * @created 2024-12-19
+ * @lastModified 2024-12-19
+ */
+
+/**
+ * Códigos de status HTTP comuns
+ */
+export const HttpStatus = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500
 }
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
+/**
+ * Validação de resposta de API
+ * @param {Object} response - Resposta da API
+ * @returns {Object} Resultado da validação
+ */
+export const validateApiResponse = (response) => {
+  const errors = []
+  
+  if (!response || typeof response !== 'object') {
+    errors.push('Resposta deve ser um objeto')
   }
-}
-
-export interface ApiError {
-  code: string
-  message: string
-  details?: Record<string, unknown>
+  
+  if (typeof response.status !== 'number') {
+    errors.push('Status deve ser um número')
+  }
+  
+  if (typeof response.message !== 'string') {
+    errors.push('Message deve ser uma string')
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
 }
 ```
 
@@ -407,7 +466,7 @@ export interface ApiError {
       "@/hooks/*": ["./src/hooks/*"],
       "@/services/*": ["./src/services/*"],
       "@/utils/*": ["./src/utils/*"],
-      "@/types/*": ["./src/types/*"]
+      "@/constants/*": ["./src/constants/*"]
     }
   },
   "include": ["**/*.js", "**/*.jsx"],

@@ -19,7 +19,7 @@ O DOM v1 é um sistema multiplataforma de gestão doméstica desenvolvido com **
 - **Material-UI v2** - Biblioteca de componentes
 - **React Hooks** - Gerenciamento de estado
 - **next-i18next** - Internacionalização
-- **JavaScript puro** - Sem TypeScript (regra do projeto)
+- **JavaScript puro** - TypeScript PROIBIDO (regra do projeto)
 
 ## 👥 Perfis de Usuários
 

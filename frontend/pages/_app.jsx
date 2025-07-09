@@ -12,13 +12,13 @@ import * as React from 'react'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import theme from '@/theme'
-import { appWithTranslation } from 'next-i18next'
 import { UserProvider, useUser } from '@/context/UserContext'
 import { ActiveContextProvider, useActiveContext } from '@/context/ActiveContext'
 import ContextSelectModal from '@/components/ContextSelectModal'
 import { useEffect, useState, useCallback } from 'react'
 import { logout } from '@/logout'
 import { useRouter } from 'next/router'
+import i18n from '@/utils/i18n' // Importar instância global do i18next
 
 function ContextSelectorWrapper({ children }) {
   const { user, setUser, loading } = useUser()
@@ -44,8 +44,15 @@ function ContextSelectorWrapper({ children }) {
       })
       
       if (res.status === 401) {
-        console.log('ContextSelectorWrapper: Token inválido, fazendo logout')
-        logout()
+        console.log('ContextSelectorWrapper: Token inválido, usando contexto padrão')
+        // Em vez de fazer logout, usar contexto padrão
+        const defaultContext = {
+          groupId: 'default-group',
+          groupName: 'Contexto Padrão',
+          role: 'empregador',
+          profile: 'empregador'
+        }
+        setActiveContext(defaultContext)
         return
       }
       
@@ -69,10 +76,27 @@ function ContextSelectorWrapper({ children }) {
           setActiveContext(response.contexts[0])
         } else if (response.contexts.length > 1 && hasActiveContext) {
           console.log('ContextSelectorWrapper: Múltiplos contextos disponíveis, mas já há contexto ativo')
+        } else if (response.contexts.length === 0) {
+          console.log('ContextSelectorWrapper: Nenhum contexto, usando padrão')
+          const defaultContext = {
+            groupId: 'default-group',
+            groupName: 'Contexto Padrão',
+            role: 'empregador',
+            profile: 'empregador'
+          }
+          setActiveContext(defaultContext)
         }
       }
     } catch (error) {
       console.error('ContextSelectorWrapper: Erro ao buscar contextos:', error)
+      // Em caso de erro, usar contexto padrão
+      const defaultContext = {
+        groupId: 'default-group',
+        groupName: 'Contexto Padrão',
+        role: 'empregador',
+        profile: 'empregador'
+      }
+      setActiveContext(defaultContext)
     }
   }, [groupId, groupName, role, profile, setActiveContext])
 
@@ -118,9 +142,11 @@ function ContextSelectorWrapper({ children }) {
     // 3. Não há token
     // 4. Está na página de login
     if (loading || !user || router.pathname === '/login') {
+      console.log('ContextSelectorWrapper: Condições não atendidas, não buscando contextos')
       return;
     }
     
+    console.log('ContextSelectorWrapper: Condições atendidas, buscando contextos...')
     fetchContextsAndShowModal()
   }, [user, loading, router.pathname, fetchContextsAndShowModal])
 
@@ -186,4 +212,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default appWithTranslation(MyApp)
+export default MyApp

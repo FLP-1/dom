@@ -94,7 +94,6 @@ const SplashScreen = () => {
           thickness={2}
           aria-label="Carregando aplicação"
         />
-        
         {/* Logo central */}
         <Logo
           src="/Logo_CasaMaoCoracao.png"
@@ -102,11 +101,9 @@ const SplashScreen = () => {
           aria-label="Logo DOM"
         />
       </LogoContainer>
-
       <LoadingText variant="body1">
         {loadingText}
       </LoadingText>
-
       <Typography
         variant="caption"
         sx={{

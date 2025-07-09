@@ -7,26 +7,36 @@
  * @author DOM Team
  */
 
+import path from 'path'
+import { spawn } from 'child_process'
+
 export default async function handler(req, res) {
+  console.log('🔍 Dashboard Stats Debug: Requisição recebida')
+  
   if (req.method !== 'GET') {
+    console.log('❌ Dashboard Stats Debug: Método não permitido')
     return res.status(405).json({ error: 'Método não permitido' })
   }
 
   try {
     const { profile = 'empregador', user_id = 'user_123' } = req.query
+    console.log('🔍 Dashboard Stats Debug:', { profile, user_id })
 
     // Valida perfil
     const validProfiles = ['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']
     if (!validProfiles.includes(String(profile))) {
+      console.log('❌ Dashboard Stats Debug: Perfil inválido')
       return res.status(400).json({ error: 'Perfil inválido' })
     }
 
     // Busca dados do banco usando Python
+    console.log('🔍 Dashboard Stats Debug: Buscando dados do banco...')
     const stats = await getStatsFromDatabase(String(profile), String(user_id))
+    console.log('✅ Dashboard Stats Debug: Dados obtidos:', stats)
     
     return res.status(200).json(stats)
   } catch (error) {
-    console.error('Erro ao buscar estatísticas:', error)
+    console.error('❌ Dashboard Stats Debug: Erro ao buscar estatísticas:', error)
     return res.status(500).json({ error: 'Erro interno do servidor' })
   }
 }

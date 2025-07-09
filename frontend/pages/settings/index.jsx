@@ -8,8 +8,7 @@
  */
 
 import React from 'react'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import { 
   Box, 
   Typography, 
@@ -19,20 +18,14 @@ import {
   Grid,
   Chip
 } from '@mui/material'
-
-export async function getStaticProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-}
+import { ProtectedRoute } from '@/components/auth'
 
 export default function SettingsPage() {
   const { t } = useTranslation('common')
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <ProtectedRoute allowedProfiles={['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Typography variant="h4" component="h1">
           {t('settings.title', 'Configurações')}
@@ -61,5 +54,6 @@ export default function SettingsPage() {
         </Grid>
       </Grid>
     </Container>
+    </ProtectedRoute>
   )
 } 

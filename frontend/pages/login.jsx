@@ -9,8 +9,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   Card,
@@ -38,7 +37,7 @@ import {
 } from '@mui/icons-material'
 import { styled } from '@mui/material/styles'
 import theme from '@/theme'
-import { useUser } from '@/context/UserContext'
+import { useAuth } from '@/hooks/useAuth'
 
 // Função simples de validação de CPF
 const validateCPF = (cpf) => {
@@ -192,7 +191,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
-  const { setUser } = useUser()
+  const { login, isLoading: authLoading, error: authError } = useAuth()
 
   // Carrossel de frases motivacionais
   const motivationalPhrases = getMotivationalPhrases(t)
@@ -265,48 +264,17 @@ const LoginPage = () => {
     }
 
     try {
-      // Integração real com backend Python
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          cpf: formData.cpf.replace(/\D/g, ''),
-          password: formData.password,
-          remember_me: rememberMe
-        })
+      // Usar o hook de autenticação
+      const data = await login({
+        cpf: formData.cpf.replace(/\D/g, ''),
+        password: formData.password,
+        remember_me: rememberMe
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        localStorage.setItem('userData', JSON.stringify(data))
-        if (data.access_token) {
-          localStorage.setItem('userToken', data.access_token)
-        }
-        setUser(data)
-        router.push(`/dashboard?profile=${data.profile || 'empregador'}`)
-      } else {
-        const errorData = await response.json()
-        // Melhorar mensagens de erro específicas
-        let errorMessage = t('login.error_generic', 'Erro no login')
-        
-        if (response.status === 401) {
-          errorMessage = t('login.error_invalid_credentials', 'CPF ou senha incorretos. Verifique suas credenciais e tente novamente.')
-        } else if (response.status === 404) {
-          errorMessage = t('login.error_user_not_found', 'Usuário não encontrado. Verifique se o CPF está correto ou entre em contato com o suporte.')
-        } else if (response.status === 403) {
-          errorMessage = t('login.error_account_blocked', 'Conta bloqueada ou inativa. Entre em contato com o administrador.')
-        } else if (response.status === 429) {
-          errorMessage = t('login.error_too_many_attempts', 'Muitas tentativas de login. Aguarde alguns minutos e tente novamente.')
-        } else if (errorData.message) {
-          errorMessage = errorData.message
-        }
-        
-        setErrors(prev => ({ ...prev, general: errorMessage }))
-      }
+      
+      // Redirecionar para dashboard
+      router.push(`/dashboard?profile=${data.profile || 'empregador'}`)
     } catch (error) {
-      setErrors(prev => ({ ...prev, general: t('login.error_connection', 'Erro de conexão. Verifique sua internet e tente novamente.') }))
+      setErrors(prev => ({ ...prev, general: error.message }))
     } finally {
       setIsLoading(false)
     }
@@ -346,9 +314,9 @@ const LoginPage = () => {
             onSubmit={handleSubmit}
             autoComplete="new-password"
           >
-            {errors.general && (
+            {(errors.general || authError) && (
               <Alert severity="error" sx={{ mb: 2 }}>
-                {errors.general}
+                {errors.general || authError}
               </Alert>
             )}
 
@@ -434,10 +402,10 @@ const LoginPage = () => {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={isLoading}
-              endIcon={isLoading ? undefined : <ArrowForwardIcon />}
+              disabled={isLoading || authLoading}
+              endIcon={isLoading || authLoading ? undefined : <ArrowForwardIcon />}
             >
-              {isLoading ? t('login.entering', 'Entrando...') : t('login.login', 'Entrar')}
+              {isLoading || authLoading ? t('login.entering', 'Entrando...') : t('login.login', 'Entrar')}
             </StyledButton>
           </Box>
 
@@ -460,10 +428,4 @@ const LoginPage = () => {
 
 export default LoginPage
 
-export async function getStaticProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common'])),
-    },
-  }
-} 
+ 

@@ -23,9 +23,8 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    'pages/**/*.{js,jsx,ts,tsx}',
-    '!**/*.d.ts',
+    'src/**/*.{js,jsx}',
+    'pages/**/*.{js,jsx}',
     '!**/node_modules/**',
     '!**/.next/**',
     '!**/coverage/**',
@@ -39,15 +38,15 @@ const customJestConfig = {
     },
   },
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
-    '<rootDir>/pages/**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/pages/**/*.{test,spec}.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
+    '<rootDir>/src/**/*.{test,spec}.{js,jsx}',
+    '<rootDir>/pages/**/__tests__/**/*.{js,jsx}',
+    '<rootDir>/pages/**/*.{test,spec}.{js,jsx}',
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
 }
 
 module.exports = createJestConfig(customJestConfig) 

@@ -27,6 +27,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import TaskStatsCards from '@/components/tasks/TaskStatsCards'
 import { useTasks } from '@/hooks/useTasks'
 import { useTaskStats } from '@/hooks/useTaskStats'
+import { ProtectedRoute } from '@/components/auth'
 
 // Dados mockados para responsáveis (será substituído por API real posteriormente)
 const mockResponsaveis = [
@@ -237,7 +238,8 @@ const TasksPage = () => {
   }
 
   return (
-    <MainLayout profile={currentProfile} userName={user?.name || ''} title="Tarefas">
+    <ProtectedRoute allowedProfiles={['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']}>
+      <MainLayout profile={currentProfile} userName={user?.name || ''} title="Tarefas">
       <Head>
         <title>Tarefas | DOM</title>
       </Head>
@@ -254,7 +256,7 @@ const TasksPage = () => {
             {/* Cards de resumo */}
             <Grid container spacing={3} mb={4}>
               {/* Card 1: Tarefas Urgentes */}
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <Card sx={{
                   ...getProfileCardStyle(currentProfile),
                   background: getProfileCardStyle(currentProfile).background,
@@ -278,7 +280,7 @@ const TasksPage = () => {
                 </Card>
               </Grid>
               {/* Card 2: Tarefas a Concluir */}
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <Card sx={{
                   ...getProfileCardStyle(user.profile),
                   background: getProfileCardStyle(user.profile).background,
@@ -302,7 +304,7 @@ const TasksPage = () => {
                 </Card>
               </Grid>
               {/* Card 3: Tarefas Concluídas Hoje */}
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <Card sx={{
                   ...getProfileCardStyle(user.profile),
                   background: getProfileCardStyle(user.profile).background,
@@ -403,6 +405,7 @@ const TasksPage = () => {
         message={snackbarMessage}
       />
     </MainLayout>
+    </ProtectedRoute>
   )
 }
 

@@ -41,9 +41,9 @@ export default async function handler(req, res) {
       console.log('Erro do backend:', response.status, response.statusText)
       const errorData = await response.json().catch(() => ({}))
       
-      // Se o backend não estiver disponível, usar dados mockados para desenvolvimento
-      if (response.status === 500 || response.status === 503) {
-        console.log('Backend não disponível, usando dados mockados')
+      // Se o backend não estiver disponível ou token inválido, usar dados mockados para desenvolvimento
+      if (response.status === 500 || response.status === 503 || response.status === 401) {
+        console.log('Backend não disponível ou token inválido, usando dados mockados')
         const mockContexts = [
           {
             groupId: 'group-1',

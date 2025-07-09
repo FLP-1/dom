@@ -21,7 +21,11 @@ const SimpleComponent = ({ title, children }) => (
 
 describe('Teste Simples', () => {
   it('deve renderizar componente básico', () => {
-    render(<SimpleComponent title="Teste" children="Conteúdo" />)
+    render(
+      <SimpleComponent title="Teste">
+        Conteúdo
+      </SimpleComponent>
+    )
     
     expect(screen.getByText('Teste')).toBeInTheDocument()
     expect(screen.getByText('Conteúdo')).toBeInTheDocument()
@@ -29,7 +33,9 @@ describe('Teste Simples', () => {
 
   it('deve renderizar com providers', () => {
     renderWithProviders(
-      <SimpleComponent title="Teste com Providers" children="Conteúdo" />,
+      <SimpleComponent title="Teste com Providers">
+        Conteúdo
+      </SimpleComponent>,
       { profile: 'empregador' }
     )
     
@@ -42,7 +48,9 @@ describe('Teste Simples', () => {
     
     profiles.forEach(profile => {
       const { unmount } = renderWithProviders(
-        <SimpleComponent title={`Teste ${profile}`} children="Conteúdo" />,
+        <SimpleComponent title={`Teste ${profile}`}>
+          Conteúdo
+        </SimpleComponent>,
         { profile }
       )
       
