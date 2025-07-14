@@ -34,7 +34,7 @@ import { getProfileTheme } from '@/theme/profile-themes'
 const TaskFilters = ({
   filter,
   onFilterChange,
-  responsaveis,
+  responsaveis = [],
   profile = 'empregador'
 }) => {
   const [expanded, setExpanded] = useState(false)
@@ -117,7 +117,7 @@ const TaskFilters = ({
               label="Responsável"
             >
               <MenuItem value="">Todos</MenuItem>
-              {responsaveis.map(r => (
+              {(responsaveis || []).map(r => (
                 <MenuItem key={r.id} value={r.id}>
                   {r.name} ({r.nickname})
                 </MenuItem>
@@ -208,11 +208,11 @@ const TaskFilters = ({
       {(filter.responsibleId?.length || filter.status?.length || filter.priority?.length || filter.search) && (
         <Box mt={2} display="flex" flexWrap="wrap" gap={1}>
           {filter.responsibleId?.map(id => {
-            const responsavel = responsaveis.find(r => r.id === id)
+            const responsavel = (responsaveis || []).find(r => r.id === id)
             return (
               <Chip
                 key={`resp-${id}`}
-                label={`Responsável: ${responsavel?.name}`}
+                label={`Responsável: ${responsavel?.name || 'Desconhecido'}`}
                 onDelete={() => handleFilterChange('responsibleId', filter.responsibleId?.filter(r => r !== id))}
                 color="primary"
                 size="small"

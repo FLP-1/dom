@@ -8,7 +8,7 @@
  */
 
 import React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { 
   Box, 
   Typography, 
@@ -20,14 +20,21 @@ import {
   Chip
 } from '@mui/material'
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material'
+import MainLayout from '@/components/MainLayout'
+import { useUser } from '@/context/UserContext'
+import { ProtectedRoute } from '@/components/auth'
 
 
 
 export default function NewTaskPage() {
   const { t } = useTranslation('common')
+  const { activeContext, user } = useUser()
+  const profile = activeContext?.profile || user?.profile || 'empregador'
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <ProtectedRoute allowedProfiles={['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']}>
+      <MainLayout profile={profile}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box display="flex" alignItems="center" mb={4}>
         <Button
           startIcon={<ArrowBackIcon />}
@@ -62,6 +69,8 @@ export default function NewTaskPage() {
           </Card>
         </Grid>
       </Grid>
-    </Container>
+        </Container>
+      </MainLayout>
+    </ProtectedRoute>
   )
 } 

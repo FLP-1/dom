@@ -18,53 +18,18 @@ import { getProfileTheme, getProfileCardStyle } from '@/theme/profile-themes'
 import TaskFilters from '@/components/tasks/TaskFilters'
 import TaskCard from '@/components/tasks/TaskCard'
 import MainLayout from '@/components/MainLayout'
-import { Task, TaskResponsible, TaskFilter, TaskStats } from '@/types/tasks'
+
 import { useUser } from '@/context/UserContext'
-import { useActiveContext } from '@/context/ActiveContext'
 import WarningIcon from '@mui/icons-material/Warning'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import TaskStatsCards from '@/components/tasks/TaskStatsCards'
 import { useTasks } from '@/hooks/useTasks'
 import { useTaskStats } from '@/hooks/useTaskStats'
+import { useUsers } from '@/hooks/useUsers'
 import { ProtectedRoute } from '@/components/auth'
 
-// Dados mockados para responsáveis (será substituído por API real posteriormente)
-const mockResponsaveis = [
-  { 
-    id: '1', 
-    name: 'Maria Silva', 
-    nickname: 'Mari', 
-    role: 'empregado', 
-    avatar: '', 
-    email: 'maria@email.com',
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  { 
-    id: '2', 
-    name: 'Joana Santos', 
-    nickname: 'Jo', 
-    role: 'empregador', 
-    avatar: '', 
-    email: 'joana@email.com',
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  { 
-    id: '3', 
-    name: 'Ana Costa', 
-    nickname: 'Aninha', 
-    role: 'familiar', 
-    avatar: '', 
-    email: 'ana@email.com',
-    isActive: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-]
+
 
 const PERIODS = ['today', 'week', 'month', 'custom']
 const STATUS = ['pending', 'in_progress', 'completed', 'cancelled', 'paused']
@@ -72,7 +37,12 @@ const STATUS = ['pending', 'in_progress', 'completed', 'cancelled', 'paused']
 const TasksPage = () => {
   const theme = useTheme()
   const { user, loading } = useUser()
-  const { groupId, groupName, role, profile: activeProfile, refreshTrigger } = useActiveContext()
+  const { activeContext } = useUser()
+  const groupId = activeContext?.groupId
+  const groupName = activeContext?.groupName
+  const role = activeContext?.role
+  const activeProfile = activeContext?.profile
+  const refreshTrigger = activeContext?.refreshTrigger
   const [filter, setFilter] = useState({})
   const [showSnackbar, setShowSnackbar] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
@@ -84,19 +54,15 @@ const TasksPage = () => {
   const profileTheme = getProfileTheme(currentProfile)
 
   // Hook para buscar tarefas do backend
-  const { tasks, loading: loadingTasks, error: errorTasks } = useTasks({
-    token: user?.access_token || '',
-    params: {
-      status: status !== 'all' ? status : undefined,
-      categoria: filter.category,
-      responsavel_id: filter.responsibleId?.[0],
-      criador_id: filter.creatorId?.[0],
-    }
-  })
+  const { tasks, loading: loadingTasks, error: errorTasks } = useTasks(currentProfile, true)
 
   // Hook para buscar estatísticas do backend
-  const { stats, loading: loadingStats, error: errorStats } = useTaskStats({
-    token: user?.access_token || ''
+  const { stats, loading: loadingStats, error: errorStats } = useTaskStats(currentProfile)
+
+  // Hook para buscar usuários (responsáveis)
+  const { users: responsaveis, loading: loadingUsers, error: errorUsers } = useUsers({ 
+    token: user?.token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null), 
+    params: { profile: currentProfile } 
   })
 
   // Recarregar dados quando o contexto mudar ou quando refreshTrigger for acionado
@@ -105,7 +71,7 @@ const TasksPage = () => {
       console.log('Contexto ativo mudou:', { groupId, groupName, role, profile: activeProfile })
       // Aqui você pode adicionar lógica para recarregar dados específicos do contexto
     }
-  }, [groupId, groupName, role, activeProfile, refreshTrigger])
+  }, [groupId, groupName, role, activeProfile]) // Removido refreshTrigger para evitar loop
 
   // Exibir erros se houver
   useEffect(() => {
@@ -121,6 +87,13 @@ const TasksPage = () => {
       setShowSnackbar(true)
     }
   }, [errorStats])
+
+  useEffect(() => {
+    if (errorUsers) {
+      setSnackbarMessage(`Erro ao carregar responsáveis: ${errorUsers}`)
+      setShowSnackbar(true)
+    }
+  }, [errorUsers])
 
   // Função para filtrar por período
   const isInPeriod = useCallback((date) => {
@@ -244,7 +217,7 @@ const TasksPage = () => {
         <title>Tarefas | DOM</title>
       </Head>
       <Container maxWidth="lg" sx={{ mt: 4 }}>
-        {loading || loadingTasks ? (
+        {loading || loadingTasks || loadingUsers ? (
           <Box p={4} display="flex" justifyContent="center" alignItems="center">
             <CircularProgress />
             <Typography ml={2}>Carregando tarefas...</Typography>
@@ -282,9 +255,9 @@ const TasksPage = () => {
               {/* Card 2: Tarefas a Concluir */}
               <Grid xs={12} sm={4}>
                 <Card sx={{
-                  ...getProfileCardStyle(user.profile),
-                  background: getProfileCardStyle(user.profile).background,
-                  border: getProfileCardStyle(user.profile).border,
+                  ...getProfileCardStyle(currentProfile),
+                  background: getProfileCardStyle(currentProfile).background,
+                  border: getProfileCardStyle(currentProfile).border,
                   height: 70,
                   minHeight: 60,
                   display: 'flex',
@@ -292,12 +265,12 @@ const TasksPage = () => {
                   justifyContent: 'center'
                 }}>
                   <CardContent sx={{ p: 1.5, flexGrow: 1, display: 'flex', alignItems: 'center', minHeight: 0 }}>
-                    <AssignmentIcon sx={{ color: getProfileTheme(user.profile).primaryColor, mr: 1 }} />
-                    <Typography variant="h6" sx={{ fontSize: getProfileTheme(user.profile).textSize.medium, fontWeight: 600, mr: 1 }}>
+                    <AssignmentIcon sx={{ color: getProfileTheme(currentProfile).primaryColor, mr: 1 }} />
+                    <Typography variant="h6" sx={{ fontSize: getProfileTheme(currentProfile).textSize.medium, fontWeight: 600, mr: 1 }}>
                       Tarefas a Concluir
                     </Typography>
                     <Box flex={1} />
-                    <Typography variant="h4" color="primary" sx={{ fontSize: getProfileTheme(user.profile).textSize.xlarge, minWidth: 32, textAlign: 'right', fontWeight: 700 }}>
+                    <Typography variant="h4" color="primary" sx={{ fontSize: getProfileTheme(currentProfile).textSize.xlarge, minWidth: 32, textAlign: 'right', fontWeight: 700 }}>
                       {statsAConcluir.total}
                     </Typography>
                   </CardContent>
@@ -306,9 +279,9 @@ const TasksPage = () => {
               {/* Card 3: Tarefas Concluídas Hoje */}
               <Grid xs={12} sm={4}>
                 <Card sx={{
-                  ...getProfileCardStyle(user.profile),
-                  background: getProfileCardStyle(user.profile).background,
-                  border: getProfileCardStyle(user.profile).border,
+                  ...getProfileCardStyle(currentProfile),
+                  background: getProfileCardStyle(currentProfile).background,
+                  border: getProfileCardStyle(currentProfile).border,
                   height: 70,
                   minHeight: 60,
                   display: 'flex',
@@ -317,11 +290,11 @@ const TasksPage = () => {
                 }}>
                   <CardContent sx={{ p: 1.5, flexGrow: 1, display: 'flex', alignItems: 'center', minHeight: 0 }}>
                     <CheckCircleIcon sx={{ color: '#4caf50', mr: 1 }} />
-                    <Typography variant="h6" sx={{ fontSize: getProfileTheme(user.profile).textSize.medium, fontWeight: 600, mr: 1 }}>
+                    <Typography variant="h6" sx={{ fontSize: getProfileTheme(currentProfile).textSize.medium, fontWeight: 600, mr: 1 }}>
                       Tarefas Concluídas Hoje
                     </Typography>
                     <Box flex={1} />
-                    <Typography variant="h4" sx={{ color: '#4caf50', fontSize: getProfileTheme(user.profile).textSize.xlarge, minWidth: 32, textAlign: 'right', fontWeight: 700 }}>
+                    <Typography variant="h4" sx={{ color: '#4caf50', fontSize: getProfileTheme(currentProfile).textSize.xlarge, minWidth: 32, textAlign: 'right', fontWeight: 700 }}>
                       {statsConcluidasHoje.total}
                     </Typography>
                   </CardContent>
@@ -332,8 +305,8 @@ const TasksPage = () => {
             <TaskFilters
               filter={filter}
               onFilterChange={setFilter}
-              responsaveis={mockResponsaveis}
-              profile={user.profile}
+              responsaveis={responsaveis || []}
+              profile={currentProfile}
             />
             {/* Lista de tarefas */}
             <Box mb={3}>
@@ -365,7 +338,7 @@ const TasksPage = () => {
                           photos: tarefa.anexos || [],
                           tags: tarefa.tags || []
                         }}
-                        responsible={mockResponsaveis.find(r => r.id === tarefa.responsavel_id)}
+                        responsible={null}
                         profile={user.profile}
                         onEdit={handleEditTask}
                         onDelete={handleDeleteTask}

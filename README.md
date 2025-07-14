@@ -16,7 +16,7 @@ O DOM v1 é um sistema multiplataforma de gestão doméstica desenvolvido com **
 
 ### Frontend (JavaScript/Next.js)
 - **Next.js 15** - Framework React para produção
-- **Material-UI v2** - Biblioteca de componentes
+- **MUI v5 (Material-UI moderno)** - Biblioteca de componentes
 - **React Hooks** - Gerenciamento de estado
 - **next-i18next** - Internacionalização
 - **JavaScript puro** - TypeScript PROIBIDO (regra do projeto)

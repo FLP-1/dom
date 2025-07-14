@@ -33,18 +33,18 @@ import {
   Add as AddIcon,
   Group as GroupIcon,
 } from '@mui/icons-material'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@/utils/i18n'
 
 import Head from 'next/head'
 
 import MainLayout from '@/components/MainLayout'
-import { useGroups, Group, GroupFilters } from '@/hooks/useGroups'
+import { useGroups } from '@/hooks/useGroups'
 import { GroupCard, GroupFilters as GroupFiltersComponent, GroupStatsCards } from '@/components/groups'
 import { useUser } from '@/context/UserContext'
 import { ProtectedRoute } from '@/components/auth'
 
 const GroupsPage = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { user } = useUser()
   const {
     groups,

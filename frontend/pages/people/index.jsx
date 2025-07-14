@@ -32,36 +32,23 @@ import {
 import {
   Add as AddIcon,
   Refresh as RefreshIcon,
-  PersonAdd as PersonAddIcon
+  PersonAdd as PersonAddIcon,
+  People as PeopleIcon
 } from '@mui/icons-material';
 import MainLayout from '@/components/MainLayout';
 import { UserCard, UserFilters, UserStatsCards } from '@/components/people';
+import { getProfileTheme } from '@/theme/profile-themes';
 import { useUsers } from '@/hooks/useUsers';
+import { useUserStats } from '@/hooks/useUserStats';
 import { useUser } from '@/context/UserContext';
-import { UserApi, UserProfile, UserStatus } from '@/types/users';
 import { createUser, updateUser, deleteUser, activateUser, deactivateUser } from '@/services/userService';
 import { ProtectedRoute } from '@/components/auth';
 
-// Dados mockados para estatísticas (será substituído por dados reais)
-const mockStats = {
-  total_usuarios: 156,
-  usuarios_ativos: 142,
-  usuarios_inativos: 14,
-  usuarios_por_perfil: {
-    empregador: 45,
-    empregado: 67,
-    familiar: 23,
-    parceiro: 12,
-    subordinado: 8,
-    admin: 1,
-    owner: 1
-  },
-  novos_usuarios_mes: 23,
-  usuarios_online: 18
-};
+
 
 export default function PeoplePage() {
-  const { user } = useUser();
+  const { user, activeContext } = useUser();
+  const profile = activeContext?.profile || user?.profile || 'empregador';
   const [filters, setFilters] = useState({
     search: '',
     perfil: [],
@@ -101,6 +88,14 @@ export default function PeoplePage() {
     token: user?.token || '', 
     params: apiParams 
   });
+
+  // Hook para estatísticas de usuários
+  const { 
+    stats: userStats, 
+    loading: statsLoading, 
+    error: statsError, 
+    refreshStats 
+  } = useUserStats(user?.token || '');
 
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
@@ -177,6 +172,7 @@ export default function PeoplePage() {
 
   const handleRefresh = () => {
     refreshUsers();
+    refreshStats();
   };
 
   const handleCloseDialog = () => {
@@ -193,22 +189,27 @@ export default function PeoplePage() {
 
   return (
     <ProtectedRoute allowedProfiles={['empregador', 'admin', 'owner']}>
-      <MainLayout>
+      <MainLayout profile={profile} userName={user?.name || ''} title="Pessoas">
         <Container maxWidth="xl">
         <Box sx={{ py: 4 }}>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-            <Box>
+            <Box display="flex" alignItems="center" gap={2}>
+              <PeopleIcon 
+                sx={{ 
+                  fontSize: '32px', 
+                  color: getProfileTheme(profile).primaryColor 
+                }} 
+              />
               <Typography 
-                variant={isSimpleInterface ? 'h4' : 'h3'} 
-                component="h1" 
-                gutterBottom
-                sx={{ fontWeight: 'bold' }}
+                variant="h4" 
+                component="h1"
+                sx={{ 
+                  color: getProfileTheme(profile).primaryColor,
+                  fontWeight: 'bold' 
+                }}
               >
                 Pessoas
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Gerencie usuários, funcionários e familiares do sistema
               </Typography>
             </Box>
             
@@ -237,8 +238,9 @@ export default function PeoplePage() {
           {/* Estatísticas */}
           {showStats && (
             <UserStatsCards 
-              stats={mockStats} 
+              stats={userStats} 
               profile={user?.perfil || 'empregador'} 
+              loading={statsLoading}
             />
           )}
 

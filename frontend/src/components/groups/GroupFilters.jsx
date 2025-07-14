@@ -28,7 +28,7 @@ import {
   Clear as ClearIcon,
   Search as SearchIcon,
 } from '@mui/icons-material'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { GroupFilters } from '@/hooks/useGroups'
 
 const GroupFiltersComponent = memo(({
@@ -36,7 +36,7 @@ const GroupFiltersComponent = memo(({
   onFiltersChange,
   onClearFilters,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [expanded, setExpanded] = useState(false)
   const [localFilters, setLocalFilters] = useState(filters)
 

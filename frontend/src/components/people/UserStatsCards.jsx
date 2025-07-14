@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from '@/utils/i18n';
 import {
   Grid,
   Card,
@@ -52,9 +53,20 @@ const getProfileLabel = (perfil) => {
   return labels[perfil] || perfil;
 };
 
-export const UserStatsCards = ({ stats, profile }) => {
+export const UserStatsCards = ({ stats, profile, loading = false }) => {
+  const { t } = useTranslation('common');
   const isSimpleInterface = profile === 'empregado' || profile === 'familiar';
   const cardPadding = isSimpleInterface ? 3 : 2;
+
+  // Se stats for null ou loading, mostrar dados padrão
+  const safeStats = stats || {
+    total_usuarios: 0,
+    usuarios_ativos: 0,
+    usuarios_inativos: 0,
+    usuarios_por_perfil: {},
+    novos_usuarios_mes: 0,
+    usuarios_online: 0
+  };
 
   const StatCard = ({ 
     title, 
@@ -133,8 +145,8 @@ export const UserStatsCards = ({ stats, profile }) => {
     </Card>
   );
 
-  const totalAtivosPercent = stats.total_usuarios > 0 
-    ? Math.round((stats.usuarios_ativos / stats.total_usuarios) * 100) 
+  const totalAtivosPercent = safeStats.total_usuarios > 0 
+    ? Math.round((safeStats.usuarios_ativos / safeStats.total_usuarios) * 100) 
     : 0;
 
   return (
@@ -144,29 +156,29 @@ export const UserStatsCards = ({ stats, profile }) => {
         component="h2" 
         sx={{ mb: 3, fontWeight: 'bold' }}
       >
-        Estatísticas de Usuários
+        {t('users.stats.title', 'Estatísticas de Usuários')}
       </Typography>
       
       <Grid container spacing={isSimpleInterface ? 3 : 2}>
         {/* Total de Usuários */}
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Total de Usuários"
-            value={stats.total_usuarios}
+            title={t('users.stats.total', 'Total de Usuários')}
+            value={safeStats.total_usuarios}
             icon={<PeopleIcon />}
             color="#1976d2"
-            subtitle="Todos os usuários cadastrados"
+            subtitle={t('users.stats.total_subtitle', 'Todos os usuários cadastrados')}
           />
         </Grid>
 
         {/* Usuários Ativos */}
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Usuários Ativos"
-            value={stats.usuarios_ativos}
+            title={t('users.stats.active', 'Usuários Ativos')}
+            value={safeStats.usuarios_ativos}
             icon={<ActiveIcon />}
             color="#4caf50"
-            subtitle="Usuários com acesso ativo"
+            subtitle={t('users.stats.active_subtitle', 'Usuários com acesso ativo')}
             progress={totalAtivosPercent}
           />
         </Grid>
@@ -174,22 +186,22 @@ export const UserStatsCards = ({ stats, profile }) => {
         {/* Novos Usuários */}
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Novos este Mês"
-            value={stats.novos_usuarios_mes}
+            title={t('users.stats.new_month', 'Novos este Mês')}
+            value={safeStats.novos_usuarios_mes}
             icon={<PersonAddIcon />}
             color="#ff9800"
-            subtitle="Novos cadastros no mês"
+            subtitle={t('users.stats.new_month_subtitle', 'Novos cadastros no mês')}
           />
         </Grid>
 
         {/* Usuários Online */}
         <Grid xs={12} sm={6} md={3}>
           <StatCard
-            title="Usuários Online"
-            value={stats.usuarios_online}
+            title={t('users.stats.online', 'Usuários Online')}
+            value={safeStats.usuarios_online}
             icon={<OnlineIcon />}
             color="#9c27b0"
-            subtitle="Usuários ativos agora"
+            subtitle={t('users.stats.online_subtitle', 'Usuários ativos agora')}
           />
         </Grid>
       </Grid>
@@ -205,9 +217,9 @@ export const UserStatsCards = ({ stats, profile }) => {
         </Typography>
         
         <Grid container spacing={2}>
-          {Object.entries(stats.usuarios_por_perfil).map(([perfil, count]) => {
-            const percent = stats.total_usuarios > 0 
-              ? Math.round((count / stats.total_usuarios) * 100) 
+          {Object.entries(safeStats.usuarios_por_perfil).map(([perfil, count]) => {
+            const percent = safeStats.total_usuarios > 0 
+              ? Math.round((count / safeStats.total_usuarios) * 100) 
               : 0;
             
             return (

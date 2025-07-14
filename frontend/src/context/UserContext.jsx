@@ -1,55 +1,66 @@
 /**
- * @fileoverview Contexto global de usuário
+ * @fileoverview Contexto global de usuário e contexto ativo
  * @directory src/context
- * @description Fornece o usuário logado e perfil para todo o app
+ * @description Gerencia usuário logado e contexto ativo de forma sincronizada
  * @created 2024-12-19
  * @lastModified 2024-12-19
- * @author DOM Team
+ * @author Cursor AI
  */
-
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 const UserContext = createContext()
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [activeContext, setActiveContext] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Carregar do localStorage ao iniciar
   useEffect(() => {
-    console.log('🔍 UserContext Debug: Iniciando carregamento...')
-    
-    const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
-    const data = typeof window !== 'undefined' ? localStorage.getItem('userData') : null
-    
-    console.log('🔍 UserContext Debug:', { token: !!token, data: !!data })
-    
-    // Só carregar dados do usuário se há token válido
-    if (token && data) {
-      try {
-        const userData = JSON.parse(data)
-        console.log('🔍 UserContext Debug: Dados do usuário carregados:', userData)
-        setUser(userData)
-      } catch (error) {
-        console.error('❌ UserContext Debug: Erro ao carregar dados do usuário:', error)
-        // Limpar dados inválidos
-        localStorage.removeItem('userData')
-        localStorage.removeItem('userToken')
-        localStorage.removeItem('activeContext')
-      }
-    } else {
-      console.log('🔍 UserContext Debug: Sem token ou dados, limpando localStorage')
-      // Limpar dados se não há token
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('userData')
-        localStorage.removeItem('activeContext')
-      }
-    }
+    const storedUser = localStorage.getItem('userData')
+    const storedContext = localStorage.getItem('activeContext')
+    if (storedUser) setUser(JSON.parse(storedUser))
+    if (storedContext) setActiveContext(JSON.parse(storedContext))
     setLoading(false)
-    console.log('🔍 UserContext Debug: Carregamento finalizado')
   }, [])
 
+  // Sincronizar user/contexto no localStorage sempre que mudar
+  useEffect(() => {
+    if (user) localStorage.setItem('userData', JSON.stringify(user))
+    if (activeContext) localStorage.setItem('activeContext', JSON.stringify(activeContext))
+  }, [user, activeContext])
+
+  // Função para login: atualiza user e contexto
+  const login = (userData, contextData) => {
+    setUser(userData)
+    setActiveContext(contextData)
+  }
+
+  // Função para troca de contexto
+  const changeContext = (contextData) => {
+    setActiveContext(contextData)
+    // Se necessário, atualize user também (ex: perfil mudou)
+    // setUser({...user, profile: contextData.profile})
+  }
+
+  // Função para logout
+  const logout = () => {
+    setUser(null)
+    setActiveContext(null)
+    localStorage.removeItem('userData')
+    localStorage.removeItem('activeContext')
+  }
+
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{
+      user,
+      activeContext,
+      setUser,
+      setActiveContext: changeContext,
+      login,
+      logout,
+      loading
+    }}>
       {children}
     </UserContext.Provider>
   )

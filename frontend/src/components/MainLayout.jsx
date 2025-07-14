@@ -38,7 +38,7 @@ import {
 } from '@mui/icons-material'
 import Image from 'next/image'
 import { getProfileColor, getProfileFontSize, getProfileIconSize, getProfileAvatarSize } from '@/theme/profile-themes'
-import { useActiveContext } from '@/context/ActiveContext'
+import { useUser } from '@/context/UserContext'
 import { logout } from '@/logout'
 
 const drawerWidth = 240
@@ -60,7 +60,9 @@ const MainLayout = ({ children, profile = 'empregador', userName = 'Maria', avat
   const profileColor = getProfileColor(profile)
   const menuBgColor = '#fff'
   const contentBgColor = '#f5f5f5'
-  const { setActiveContext, groupName, role, triggerRefresh } = useActiveContext()
+  const { setActiveContext, activeContext } = useUser()
+  const groupName = activeContext?.groupName
+  const role = activeContext?.role
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -101,9 +103,15 @@ const MainLayout = ({ children, profile = 'empregador', userName = 'Maria', avat
         >
           <SyncAltIcon color="primary" sx={{ mr: 1 }} />
           <Box>
-            <Typography fontWeight={600} color={profileColor} fontSize={16}>
-              Trocar contexto
-            </Typography>
+                      <Typography fontWeight={600} color={profileColor} fontSize={16}>
+            {profile === 'empregador' ? 'Trocar Família' : 
+             profile === 'empregado' ? 'Trocar Casa' : 
+             profile === 'familiar' ? 'Trocar Grupo' : 
+             profile === 'parceiro' ? 'Trocar Negócio' : 
+             profile === 'subordinado' ? 'Trocar Operação' : 
+             profile === 'admin' ? 'Trocar Sistema' : 
+             profile === 'owner' ? 'Trocar Contexto' : 'Trocar Contexto'}
+          </Typography>
             {groupName && role && (
               <Typography fontSize={12} color="text.secondary">
                 {groupName} - {role}

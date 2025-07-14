@@ -11,7 +11,7 @@
 
 import React, { useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { 
   Box, 
   Typography, 
@@ -70,7 +70,6 @@ import {
 } from '@/theme/profile-themes'
 import MainLayout from '@/components/MainLayout'
 import { useUser } from '@/context/UserContext'
-import { useActiveContext } from '@/context/ActiveContext'
 
 function MenuItem(props) {
   const { id, label, icon, path, profiles } = props;
@@ -136,7 +135,9 @@ function User(props) {
 
   // Usar nickname se disponível, senão usar primeira palavra do nome
   const displayName = nickname || (typeof name === 'string' && name ? name.split(' ')[0] : 'Usuário')
-  const welcomeLabel = t('dashboard.welcome')
+  
+  // Usar mensagem específica do perfil ativo ou fallback para mensagem comum
+  const welcomeLabel = t(`${profile}.dashboard.welcome`, t('common.dashboard.welcome', 'Bem-vindo'))
 
   return (
     <Grid item xs={12} md={6} lg={4}>
@@ -218,10 +219,6 @@ function TaskStatsCard(props) {
   const router = useRouter();
   const { t } = useTranslation('common');
 
-  console.log('PROFILE:', profile)
-  console.log('KEY BUSCADA TASKS:', `${profile}.dashboard.tasks`)
-  console.log('VALOR TASKS:', t(`${profile}.dashboard.tasks`))
-
   const handleAddTask = () => {
     router.push('/tasks/new')
   }
@@ -230,21 +227,12 @@ function TaskStatsCard(props) {
     router.push('/tasks')
   }
 
-  const totalMsg = t(`${profile}.dashboard.total`)
-  const totalLabel = t(`${profile}.dashboard.total`, t('dashboard.total'))
-  const completedMsg = t(`${profile}.dashboard.completed`)
-  const completedLabel = t(`${profile}.dashboard.completed`, t('dashboard.completed'))
-  const progressMsg = t(`${profile}.dashboard.progress`)
-  const progressLabel = t(`${profile}.dashboard.progress`, t('dashboard.progress'))
-  const urgentMsg = t(`${profile}.dashboard.urgent`)
-  const urgentLabel = t(`${profile}.dashboard.urgent`, t('dashboard.urgent'))
-  const viewUrgentMsg = t(`${profile}.dashboard.view_urgent`)
-  const viewUrgentLabel = t(`${profile}.dashboard.view_urgent`, t('dashboard.view_urgent'))
-  const addTaskMsg = t(`${profile}.dashboard.add_task`)
-  const addTaskLabel = t(`${profile}.dashboard.add_task`, t('dashboard.add_task'))
-
-  const tasksMsg = t(`${profile}.dashboard.tasks`)
-  const tasksLabel = t(`${profile}.dashboard.tasks`, t('dashboard.tasks'))
+  // Mensagens centralizadas por perfil ou fallback
+  const totalLabel = t(`${profile}.dashboard.total`, t('common.dashboard.total', 'Total'))
+  const completedLabel = t(`${profile}.dashboard.completed`, t('common.dashboard.completed', 'Concluídas'))
+  const progressLabel = t(`${profile}.dashboard.progress`, t('common.dashboard.progress', 'Progresso'))
+  const addTaskLabel = t(`${profile}.dashboard.add_task`, t('common.dashboard.add_task', 'Nova Tarefa'))
+  const tasksLabel = t(`${profile}.dashboard.tasks`, t('common.dashboard.tasks', 'Tarefas'))
 
   return (
     <Grid item xs={12} md={6} lg={4}>
@@ -258,12 +246,12 @@ function TaskStatsCard(props) {
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <AssignmentIcon sx={{ color: props.getProfileColor(profile) }} />
-                          <Typography 
-              variant="h6" 
-              sx={{ fontSize: props.getProfileFontSize(profile, 'medium') }}
-            >
-              {tasksLabel}
-            </Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ fontSize: props.getProfileFontSize(profile, 'medium') }}
+              >
+                {tasksLabel}
+              </Typography>
             </Box>
             <Tooltip title={addTaskLabel} arrow>
               <span>
@@ -375,10 +363,6 @@ function NotificationStatsCard(props) {
   const router = useRouter();
   const { t } = useTranslation('common');
 
-  console.log('PROFILE:', profile)
-  console.log('KEY BUSCADA NOTIFICATIONS:', `${profile}.dashboard.notifications`)
-  console.log('VALOR NOTIFICATIONS:', t(`${profile}.dashboard.notifications`))
-
   const handleAddNotification = () => {
     router.push('/notifications/new')
   }
@@ -387,19 +371,12 @@ function NotificationStatsCard(props) {
     router.push('/notifications?filter=urgent')
   }
 
-  const totalMsg = t(`${profile}.dashboard.total`)
-  const totalLabel = t(`${profile}.dashboard.total`, t('dashboard.total'))
-  const completedMsg = t(`${profile}.dashboard.completed`)
-  const completedLabel = t(`${profile}.dashboard.completed`, t('dashboard.completed'))
-  const urgentMsg = t(`${profile}.dashboard.urgent`)
-  const urgentLabel = t(`${profile}.dashboard.urgent`, t('dashboard.urgent'))
-  const viewUrgentMsg = t(`${profile}.dashboard.view_urgent`)
-  const viewUrgentLabel = t(`${profile}.dashboard.view_urgent`, t('dashboard.view_urgent'))
-  const addNotificationMsg = t(`${profile}.dashboard.add_notification`)
-  const addNotificationLabel = t(`${profile}.dashboard.add_notification`, t('dashboard.add_notification'))
-
-  const notificationsMsg = t(`${profile}.dashboard.notifications`)
-  const notificationsLabel = t(`${profile}.dashboard.notifications`, t('dashboard.notifications'))
+  // Mensagens centralizadas por perfil ou fallback
+  const totalLabel = t(`${profile}.dashboard.total`, t('common.dashboard.total', 'Total'))
+  const urgentLabel = t(`${profile}.dashboard.urgent`, t('common.dashboard.urgent', 'Urgentes'))
+  const viewUrgentLabel = t(`${profile}.dashboard.view_urgent`, t('common.dashboard.view_urgent', 'Ver Urgentes'))
+  const addNotificationLabel = t(`${profile}.dashboard.add_notification`, t('common.dashboard.add_notification', 'Nova Notificação'))
+  const notificationsLabel = t(`${profile}.dashboard.notifications`, t('common.dashboard.notifications', 'Notificações'))
 
   return (
     <Grid item xs={12} md={6} lg={4}>
@@ -414,25 +391,27 @@ function NotificationStatsCard(props) {
             <Box display="flex" alignItems="center" gap={1}>
               <NotificationsIcon sx={{ color: props.getProfileColor(profile) }} />
               <Typography 
-                variant="h6"
+                variant="h6" 
                 sx={{ fontSize: props.getProfileFontSize(profile, 'medium') }}
               >
                 {notificationsLabel}
               </Typography>
             </Box>
             <Tooltip title={addNotificationLabel} arrow>
-              <IconButton
-                size="small"
-                onClick={handleAddNotification}
-                sx={{ 
-                  color: props.getProfileColor(profile),
-                  '&:hover': {
-                    bgcolor: `${props.getProfileColor(profile)}10`
-                  }
-                }}
-              >
-                <AddIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={handleAddNotification}
+                  sx={{ 
+                    color: props.getProfileColor(profile),
+                    '&:hover': {
+                      bgcolor: `${props.getProfileColor(profile)}10`
+                    }
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </Box>
           
@@ -479,28 +458,22 @@ function NotificationStatsCard(props) {
           
           {notification_stats?.notificacoes_urgentes && notification_stats.notificacoes_urgentes > 0 && (
             <Box mt={2}>
-              <Box 
+              <Button
+                variant="outlined"
+                size="small"
                 onClick={handleUrgentClick}
                 sx={{ 
-                  cursor: 'pointer',
+                  color: '#ff9800',
+                  borderColor: '#ff9800',
                   '&:hover': {
-                    opacity: 0.8
+                    borderColor: '#f57c00',
+                    bgcolor: '#ff980010'
                   }
                 }}
+                fullWidth
               >
-                <Chip 
-                  icon={<WarningIcon />}
-                  label={`${viewUrgentLabel} (${notification_stats.notificacoes_urgentes})`}
-                  color="warning"
-                  variant="outlined"
-                  sx={{ 
-                    fontSize: props.getProfileFontSize(profile, 'small'),
-                    '&:hover': {
-                      bgcolor: '#ff980010'
-                    }
-                  }}
-                />
-              </Box>
+                {viewUrgentLabel}
+              </Button>
             </Box>
           )}
         </CardContent>
@@ -515,6 +488,7 @@ function HeaderInfo({ profile, getProfileFontSize }) {
   const [connectionType, setConnectionType] = useState('')
   const [location, setLocation] = useState(t('dashboard.location_loading', 'Carregando...'))
   const [isClient, setIsClient] = useState(false)
+  const [geoError, setGeoError] = useState(null)
 
   useEffect(() => {
     // Atualizar hora a cada segundo
@@ -525,6 +499,7 @@ function HeaderInfo({ profile, getProfileFontSize }) {
     // Detectar tipo de conexão
     if (navigator.connection) {
       const type = navigator.connection.type || navigator.connection.effectiveType
+      console.log('[Dashboard] Tipo de conexão detectado:', type)
       if (type === 'wifi') setConnectionType('Wi-Fi')
       else if (type === 'cellular') setConnectionType('Rede móvel')
       else setConnectionType(type || 'Online')
@@ -537,25 +512,33 @@ function HeaderInfo({ profile, getProfileFontSize }) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords
+          console.log('[Dashboard] Geolocalização obtida:', latitude, longitude)
           try {
-            // Buscar endereço via proxy Next.js
             const response = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`)
             const data = await response.json()
             if (data && data.display_name) {
               setLocation(data.display_name)
+              setGeoError(null)
+              console.log('[Dashboard] Endereço obtido:', data.display_name)
             } else {
               setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`)
+              setGeoError('Sem endereço detalhado')
             }
           } catch (e) {
             setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`)
+            setGeoError('Erro ao buscar endereço')
+            console.error('[Dashboard] Erro ao buscar endereço:', e)
           }
         },
         (error) => {
           setLocation(t('dashboard.location_unavailable', 'Não disponível'))
+          setGeoError(error.message)
+          console.error('[Dashboard] Erro de geolocalização:', error)
         }
       )
     } else {
       setLocation(t('dashboard.location_unsupported', 'Não suportado'))
+      setGeoError('API de geolocalização não suportada')
     }
 
     setIsClient(true)
@@ -580,35 +563,77 @@ function HeaderInfo({ profile, getProfileFontSize }) {
       gap={2}
       sx={{ 
         fontSize: getProfileFontSize(profile, 'small'),
-        color: '#ffffff80'
+        color: '#000000',
+        flexWrap: 'wrap',
+        minHeight: 32,
+        bgcolor: 'rgba(255, 255, 255, 0.9)',
+        px: 2,
+        py: 1,
+        borderRadius: 2,
+        backdropFilter: 'blur(10px)'
       }}
     >
       {isClient && (
         <Box display="flex" alignItems="center" gap={1}>
-          <ScheduleIcon sx={{ fontSize: 16 }} />
-          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
+          <ScheduleIcon sx={{ fontSize: 16 }} aria-label="Horário atual" />
+          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small'), color: '#000000', fontWeight: 600 }}>
             {formatTime(currentTime)}
           </Typography>
         </Box>
       )}
       <Box display="flex" alignItems="center" gap={1}>
-        <WifiIcon sx={{ fontSize: 16, color: connectionType === 'Offline' ? '#f44336' : '#4caf50' }} />
-        <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small') }}>
-          {connectionType}
+        <WifiIcon sx={{ fontSize: 16, color: connectionType === 'Offline' ? '#f44336' : '#4caf50' }} aria-label="Status da conexão" />
+        <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small'), color: connectionType === 'Offline' ? '#d32f2f' : '#000000', fontWeight: 600, minWidth: 60 }}>
+          {connectionType || t('dashboard.connection_unknown', 'Desconhecido')}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        <LocationIcon sx={{ fontSize: 16 }} />
+        <LocationIcon sx={{ fontSize: 16 }} aria-label="Localização" />
         <Tooltip title={location}>
-          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small'), maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {location}
+          <Typography variant="body2" sx={{ fontSize: getProfileFontSize(profile, 'small'), maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#000000', fontWeight: 600 }}>
+            {location || t('dashboard.location_unavailable', 'Não disponível')}
           </Typography>
         </Tooltip>
+        {geoError && (
+          <Tooltip title={geoError}>
+            <Typography variant="caption" color="#ffeb3b" sx={{ ml: 1 }}>
+              ⚠️
+            </Typography>
+          </Tooltip>
+        )}
       </Box>
     </Box>
   )
 }
 
+function DashboardNewUserButton({ profile }) {
+  const router = useRouter();
+  const { t } = useTranslation('common');
+  // Perfis permitidos
+  const canCreateUser = ['admin', 'owner', 'empregador'].includes(profile);
+  if (!canCreateUser) return null;
+  return (
+    <Button
+      variant="contained"
+      startIcon={<PeopleIcon />}
+      sx={{
+        bgcolor: '#ffd600',
+        color: '#222',
+        fontWeight: 700,
+        borderRadius: 8,
+        px: 3,
+        py: 1.2,
+        boxShadow: 2,
+        '&:hover': { bgcolor: '#ffea00' },
+        mb: 3,
+        ml: 1
+      }}
+      onClick={() => router.push('/people')}
+    >
+      {t('users.new', 'Novo Usuário')}
+    </Button>
+  );
+}
 
 
 const menuItems = [
@@ -672,7 +697,12 @@ export default function Dashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const { t } = useTranslation('common')
   const { user, loading } = useUser()
-  const { groupId, groupName, role, profile: activeProfile, refreshTrigger } = useActiveContext()
+  const { activeContext } = useUser()
+  const groupId = activeContext?.groupId
+  const groupName = activeContext?.groupName
+  const role = activeContext?.role
+  const activeProfile = activeContext?.profile
+  const refreshTrigger = activeContext?.refreshTrigger
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selectedMenu, setSelectedMenu] = useState('dashboard')
   const [dashboardStats, setDashboardStats] = useState(null)
@@ -694,8 +724,8 @@ export default function Dashboard() {
     }
   })
   
-  // Usar perfil do contexto ativo se disponível, senão usar perfil do usuário
-  const profile = activeProfile || user?.profile || 'empregador'
+  // Usar perfil do contexto ativo, senão do usuário, senão fallback
+  const profile = activeContext?.profile || user?.profile || 'empregador'
   
   // Função para buscar estatísticas do dashboard
   const fetchStats = useCallback(async () => {
@@ -703,10 +733,10 @@ export default function Dashboard() {
     setLoadingStats(true)
     setStatsError(null)
     try {
-      const token = localStorage.getItem('userToken')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       console.log('🔍 Dashboard Debug: Token disponível:', !!token)
       
-      const response = await fetch(`/api/dashboard/stats?profile=${profile}&user_id=user_123`, {
+      const response = await fetch(`/api/dashboard/stats?profile=${profile}&user_id=${user?.id || 'user_123'}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -729,16 +759,15 @@ export default function Dashboard() {
       setLoadingStats(false)
       console.log('🔍 Dashboard Debug: Busca de estatísticas finalizada')
     }
-  }, [profile, t])
+  }, [profile, user?.id, t])
 
-  // Recarregar dados quando o contexto mudar ou quando refreshTrigger for acionado
+  // Recarregar dados quando o usuário mudar
   useEffect(() => {
-    if (groupId && groupName && role) {
-      console.log('Contexto ativo mudou no dashboard:', { groupId, groupName, role, profile: activeProfile })
-      // Recarregar estatísticas do dashboard
+    if (user && user.profile) {
+      console.log('Usuário carregado no dashboard:', { user: user.name, profile: user.profile })
       fetchStats()
     }
-  }, [groupId, groupName, role, activeProfile, refreshTrigger, fetchStats])
+  }, [user, fetchStats])
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -752,8 +781,12 @@ export default function Dashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('userProfile')
-    localStorage.removeItem('userToken')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('userProfile')
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('userData')
+      localStorage.removeItem('activeContext')
+    }
     router.push('/login')
   }
 
@@ -816,7 +849,7 @@ export default function Dashboard() {
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText 
-              primary={t('dashboard.logout', 'Sair do Sistema')}
+              primary={t('common.dashboard.logout', 'Sair do Sistema')}
               sx={{ 
                 '& .MuiTypography-root': {
                   color: '#f44336',
@@ -833,6 +866,8 @@ export default function Dashboard() {
   // Carregar dados do usuário se não estiverem no localStorage
   useEffect(() => {
     const loadUserData = async () => {
+      if (typeof window === 'undefined') return;
+      
       const userData = localStorage.getItem('userData')
       if (!userData || !JSON.parse(userData).name) {
         try {
@@ -845,7 +880,6 @@ export default function Dashboard() {
             })
             if (response.ok) {
               const userInfo = await response.json()
-              // setUser(userInfo) // This line was removed as per the new_code, as setUser is no longer defined.
               localStorage.setItem('userData', JSON.stringify(userInfo))
             }
           }
@@ -857,81 +891,96 @@ export default function Dashboard() {
     loadUserData()
   }, [])
 
-  // Carregar estatísticas iniciais
+  // Carregar estatísticas iniciais quando o usuário estiver disponível
   useEffect(() => {
-    fetchStats()
-  }, [fetchStats])
+    if (user && user.profile) {
+      fetchStats()
+    }
+  }, [user, fetchStats])
 
   const renderDashboardContent = () => {
     console.log('🔍 Dashboard Debug: Renderizando conteúdo, selectedMenu:', selectedMenu)
     
     if (loadingStats) {
-      console.log('🔍 Dashboard Debug: Mostrando loading')
       return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-          <Typography sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
-            {t('dashboard.loading', 'Carregando dados do dashboard...')}
-          </Typography>
-        </Box>
-      )
-    }
-    if (statsError) {
-      console.log('🔍 Dashboard Debug: Mostrando erro:', statsError)
-      return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-          <Typography color="error" sx={{ fontSize: getProfileFontSize(profile, 'medium') }}>
-            {t('dashboard.error_loading', 'Erro ao carregar estatísticas do dashboard')}
-          </Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <LinearProgress sx={{ width: '100%', maxWidth: 400 }} />
         </Box>
       )
     }
 
-    console.log('🔍 Dashboard Debug: Renderizando menu:', selectedMenu)
-    
+    if (statsError) {
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <Typography color="error">{statsError}</Typography>
+        </Box>
+      )
+    }
+
     switch (selectedMenu) {
       case 'dashboard':
-        console.log('🔍 Dashboard Debug: Renderizando dashboard principal')
         return (
-          <Grid container spacing={3}>
-            <User
-              name={user?.name || 'Usuário'}
-              nickname={user?.nickname || 'Usuário'}
-              cpf={user?.cpf || '000.000.000-00'}
-              profile={profile}
-              user_photo={user?.user_photo}
-              email={user?.email || 'email@exemplo.com'}
-              celular={user?.celular || '(00) 00000-0000'}
-            />
-            <TaskStatsCard
-              task_stats={dashboardStats?.task_stats}
-              profile={profile}
-              getProfileColor={getProfileColor}
-              getProfileFontSize={getProfileFontSize}
-              getProfileSpacing={getProfileSpacing}
-            />
-            <NotificationStatsCard
-              notification_stats={dashboardStats?.notification_stats}
-              profile={profile}
-              getProfileColor={getProfileColor}
-              getProfileFontSize={getProfileFontSize}
-              getProfileSpacing={getProfileSpacing}
-            />
-          </Grid>
+          <Box>
+            <HeaderInfo profile={profile} getProfileFontSize={getProfileFontSize} />
+            {/* Botão Novo Usuário */}
+            <DashboardNewUserButton profile={profile} />
+            <Grid container spacing={3} sx={{ mt: 2 }}>
+              {/* Card do usuário */}
+              <User
+                name={user?.name}
+                nickname={user?.nickname}
+                cpf={user?.cpf}
+                profile={profile}
+                user_photo={user?.user_photo}
+                email={user?.email}
+                celular={user?.celular}
+              />
+              
+              {/* Card de estatísticas de tarefas */}
+              <TaskStatsCard
+                task_stats={dashboardStats?.task_stats}
+                profile={profile}
+                getProfileColor={getProfileColor}
+                getProfileFontSize={getProfileFontSize}
+              />
+              
+              {/* Card de estatísticas de notificações */}
+              <NotificationStatsCard
+                notification_stats={dashboardStats?.notification_stats}
+                profile={profile}
+                getProfileColor={getProfileColor}
+                getProfileFontSize={getProfileFontSize}
+              />
+            </Grid>
+          </Box>
         )
-      case 'tasks':
-        if (typeof window !== 'undefined') window.location.href = '/tasks'
-        return null
+      
       case 'people':
-        if (typeof window !== 'undefined') window.location.href = '/people'
+        router.push('/people')
         return null
+      
+      case 'tasks':
+        router.push('/tasks')
+        return null
+      
+      case 'groups':
+        router.push('/groups')
+        return null
+      
       case 'notifications':
-        if (typeof window !== 'undefined') window.location.href = '/notifications'
+        router.push('/notifications')
         return null
+      
       case 'settings':
-        if (typeof window !== 'undefined') window.location.href = '/settings'
+        router.push('/settings')
         return null
+      
       default:
-        return null
+        return (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+            <Typography>Página não encontrada</Typography>
+          </Box>
+        )
     }
   }
 

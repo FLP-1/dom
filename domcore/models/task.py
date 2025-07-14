@@ -89,7 +89,7 @@ class Task(TaskBase):
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "task_123",
                 "titulo": "Limpar a casa",
@@ -119,7 +119,7 @@ class TaskStats(BaseModel):
     class Config:
         """Configuração do modelo"""
         from_attributes = True
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "total_tarefas": 15,
                 "tarefas_pendentes": 8,

@@ -7,7 +7,7 @@
  * @author Equipe DOM v1
  */
 import { useState, useCallback, useEffect } from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from '@/utils/i18n';
 import { useMessageSnackbar } from '@/hooks/useMessageSnackbar';
 
 /**
@@ -17,7 +17,7 @@ import { useMessageSnackbar } from '@/hooks/useMessageSnackbar';
  * @returns {Object} Estado e funções para gerenciar tarefas
  */
 export function useTasks(profile = 'empregador', autoFetch = true) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const { showMessage } = useMessageSnackbar();
   
   const [tasks, setTasks] = useState([]);
@@ -54,18 +54,20 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     try {
       setLoading(true);
       setError(null);
-      
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('userToken') || localStorage.getItem('token')) : null;
       const params = new URLSearchParams({
         profile,
         ...filters
       });
-      
-      const response = await fetch(`/api/tasks?${params}`);
+      const response = await fetch(`/api/tasks?${params}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : undefined,
+        }
+      });
       const data = await response.json();
-      
-      if (response.ok) {
-        setTasks(data.tasks || data);
-        calculateStats(data.tasks || data);
+      if (response.ok && data.success) {
+        setTasks(data.tasks || []);
+        calculateStats(data.tasks || []);
       } else {
         throw new Error(data.message || t('tasks.fetch_error', 'Erro ao buscar tarefas'));
       }
@@ -82,17 +84,16 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     try {
       setLoading(true);
       setError(null);
-      
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('userToken') || localStorage.getItem('token')) : null;
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ ...taskData, profile }),
       });
-      
       const data = await response.json();
-      
       if (response.ok) {
         const newTask = data.task || data;
         setTasks(prev => [...prev, newTask]);
@@ -116,17 +117,16 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     try {
       setLoading(true);
       setError(null);
-      
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('userToken') || localStorage.getItem('token')) : null;
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ ...updateData, profile }),
       });
-      
       const data = await response.json();
-      
       if (response.ok) {
         const updatedTask = data.task || data;
         setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
@@ -150,17 +150,16 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     try {
       setLoading(true);
       setError(null);
-      
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('userToken') || localStorage.getItem('token')) : null;
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ profile }),
       });
-      
       const data = await response.json();
-      
       if (response.ok) {
         setTasks(prev => prev.filter(t => t.id !== taskId));
         calculateStats(tasks.filter(t => t.id !== taskId));
@@ -183,17 +182,16 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
     try {
       setLoading(true);
       setError(null);
-      
+      const token = typeof window !== 'undefined' ? (localStorage.getItem('userToken') || localStorage.getItem('token')) : null;
       const response = await fetch(`/api/tasks/${taskId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ status: newStatus, profile }),
       });
-      
       const data = await response.json();
-      
       if (response.ok) {
         const updatedTask = data.task || data;
         setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
@@ -239,10 +237,10 @@ export function useTasks(profile = 'empregador', autoFetch = true) {
 
   // Buscar tarefas automaticamente ao montar
   useEffect(() => {
-    if (autoFetch) {
+    if (autoFetch && profile) {
       fetchTasks();
     }
-  }, [fetchTasks, autoFetch]);
+  }, [profile, autoFetch]); // Removido fetchTasks da dependência para evitar loop
 
   return {
     tasks,

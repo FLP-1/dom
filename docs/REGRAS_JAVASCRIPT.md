@@ -111,6 +111,8 @@ const UserRole = {
  * @param {Function} [props.onDelete]
  */
 export const UserCard = ({ user, onEdit, onDelete }) => {
+  const { t } = useTranslation('common')
+  
   return (
     <Card>
       <CardContent>
@@ -120,6 +122,18 @@ export const UserCard = ({ user, onEdit, onDelete }) => {
     </Card>
   );
 };
+```
+
+### ✅ Internacionalização (next-i18next OBRIGATÓRIO)
+```javascript
+// ✅ SEMPRE usar next-i18next
+import { useTranslation } from 'next-i18next'
+
+const { t } = useTranslation('common')
+return <Button>{t('common.save')}</Button>
+
+// ❌ NUNCA usar react-i18next
+import { useTranslation } from 'react-i18next'
 ```
 
 ### ✅ PropTypes para Validação

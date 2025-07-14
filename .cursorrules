@@ -7,8 +7,7 @@ Este é um aplicativo multiplataforma (web, iOS, Android) desenvolvido com:
 - Monorepo usando Turbo
 - React/Next.js para web
 - React Native para mobile
-- TypeScript rigoroso
-- Material-UI v2
+- MUI v5 (Material-UI moderno)
 - Prisma + PostgreSQL
 - Internacionalização completa
 
@@ -203,10 +202,10 @@ export const messages = {
 
 ## 🎨 Padrões de UI/UX
 
-### Material-UI v2
-- Usar componentes MUI como base
-- Preferir ícones e cards sobre botões simples
-- Tema centralizado e consistente
+### MUI v5 (Material-UI moderno)
+Usar componentes MUI v5 como base
+Preferir ícones e cards sobre botões simples
+Tema centralizado e consistente
 
 ### Acessibilidade
 - ARIA labels obrigatórios

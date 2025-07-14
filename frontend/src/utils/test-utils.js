@@ -12,7 +12,6 @@ import { render } from '@testing-library/react'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/theme'
 import { UserProvider } from '@/context/UserContext'
-import { ActiveContextProvider } from '@/context/ActiveContext'
 
 // Dados reais de teste
 export const REAL_TEST_DATA = {
@@ -378,9 +377,7 @@ export const renderWithProviders = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <ThemeProvider theme={customTheme}>
       <UserProvider initialUser={user}>
-        <ActiveContextProvider initialContext={activeContext}>
-          {children}
-        </ActiveContextProvider>
+        {children}
       </UserProvider>
     </ThemeProvider>
   )

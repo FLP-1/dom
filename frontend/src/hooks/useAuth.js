@@ -40,7 +40,7 @@ export const useAuth = (options = {}) => {
   const handleLogout = useCallback(async () => {
     try {
       // Chamar endpoint de logout no backend (se existir)
-      const currentToken = localStorage.getItem('userToken')
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       if (currentToken) {
         await fetch('/api/auth/logout', {
           method: 'POST',
@@ -55,9 +55,11 @@ export const useAuth = (options = {}) => {
       console.error('Erro ao fazer logout no backend:', error)
     } finally {
       // Limpar dados locais
-      localStorage.removeItem('userToken')
-      localStorage.removeItem('userData')
-      localStorage.removeItem('activeContext')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('userToken')
+        localStorage.removeItem('userData')
+        localStorage.removeItem('activeContext')
+      }
       
       // Atualizar estado
       setToken(null)
@@ -78,7 +80,7 @@ export const useAuth = (options = {}) => {
    */
   const refreshToken = useCallback(async () => {
     try {
-      const currentToken = localStorage.getItem('userToken')
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       if (!currentToken) {
         throw new Error(t('token_not_found'))
       }
@@ -93,7 +95,9 @@ export const useAuth = (options = {}) => {
 
       if (response.ok) {
         const data = await response.json()
-        localStorage.setItem('userToken', data.access_token)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('userToken', data.access_token)
+        }
         setToken(data.access_token)
         return data.access_token
       } else {
@@ -201,8 +205,10 @@ export const useAuth = (options = {}) => {
       
       console.log('🔍 useAuth Debug: Salvando dados no localStorage...')
       // Salvar dados no localStorage
-      localStorage.setItem('userToken', userData.access_token)
-      localStorage.setItem('userData', JSON.stringify(userData))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('userToken', userData.access_token)
+        localStorage.setItem('userData', JSON.stringify(userData))
+      }
       
       console.log('🔍 useAuth Debug: Atualizando estado...')
       // Atualizar estado
@@ -248,7 +254,7 @@ export const useAuth = (options = {}) => {
    * @returns {Object} Headers com token de autorização
    */
   const getAuthHeaders = useCallback(() => {
-    const currentToken = localStorage.getItem('userToken')
+    const currentToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
     return {
       'Authorization': `Bearer ${currentToken}`,
       'Content-Type': 'application/json'
@@ -260,8 +266,8 @@ export const useAuth = (options = {}) => {
     const initializeAuth = async () => {
       console.log('🔍 useAuth Debug: Iniciando inicialização...')
       try {
-        const storedToken = localStorage.getItem('userToken')
-        const storedUser = localStorage.getItem('userData')
+        const storedToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
+        const storedUser = typeof window !== 'undefined' ? localStorage.getItem('userData') : null
         
         console.log('🔍 useAuth Debug:', { 
           hasToken: !!storedToken, 
@@ -279,9 +285,11 @@ export const useAuth = (options = {}) => {
           } else {
             console.log('🔍 useAuth Debug: Token inválido, limpando dados')
             // Token inválido, limpar dados
-            localStorage.removeItem('userToken')
-            localStorage.removeItem('userData')
-            localStorage.removeItem('activeContext')
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('userToken')
+              localStorage.removeItem('userData')
+              localStorage.removeItem('activeContext')
+            }
           }
         } else {
           console.log('🔍 useAuth Debug: Sem token ou dados armazenados')
@@ -289,9 +297,11 @@ export const useAuth = (options = {}) => {
       } catch (error) {
         console.error('❌ useAuth Debug: Erro ao inicializar autenticação:', error)
         // Limpar dados em caso de erro
-        localStorage.removeItem('userToken')
-        localStorage.removeItem('userData')
-        localStorage.removeItem('activeContext')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('userToken')
+          localStorage.removeItem('userData')
+          localStorage.removeItem('activeContext')
+        }
       } finally {
         setIsLoading(false)
         console.log('🔍 useAuth Debug: Inicialização finalizada')
@@ -306,7 +316,7 @@ export const useAuth = (options = {}) => {
     if (!autoRefresh || !token) return
 
     const interval = setInterval(() => {
-      const currentToken = localStorage.getItem('userToken')
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       if (currentToken && !isTokenValid(currentToken)) {
         handleLogout()
       }

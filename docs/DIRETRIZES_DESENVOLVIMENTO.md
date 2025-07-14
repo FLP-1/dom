@@ -174,7 +174,7 @@ export const UserCard = ({ user, onEdit = () => {}, onDelete = () => {}, ...prop
 
 ## 🎨 UI/UX e Material-UI
 
-### Material-UI v2 (MUI)
+### MUI v5 (Material-UI moderno)
 
 - Usar componentes MUI como base
 - Customizar através do sistema de temas
@@ -441,59 +441,68 @@ main()
 
 ## 🌍 Internacionalização
 
-### Estrutura de Mensagens
+### ⚠️ **OBRIGATÓRIO: next-i18next (NÃO react-i18next)**
 
-```typescript
-// shared/messages/pt-BR.ts
-export const messages = {
-  common: {
-    save: 'Salvar',
-    cancel: 'Cancelar',
-    delete: 'Excluir',
-    edit: 'Editar',
-    loading: 'Carregando...',
-  },
-  user: {
-    profile: 'Perfil do Usuário',
-    email: 'E-mail',
-    'email.help': 'Digite um e-mail válido',
-    name: 'Nome',
-    'name.help': 'Digite seu nome completo',
-  },
-  errors: {
-    required: 'Campo obrigatório',
-    invalidEmail: 'E-mail inválido',
-    networkError: 'Erro de conexão',
-  },
-};
+**Esta regra é ABSOLUTA para projetos Next.js.**
+
+#### ❌ **PROIBIDO:**
+```javascript
+// ❌ NUNCA usar react-i18next diretamente
+import { useTranslation } from 'react-i18next'
+import i18n from '@/utils/i18n'
+
+// ❌ NUNCA configurar i18next manualmente
+i18n.use(initReactI18next).init({...})
 ```
 
-### Hook de Tradução
+#### ✅ **OBRIGATÓRIO:**
+```javascript
+// ✅ SEMPRE usar next-i18next
+import { useTranslation } from 'next-i18next'
 
-```typescript
-// hooks/useTranslation.ts
-import { useTranslation as useI18nTranslation } from 'react-i18next';
+// ✅ SEMPRE usar appWithTranslation no _app.jsx
+export default appWithTranslation(MyApp)
 
-export const useTranslation = () => {
-  const { t, i18n } = useI18nTranslation();
-
-  const changeLanguage = (lang: string) => {
-    i18n.changeLanguage(lang);
-  };
-
-  return { t, changeLanguage, currentLanguage: i18n.language };
-};
+// ✅ SEMPRE ter next-i18next.config.js
+module.exports = {
+  i18n: {
+    defaultLocale: 'pt-BR',
+    locales: ['pt-BR', 'en', 'es']
+  }
+}
 ```
 
-### Uso nas Aplicações
+### Estrutura de Arquivos Obrigatória
+```
+frontend/public/locales/
+├── pt-BR/
+│   └── common.json
+├── en/
+│   └── common.json
+└── es/
+    └── common.json
+```
 
-```typescript
-// Em componentes
-const { t } = useTranslation()
+### Uso Correto
+```javascript
+// ✅ Correto - next-i18next
+const { t } = useTranslation('common')
+return <Button>{t('common.save')}</Button>
 
-return (
-  <Typography>{t('user.profile')}</Typography>
-)
+// ✅ Correto - com namespace
+const { t } = useTranslation(['common', 'auth'])
+return <Button>{t('auth.login')}</Button>
+```
+
+### Configuração Obrigatória
+```javascript
+// next.config.js
+const { i18n } = require('./next-i18next.config.js')
+
+const nextConfig = {
+  i18n, // OBRIGATÓRIO
+  // ... outras configurações
+}
 ```
 
 ---

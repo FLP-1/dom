@@ -15,9 +15,13 @@ const publicRoutes = [
   '/splash',
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/contexts',
+  '/api/auth/me',
+  '/api/auth/session/context',
   '/_next',
   '/favicon.ico',
-  '/static'
+  '/static',
+  '/Logo_CasaMaoCoracao.png'
 ]
 
 // Rotas que precisam de autenticação específica por perfil
@@ -47,18 +51,12 @@ export function middleware(request) {
   if (protectedRoute) {
     console.log('🔍 Middleware Debug: Rota protegida encontrada:', protectedRoute)
     
-    // TEMPORÁRIO: Desabilitar verificação de token para permitir acesso ao dashboard
-    // TODO: Implementar verificação adequada de token no middleware
-    console.log('🔍 Middleware Debug: Verificação de token desabilitada temporariamente')
-    return NextResponse.next()
-    
-    // Código original comentado temporariamente:
-    /*
     // Verificar token de autenticação
     const token = request.cookies.get('userToken')?.value || 
                   request.headers.get('authorization')?.replace('Bearer ', '')
     
     if (!token) {
+      console.log('🔍 Middleware Debug: Token não encontrado, redirecionando para login')
       // Redirecionar para login se não há token
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('redirect', pathname)
@@ -73,15 +71,15 @@ export function middleware(request) {
         const allowedProfiles = protectedRoutes[protectedRoute]
         
         if (!allowedProfiles.includes(user.profile)) {
+          console.log('🔍 Middleware Debug: Perfil não autorizado, redirecionando para dashboard')
           // Redirecionar para dashboard se não tem permissão
           return NextResponse.redirect(new URL('/dashboard', request.url))
         }
       } catch (error) {
-        console.error('Erro ao verificar perfil do usuário:', error)
+        console.error('🔍 Middleware Debug: Erro ao verificar perfil do usuário:', error)
         return NextResponse.redirect(new URL('/login', request.url))
       }
     }
-    */
   }
   
   return NextResponse.next()

@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from .config import config
 import os
+import psycopg2
 
 # Usar configurações do config.py
 db_config = config.database
@@ -37,4 +38,14 @@ engine = create_engine(
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base() 
+Base = declarative_base()
+
+def get_db_connection():
+    """Retorna uma conexão direta com o PostgreSQL usando psycopg2"""
+    return psycopg2.connect(
+        host=db_config.host,
+        port=db_config.port,
+        database=db_config.database,
+        user=db_config.username,
+        password=db_config.password
+    ) 

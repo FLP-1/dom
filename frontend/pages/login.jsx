@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@/utils/i18n'
 import {
   Box,
   Card,
@@ -17,13 +17,11 @@ import {
   TextField,
   Button,
   Typography,
-  Checkbox,
   FormControlLabel,
+  Checkbox,
   IconButton,
   InputAdornment,
-  Tooltip,
   Alert,
-  Link,
   Grid,
   Paper,
   Chip
@@ -38,6 +36,8 @@ import {
 import { styled } from '@mui/material/styles'
 import theme from '@/theme'
 import { useAuth } from '@/hooks/useAuth'
+import ContextSelectModal from '@/components/ContextSelectModal'
+import { useUser } from '@/context/UserContext'
 
 // Função simples de validação de CPF
 const validateCPF = (cpf) => {
@@ -192,6 +192,10 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
   const { login, isLoading: authLoading, error: authError } = useAuth()
+  const { setUser, setActiveContext } = useUser()
+  const [showContextModal, setShowContextModal] = useState(false)
+  const [contextOptions, setContextOptions] = useState([])
+  const [pendingUserData, setPendingUserData] = useState(null)
 
   // Carrossel de frases motivacionais
   const motivationalPhrases = getMotivationalPhrases(t)
@@ -209,6 +213,8 @@ const LoginPage = () => {
   useEffect(() => {
     localStorage.removeItem('userToken')
     localStorage.removeItem('userData')
+    localStorage.removeItem('activeContext')
+    sessionStorage.removeItem('contextModalShown')
   }, [])
 
   // Máscara de CPF
@@ -241,6 +247,8 @@ const LoginPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    console.log('🔍 Login Debug: Botão Entrar clicado!')
+    console.log('🔍 Login Debug: Dados do formulário:', formData)
     setIsLoading(true)
     setErrors({})
 
@@ -256,7 +264,7 @@ const LoginPage = () => {
       setIsLoading(false)
       return
     }
-
+    
     if (!formData.password || formData.password.length < 6) {
       setErrors(prev => ({ ...prev, password: t('login.password_min_length', 'Senha deve ter pelo menos 6 caracteres') }))
       setIsLoading(false)
@@ -264,24 +272,59 @@ const LoginPage = () => {
     }
 
     try {
+      console.log('🔍 Login Debug: Chamando hook de autenticação...')
       // Usar o hook de autenticação
       const data = await login({
         cpf: formData.cpf.replace(/\D/g, ''),
         password: formData.password,
         remember_me: rememberMe
       })
+
+      console.log('🔍 Login Debug: Resposta do login:', data)
       
-      // Redirecionar para dashboard
-      router.push(`/dashboard?profile=${data.profile || 'empregador'}`)
+      // O hook useAuth já retorna os dados do usuário diretamente
+      // Não precisa verificar data.success pois o hook já faz isso
+      localStorage.setItem('userToken', data.access_token)
+      // Salvar também em cookie para o middleware
+      document.cookie = `userToken=${data.access_token}; path=/; SameSite=Lax`
+      // Se o usuário tem múltiplos contextos/perfis, exibe o modal
+      if (Array.isArray(data.contexts) && data.contexts.length > 1) {
+        setPendingUserData(data)
+        setContextOptions(data.contexts)
+        setShowContextModal(true)
+        return
+      }
+      // Se só tem um contexto, salva direto e redireciona
+      setUser(data)
+      setActiveContext(data.contexts ? data.contexts[0] : null)
+      if (data.contexts && data.contexts[0]) {
+        localStorage.setItem('activeContext', JSON.stringify(data.contexts[0]))
+      }
+      router.push(`/dashboard?profile=${(data.contexts && data.contexts[0]?.profile) || data.profile || 'empregador'}`)
     } catch (error) {
+      console.error('❌ Login Debug: Erro no login:', error)
       setErrors(prev => ({ ...prev, general: error.message }))
     } finally {
       setIsLoading(false)
     }
   }
 
+  // Handler para quando o usuário seleciona um contexto/perfil no modal
+  const handleSelectContext = (context) => {
+    if (pendingUserData) {
+      setUser(pendingUserData)
+      setActiveContext(context)
+      localStorage.setItem('activeContext', JSON.stringify(context))
+      setShowContextModal(false)
+      setPendingUserData(null)
+      router.push(`/dashboard?profile=${context.profile}`)
+    }
+  }
+
   return (
     <LoginContainer>
+      {/* Modal de seleção de contexto/perfil */}
+      <ContextSelectModal open={showContextModal} options={contextOptions} onSelect={handleSelectContext} />
       <LoginCard>
         <CardContent sx={{ padding: 4 }}>
           <LogoContainer>
@@ -320,67 +363,63 @@ const LoginPage = () => {
               </Alert>
             )}
 
-            <Tooltip title={t('login.cpf_tooltip', 'Digite seu CPF completo no formato 000.000.000-00')} arrow>
-              <StyledTextField
-                fullWidth
-                label={t('login.cpf', 'CPF')}
-                value={formData.cpf}
-                onChange={handleCPFChange}
-                error={!!errors.cpf}
-                helperText={errors.cpf}
-                placeholder="000.000.000-00"
-                autoComplete="off"
-                inputProps={{
-                  autoComplete: "off",
-                  "data-lpignore": "true",
-                  "data-form-type": "other"
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon color="action" />
-                    </InputAdornment>
-                  )
-                }}
-                aria-describedby="cpf-helper-text"
-              />
-            </Tooltip>
+            <StyledTextField
+              fullWidth
+              label={t('login.cpf', 'CPF')}
+              value={formData.cpf}
+              onChange={handleCPFChange}
+              error={!!errors.cpf}
+              helperText={errors.cpf}
+              placeholder="000.000.000-00"
+              autoComplete="off"
+              inputProps={{
+                autoComplete: "off",
+                "data-lpignore": "true",
+                "data-form-type": "other"
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon color="action" />
+                  </InputAdornment>
+                )
+              }}
+              aria-describedby="cpf-helper-text"
+            />
 
-            <Tooltip title={t('login.password_tooltip', 'Digite sua senha de acesso')} arrow>
-              <StyledTextField
-                fullWidth
-                label={t('login.password', 'Senha')}
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handlePasswordChange}
-                error={!!errors.password}
-                helperText={errors.password}
-                autoComplete="new-password"
-                inputProps={{
-                  autoComplete: "new-password",
-                  "data-lpignore": "true"
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon color="action" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                        aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                aria-describedby="password-helper-text"
-              />
-            </Tooltip>
+            <StyledTextField
+              fullWidth
+              label={t('login.password', 'Senha')}
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handlePasswordChange}
+              error={!!errors.password}
+              helperText={errors.password}
+              autoComplete="new-password"
+              inputProps={{
+                autoComplete: "new-password",
+                "data-lpignore": "true"
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                      aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              aria-describedby="password-helper-text"
+            />
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <FormControlLabel
@@ -393,9 +432,9 @@ const LoginPage = () => {
                 }
                 label={t('login.remember', 'Lembrar de mim')}
               />
-              <Link href="/forgot-password" variant="body2" sx={{ color: theme.palette.secondary.main }}>
+              <Typography variant="body2" color="text.secondary">
                 {t('login.forgot', 'Esqueceu a senha?')}
-              </Link>
+              </Typography>
             </Box>
 
             <StyledButton
@@ -412,12 +451,18 @@ const LoginPage = () => {
           {/* Links do footer */}
           <FooterLinks>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              {t('login.no_account', 'Não tem uma conta?')} <Link href="/cadastro" sx={{ color: theme.palette.secondary.main }}>{t('login.click_here', 'Clique aqui')}</Link>
+              {t('login.no_account', 'Não tem uma conta?')} <Typography component="span" color="secondary" sx={{ cursor: 'pointer' }}>{t('login.click_here', 'Clique aqui')}</Typography>
             </Typography>
             <Box>
-              <Link href="/planos">{t('login.view_plans', 'Ver Planos')}</Link>
-              <Link href="/termos">{t('login.terms', 'Termos de Uso')}</Link>
-              <Link href="/politicas">{t('login.privacy', 'Política de Privacidade')}</Link>
+                              <Typography component="span" color="secondary" sx={{ cursor: 'pointer', mr: 2 }}>
+                  {t('login.view_plans', 'Ver Planos')}
+                </Typography>
+                <Typography component="span" color="secondary" sx={{ cursor: 'pointer', mr: 2 }}>
+                  {t('login.terms', 'Termos de Uso')}
+                </Typography>
+                <Typography component="span" color="secondary" sx={{ cursor: 'pointer' }}>
+                  {t('login.privacy', 'Política de Privacidade')}
+                </Typography>
             </Box>
           </FooterLinks>
         </CardContent>

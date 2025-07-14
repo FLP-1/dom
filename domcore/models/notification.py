@@ -86,7 +86,7 @@ class Notification(NotificationBase):
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "notif_123",
                 "tipo": "task_created",
@@ -113,7 +113,7 @@ class NotificationStats(BaseModel):
     
     class Config:
         """Configuração do modelo"""
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "total_notificacoes": 25,
                 "notificacoes_nao_lidas": 8,

@@ -7,22 +7,51 @@
  * @author Equipe DOM v1
  */
 import { useState, useEffect } from 'react';
-import { getTaskStats } from '@/services/taskService';
+import { useUser } from '@/context/UserContext';
 
-export function useTaskStats({ token }) {
+export function useTaskStats(profile = 'empregador') {
+  const { user } = useUser();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!token) return;
-    setLoading(true);
-    getTaskStats(token)
-      .then((data) => setStats(data))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line
-  }, [token]);
+    if (!user?.token) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const params = new URLSearchParams({
+          profile,
+          user_id: user.id || ''
+        });
+        
+        const response = await fetch(`/api/dashboard/stats?${params}`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        } else {
+          throw new Error('Erro ao buscar estatísticas');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [user?.token, user?.id, profile]);
 
   return { stats, loading, error };
 } 

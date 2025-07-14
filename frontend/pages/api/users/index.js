@@ -20,17 +20,38 @@ export default async function handler(req, res) {
     }
     const token = authHeader.substring(7);
 
-    // Montar query string com os filtros
-    const params = new URLSearchParams(req.query).toString();
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    // Extrair parâmetros da query
+    const { profile, limit = 50, offset = 0, search, status, ativo, grupo } = req.query;
 
-    // Chamar backend Python
-    const response = await fetch(`${backendUrl}/api/users?${params}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    // Construir comando Python
+    const pythonArgs = [
+      'domcore/get_users.py',
+      '--limit', limit.toString(),
+      '--offset', offset.toString()
+    ];
 
-    const data = await response.json();
-    return res.status(response.status).json(data);
+    if (profile) pythonArgs.push('--profile', profile);
+    if (search) pythonArgs.push('--search', search);
+    if (status) pythonArgs.push('--status', status);
+    if (ativo) pythonArgs.push('--ativo', ativo);
+    if (grupo) pythonArgs.push('--grupo', grupo);
+
+    // Executar script Python
+    const { exec } = require('child_process');
+    const util = require('util');
+    const execAsync = util.promisify(exec);
+
+    const command = `python ${pythonArgs.join(' ')}`;
+    console.log('Executando comando:', command);
+
+    const { stdout, stderr } = await execAsync(command, { cwd: process.cwd() });
+
+    if (stderr) {
+      console.error('Erro no script Python:', stderr);
+    }
+
+    const data = JSON.parse(stdout);
+    return res.status(200).json(data);
 
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);

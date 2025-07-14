@@ -51,7 +51,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 - Estrutura base do monorepo com Turbo
 - Configuração do TypeScript rigoroso
-- Setup do Material-UI v2
+- Setup do MUI v5 (Material-UI moderno)
 - Configuração do Prisma + PostgreSQL
 - Sistema de internacionalização
 - Configurações de ESLint e Prettier

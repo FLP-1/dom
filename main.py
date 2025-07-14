@@ -225,6 +225,7 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     db.add(session)
     db.commit()
     return {
+        "success": True,
         "id": user.id,
         "name": user.nome,
         "nickname": user.nickname,
@@ -285,7 +286,7 @@ async def get_user_contexts(current_user: UserDB = Depends(get_current_user), db
     return [
         {
             'groupId': str(r.group_id),
-            'groupName': r.group.name if r.group else "Grupo não encontrado",
+            'groupName': r.group.nome if r.group else "Grupo não encontrado",
             'role': r.role,
             'profile': r.role  # ou mapeie para o profile correto
         }

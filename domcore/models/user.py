@@ -201,7 +201,7 @@ class User(UserBase):
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "user_123",
                 "cpf": "123.456.789-01",

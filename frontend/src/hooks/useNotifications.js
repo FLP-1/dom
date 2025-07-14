@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { useMessageSnackbar } from '@/hooks/useMessageSnackbar'
 
 /**
@@ -40,6 +40,7 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
     setError(null)
     
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       const params = new URLSearchParams({
         limit: filters.limit || 50,
         offset: filters.offset || 0,
@@ -48,7 +49,11 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
         profile
       })
 
-      const response = await fetch(`/api/notifications?${params}`)
+      const response = await fetch(`/api/notifications?${params}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : undefined,
+        }
+      })
       
       if (!response.ok) {
         throw new Error(t('notifications.fetch_error', 'Erro ao buscar notificações'))
@@ -57,19 +62,20 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
       const data = await response.json()
       
       if (data.success) {
-        setNotifications(data.data)
+        const notifications = data.data || []
+        setNotifications(notifications)
         
         // Atualiza estatísticas
-        const unreadCount = data.data.filter(n => !n.lida).length
-        const todayCount = data.data.filter(n => {
+        const unreadCount = notifications.filter(n => !n.lida).length
+        const todayCount = notifications.filter(n => {
           const today = new Date().toDateString()
           const notificationDate = new Date(n.data_criacao).toDateString()
           return today === notificationDate
         }).length
-        const urgentCount = data.data.filter(n => n.prioridade === 'urgente').length
+        const urgentCount = notifications.filter(n => n.prioridade === 'urgente').length
         
         setStats({
-          total: data.data.length,
+          total: notifications.length,
           unread: unreadCount,
           today: todayCount,
           urgent: urgentCount
@@ -94,10 +100,12 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
     setError(null)
     
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       const response = await fetch('/api/notifications', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify(notificationData)
       })
@@ -140,10 +148,12 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
    */
   const markAsRead = useCallback(async (notificationId) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       const response = await fetch('/api/notifications/mark-read', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ notification_id: notificationId })
       })
@@ -188,10 +198,12 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
    */
   const markAllAsRead = useCallback(async () => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       const response = await fetch('/api/notifications/mark-read', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify({ mark_all: true })
       })
@@ -232,10 +244,12 @@ export const useNotifications = (profile = 'empregador', autoFetch = true) => {
    */
   const updateNotification = useCallback(async (notificationId, updateData) => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null
       const response = await fetch(`/api/notifications/${notificationId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : undefined,
         },
         body: JSON.stringify(updateData)
       })

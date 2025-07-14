@@ -23,6 +23,7 @@ import { useTheme } from '@mui/material/styles'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { getProfileTheme } from '@/theme/profile-themes'
+import { useTranslation } from '@/utils/i18n'
 
 const PERIODS = [
   { label: 'Hoje', value: 'today' },
@@ -47,6 +48,7 @@ const TaskSummaryCard = ({
   onStatusChange,
   profile
 }) => {
+  const { t } = useTranslation('common')
   const theme = useTheme()
   const profileTheme = getProfileTheme(profile)
   const [anchorPeriod, setAnchorPeriod] = React.useState(null)
@@ -106,7 +108,7 @@ const TaskSummaryCard = ({
             {count}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" fontWeight={500} sx={{ mb: 2, letterSpacing: 1 }}>
-            Tarefas
+            {t('tasks.title', 'Tarefas')}
           </Typography>
           {/* Drilldowns em linha */}
           <Stack direction="row" spacing={2} width="100%" justifyContent="center">

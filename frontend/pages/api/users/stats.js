@@ -1,40 +1,82 @@
 /**
- * @fileoverview API de usuários - Estatísticas
+ * @fileoverview Endpoint para estatísticas de usuários
  * @directory pages/api/users
- * @description Endpoint para obter estatísticas de usuários (proxy para backend Python)
+ * @description API para buscar estatísticas de usuários do banco de dados
  * @created 2024-12-19
  * @lastModified 2024-12-19
- * @author Equipe DOM v1
+ * @author DOM Team
  */
 
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Método não permitido' });
-  }
+  const { method } = req;
 
   try {
-    // Recuperar token JWT do header Authorization
+    // Verifica autenticação
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Não autorizado' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Token de autenticação não fornecido'
+      });
     }
-    const token = authHeader.substring(7);
 
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    const token = authHeader.split(' ')[1];
 
-    // Chamar backend Python
-    const response = await fetch(`${backendUrl}/api/users/stats`, {
-      headers: { Authorization: `Bearer ${token}` }
+    switch (method) {
+      case 'GET':
+        return await getUserStats(req, res, token);
+      
+      default:
+        res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ 
+          success: false,
+          message: 'Método não permitido'
+        });
+    }
+  } catch (error) {
+    console.error('❌ Erro no endpoint de estatísticas de usuários:', error);
+    return res.status(500).json({ 
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+}
+
+/**
+ * Busca estatísticas de usuários
+ */
+async function getUserStats(req, res, token) {
+  try {
+    // Chama script Python para buscar estatísticas
+    const pythonScript = 'domcore/get_user_stats.py';
+    const command = `python ${pythonScript}`;
+
+    const { exec } = require('child_process');
+    const util = require('util');
+    const execAsync = util.promisify(exec);
+
+    const { stdout, stderr } = await execAsync(command);
+
+    if (stderr) {
+      console.error('❌ Erro no script Python:', stderr);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro ao buscar estatísticas'
+      });
+    }
+
+    const stats = JSON.parse(stdout);
+
+    return res.status(200).json({
+      success: true,
+      data: stats
     });
 
-    const data = await response.json();
-    return res.status(response.status).json(data);
-
   } catch (error) {
-    console.error('Erro ao buscar estatísticas de usuários:', error);
+    console.error('❌ Erro ao buscar estatísticas:', error);
     return res.status(500).json({ 
-      error: 'Erro interno do servidor',
-      details: error.message 
+      success: false,
+      message: 'Erro ao buscar estatísticas'
     });
   }
 } 

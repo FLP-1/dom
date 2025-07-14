@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { 
   Box, 
   Typography, 
@@ -31,18 +31,19 @@ import {
   Notifications as NotificationIcon
 } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { useActiveContext } from '@/context/ActiveContext'
+import { useUser } from '@/context/UserContext'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationCard } from '@/components/notifications'
 import { getProfileTheme } from '@/theme/profile-themes'
 import { ProtectedRoute } from '@/components/auth'
-
+import MainLayout from '@/components/MainLayout'
 
 
 export default function NotificationsPage() {
   const { t } = useTranslation('common')
   const router = useRouter()
-  const { profile } = useActiveContext()
+  const { activeContext, user } = useUser()
+  const profile = activeContext?.profile || user?.profile || 'empregador'
   const theme = getProfileTheme(profile)
   
   // Estados
@@ -120,7 +121,8 @@ export default function NotificationsPage() {
   
   return (
     <ProtectedRoute allowedProfiles={['empregador', 'empregado', 'familiar', 'parceiro', 'subordinado', 'admin', 'owner']}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <MainLayout profile={profile} userName={user?.name || ''} title="Notificações">
+        <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Cabeçalho */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Box display="flex" alignItems="center" gap={2}>
@@ -315,6 +317,7 @@ export default function NotificationsPage() {
         </Grid>
       )}
     </Container>
+    </MainLayout>
     </ProtectedRoute>
   )
 } 

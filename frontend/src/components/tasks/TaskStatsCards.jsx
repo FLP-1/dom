@@ -26,59 +26,61 @@ import {
   Warning as OverdueIcon
 } from '@mui/icons-material'
 import { getProfileTheme } from '@/theme/profile-themes'
+import { useTranslation } from '@/utils/i18n'
 
 const TaskStatsCards = ({
   stats,
   profile,
   onCardClick
 }) => {
+  const { t } = useTranslation('common')
   const profileTheme = getProfileTheme(profile)
 
   const statCards = [
     {
-      title: 'Total',
+      title: t('task_status.total', 'Total'),
       value: stats.total,
       icon: AssignmentIcon,
       color: profileTheme.primaryColor,
       bgColor: profileTheme.primaryColor + '15'
     },
     {
-      title: 'A Fazer',
+      title: t('task_status.pending', 'A Fazer'),
       value: stats.pending,
       icon: AssignmentIcon,
       color: '#757575',
       bgColor: '#75757515'
     },
     {
-      title: 'Iniciadas',
+      title: t('task_status.in_progress', 'Iniciadas'),
       value: stats.inProgress,
       icon: InProgressIcon,
       color: '#FF9800',
       bgColor: '#FF980015'
     },
     {
-      title: 'Terminadas',
+      title: t('task_status.completed', 'Terminadas'),
       value: stats.completed,
       icon: CompletedIcon,
       color: '#4CAF50',
       bgColor: '#4CAF5015'
     },
     {
-      title: 'Descartadas',
+      title: t('task_status.cancelled', 'Descartadas'),
       value: stats.cancelled,
       icon: CancelledIcon,
       color: '#F44336',
       bgColor: '#F4433615'
     },
     {
-      title: 'Reprogramadas',
+      title: t('task_status.paused', 'Reprogramadas'),
       value: stats.pending - stats.inProgress - stats.completed - stats.cancelled,
       icon: PausedIcon,
       color: '#2196F3',
       bgColor: '#2196F315'
     },
     {
-      title: 'Atrasadas',
+      title: t('task_status.overdue', 'Atrasadas'),
       value: stats.overdue,
       icon: OverdueIcon,
       color: '#FF5722',

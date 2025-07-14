@@ -27,7 +27,7 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon
 } from '@mui/icons-material'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { getProfileTheme } from '@/theme/profile-themes'
 
 /**

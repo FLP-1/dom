@@ -28,11 +28,11 @@ import {
   Home as CommunityIcon,
   Category as OtherIcon,
 } from '@mui/icons-material'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { GroupStats } from '@/hooks/useGroups'
 
 const GroupStatsCards = memo(({ stats, loading = false }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   if (!stats && !loading) {
     return null

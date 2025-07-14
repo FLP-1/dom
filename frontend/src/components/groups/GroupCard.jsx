@@ -30,7 +30,7 @@ import {
   Block as BlockIcon,
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { Group } from '@/hooks/useGroups'
 import { useUser } from '@/context/UserContext'
 
@@ -41,7 +41,7 @@ const GroupCard = memo(({
   onView,
   onToggleStatus,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { user } = useUser()
   const [anchorEl, setAnchorEl] = React.useState(null)
 

@@ -8,11 +8,11 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from '@/utils/i18n'
 import { useUser } from '@/context/UserContext'
 
 export const useGroups = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { user } = useUser()
   const [groups, setGroups] = useState([])
   const [loading, setLoading] = useState(false)

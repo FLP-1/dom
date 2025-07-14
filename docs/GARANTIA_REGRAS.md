@@ -78,6 +78,19 @@ npm run quality-check
   }
 ],
 
+// ❌ PROIBIDO: react-i18next em projetos Next.js
+'no-restricted-imports': [
+  'error',
+  {
+    patterns: [
+      {
+        group: ['react-i18next'],
+        message: 'Use next-i18next em vez de react-i18next para projetos Next.js'
+      }
+    ]
+  }
+],
+
 // ❌ PROIBIDO: Strings hardcoded específicas
 'no-restricted-syntax': [
   'error',
@@ -98,6 +111,19 @@ npm run quality-check
       ClassDeclaration: true,
     },
   },
+],
+
+// ✅ OBRIGATÓRIO: next-i18next em componentes
+'no-restricted-imports': [
+  'error',
+  {
+    patterns: [
+      {
+        group: ['react-i18next'],
+        message: 'Use next-i18next para projetos Next.js'
+      }
+    ]
+  }
 ],
 ```
 
